@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "751325052741",
+    "project_id": "bimenes-vive",
+    "storage_bucket": "bimenes-vive.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:751325052741:android:2111b33fe4cf29f8f4c82c",
+        "android_client_info": {
+          "package_name": "com.bimenesvive.bimenesvive"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE3VgNw9NXcIlPkssKwpNV_xQwfk9A0VM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
