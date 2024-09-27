@@ -1,11 +1,13 @@
-package com.bimenesvive.bimenesvive.pantallas
+package com.bimenesvive.bimenesvive.pantallas.autenticacion
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -20,20 +22,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bimenesvive.bimenesvive.AuthenticationState
 import com.bimenesvive.bimenesvive.AuthenticationViewModel
+import com.bimenesvive.bimenesvive.R
 
 @Composable
-fun PantallaLogin(
+fun PantallaRegistro(
     modifier: Modifier = Modifier,
     navController: NavController,
     authenticationViewModel: AuthenticationViewModel
 ) {
+
     val context = LocalContext.current
-    //con null sin localcontext la app crashea
 
     var email by remember {
         mutableStateOf("")
@@ -46,20 +53,12 @@ fun PantallaLogin(
     //Estamos observando el estado de la autenticación para cambiar la UI
     val authenticationState = authenticationViewModel.authenticationState.observeAsState()
 
-    LaunchedEffect(authenticationState.value) {
+    LaunchedEffect(authenticationState.value) {  //estudiar LaunchedEffect
         when (authenticationState.value) {
             is AuthenticationState.Autenticado -> navController.navigate("inicio")
-            is AuthenticationState.AutentificacionFallida ->{
-                Toast.makeText(context, "Error en la autenticación", Toast.LENGTH_SHORT)
-                    .show() //podría usar el mensaje de error que viene en el estado
-            //y en vez de un toast, mejor usar un snackbar ?
-            //Tengo que mirar cómo diferenciar un error al autenticarse o que pass/email son incorrectos
-
-                //Hago un reset del estado para que el Toast no salte sin parar si navegamos por la UI
-                 authenticationViewModel.reiniciarEstadoAutenticacion()
-            }
             else -> Unit
         }
+        //When the return type of a function is Unit it means the function does not return anything
 
     }
 
@@ -69,43 +68,72 @@ fun PantallaLogin(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "LOGIN", fontSize = 35.sp)
-        Spacer(modifier = Modifier.height(20.dp))
-        OutlinedTextField(value = email, onValueChange = {
-            email = it
-        },
-            label = { Text("Email") }
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_launcher_background),
+            contentDescription = "Registro Image",
+            modifier = Modifier.height(100.dp)
         )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Text(text = "REGISTRO", fontSize = 35.sp)
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        OutlinedTextField(
+            value = email, onValueChange = {
+                email = it
+            },
+            label = { Text("Email") },
+            keyboardOptions = KeyboardOptions(
+                autoCorrectEnabled = true,
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            )
+        )
+
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        OutlinedTextField(value = password, onValueChange = {
-            password = it
-        },
-            label = { Text("Password") }  //hacer que el texto sea privado *   y hacer que cambie el boton del final y ocultar teclado
+        OutlinedTextField(
+            value = password, onValueChange = {
+                password = it
+            },
+            label = { Text("Contraseña") },
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                autoCorrectEnabled = false,
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            )
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
         Button(
             onClick = {
-                // Si el password o el email están vacíos, no permito el login
+                // Si el password o el email están vacíos, no permito el registro
                 if (email.isNotEmpty() && password.isNotEmpty()) {
-                    authenticationViewModel.login(email, password)
+                    authenticationViewModel.registro(email, password)
                 } else {
-                Toast.makeText(context, "Por favor, rellena todos los campos", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Email y contraseña no pueden estar vacíos",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             },
             //El botón estará enabled siempre que no esté autenticando, así el usuario no puede hacer click varias veces mientras firebase responde
             enabled = authenticationState.value != AuthenticationState.ProcesandoAutentificacion
         ) {
-            Text(text = "Login") //ARCHIVO DE TEXTO
+            Text(text = "Crear Cuenta") //ARCHIVO DE TEXTO
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        TextButton(onClick = { navController.navigate("registro") }) {
-            Text(text = "Todavía no tengo cuenta, quiero registrarme") //ARCHIVO DE TEXTO
+        TextButton(onClick = { navController.navigate("login") }) {
+            Text(text = "Acceder a mi cuenta") //ARCHIVO DE TEXTO
         }
 
 

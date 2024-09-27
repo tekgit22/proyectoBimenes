@@ -1,4 +1,4 @@
-package com.bimenesvive.bimenesvive.pantallas
+package com.bimenesvive.bimenesvive.pantallas.autenticacion
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

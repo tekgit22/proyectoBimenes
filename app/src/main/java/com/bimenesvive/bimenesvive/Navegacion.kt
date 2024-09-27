@@ -5,10 +5,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.bimenesvive.bimenesvive.pantallas.PantallaInicio
-import com.bimenesvive.bimenesvive.pantallas.PantallaLogin
-import com.bimenesvive.bimenesvive.pantallas.PantallaRegistro
-import com.bimenesvive.bimenesvive.pantallas.PantallaSplash
+import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaPrincipal
+import com.bimenesvive.bimenesvive.pantallas.invitado.PantallaInvitado
+import com.bimenesvive.bimenesvive.pantallas.autenticacion.PantallaLogin
+import com.bimenesvive.bimenesvive.pantallas.autenticacion.PantallaRegistro
+import com.bimenesvive.bimenesvive.pantallas.autenticacion.PantallaSplash
 
 
 @Composable
@@ -25,7 +26,10 @@ fun Navegacion(modifier: Modifier = Modifier, authenticationViewModel: Authentic
             PantallaRegistro(modifier, navController, authenticationViewModel)
         }
         composable("inicio") {
-            PantallaInicio(modifier, navController, authenticationViewModel)
+            PantallaPrincipal(modifier, navController, authenticationViewModel)
+        }
+        composable("invitado") {
+            PantallaInvitado(modifier, navController)
         }
     })
 }
