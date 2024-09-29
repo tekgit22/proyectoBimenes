@@ -90,6 +90,9 @@ dependencies {
 
     //Firebase Autehntication
     implementation("com.google.firebase:firebase-auth-ktx")
+    //Firestore
+    implementation(libs.firebase.firestore.ktx)
+
 
 
 }

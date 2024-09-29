@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -55,7 +56,7 @@ fun PantallaPrincipal(
         ) {
             Spacer(modifier = Modifier.height(15.dp))
             Button(
-                onClick = { /* TO DO */ },
+                onClick = { navController.navigate("explorar") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -68,45 +69,74 @@ fun PantallaPrincipal(
             }
 
             Spacer(modifier = Modifier.height(15.dp))
-            Button(onClick = { /* TO DO */ }, modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+            Button(
+                onClick = { /* TO DO */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
-                Text(text = "Subir Propiedad")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "\uD83D\uDCE5") // Emoji de nube con flecha hacia arriba
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Subir Propiedad")
+                }
             }
 
             Spacer(modifier = Modifier.height(15.dp))
-            Button(onClick = { /* TO DO */ }, modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+            Button(
+                onClick = { /* TO DO */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
-                Text(text = "Favoritos")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "\u2B50") // Emoji de estrella
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Favoritos")
+                }
             }
 
             Spacer(modifier = Modifier.height(15.dp))
-            Button(onClick = { /* TO DO */ }, modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+            Button(
+                onClick = { /* TO DO */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
-                Text(text = "Mis Propiedades")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "\uD83D\uDCC4") // Emoji de hojas de folio
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Mis Propiedades")
+                }
             }
 
             Spacer(modifier = Modifier.height(15.dp))
-            Button(onClick = { /* TO DO */ }, modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+            Button(
+                onClick = { /* TO DO */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
-                Text(text = "Conoce Bimenes")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "\uD83C\uDF32") // Emoji de árbol
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Conoce Bimenes")
+                }
             }
         }
-
-        // TextButton en la parte inferior
-        Box(modifier = Modifier.padding(8.dp).align(Alignment.BottomCenter)) {
-            TextButton(onClick = {
-                authenticationViewModel.cerrarSesion()
-            }) {
-                Text("Cerrar sesión")
-            }
+    }
+    // Botón de logoff en la parte inferior
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 8.dp),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        TextButton(onClick = {
+            authenticationViewModel.cerrarSesion()
+            navController.navigate("login")
+        }) {
+            Text(text = "Cerrar sesión")
         }
     }
 }

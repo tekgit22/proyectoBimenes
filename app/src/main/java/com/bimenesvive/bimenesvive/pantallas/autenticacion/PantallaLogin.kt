@@ -43,7 +43,7 @@ fun PantallaLogin(
     authenticationViewModel: AuthenticationViewModel
 ) {
     val context = LocalContext.current
-    //con null sin localcontext la app crashea
+    //recurda que con null sin localcontext la app crashea
 
     var email by remember {
         mutableStateOf("")

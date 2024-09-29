@@ -19,15 +19,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // ESTUDIAR
+        // by viewModels() es una extensión de la clase ComponentActivity permite
+        // obtener una instancia de un ViewModel asociado a la actividad.
         val authenticationViewModel : AuthenticationViewModel by viewModels()
 
         setContent {
             BimenesViveTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Navegacion(modifier = Modifier.padding(innerPadding), authenticationViewModel = authenticationViewModel)
-                    //TENGO QUE MIRAR POR QUE METE PADDING AHÍ
-                    //desde aquí vamos a la navegación
+                    //el modificador de innerPadding está para asegurarme de que la navegación
+                    //se pueda superponer con otros elementos de la UI como una barra de navegación
+
 
 
 
