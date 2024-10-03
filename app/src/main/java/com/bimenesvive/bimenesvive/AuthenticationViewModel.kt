@@ -9,10 +9,11 @@ class AuthenticationViewModel : ViewModel() {
 
     //private val sharedPreferences: SharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val _authenticationState = MutableLiveData<AuthenticationState>()  //recuerda mirar el _
-    val authenticationState: LiveData<AuthenticationState> = _authenticationState //estudiar y entender por qué se hace esto
+    //el _ privado es necesario para las variables privadas que tienen un LiveData de una variable publica asociada
+    private val _authenticationState = MutableLiveData<AuthenticationState>()
+    val authenticationState: LiveData<AuthenticationState> = _authenticationState //
 
-    //estudiar por qué init
+    //
     init {
         comprobarEstadoAutenticacion()
     }
@@ -26,7 +27,7 @@ class AuthenticationViewModel : ViewModel() {
     }
 
 
-    //Aquí tengo que estudiar asincronía, cómo funciona el task, el null, elvis operator, etc
+    //asincronía, task, null, elvis operator, etc
     fun login(email : String , password : String) {
 
         //Para evitar trabajo innecesario, no permito el login si los campos están vacíos
@@ -78,12 +79,14 @@ class AuthenticationViewModel : ViewModel() {
 
 }
 
-//estudiar la sealed class
+//Sealed class para representar los estados de autenticación, son singlenton y deben declararse en el mismo archivo
 sealed class AuthenticationState {
     object Desautenticado : AuthenticationState()
     object Autenticado : AuthenticationState()
     object ProcesandoAutentificacion : AuthenticationState()
-    data class AutentificacionFallida(val message: String) : AuthenticationState()  //estudiar
+    data class AutentificacionFallida(val message: String) : AuthenticationState()
+    //data class genera automáticamente equals, hashcode, toString, copy
+    //lo estoy utilizando para trasladar un mensaje de error, puedo refactorizar y simplificar
 
 
 }
