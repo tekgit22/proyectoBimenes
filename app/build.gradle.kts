@@ -92,7 +92,10 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     //Firestore
     implementation(libs.firebase.firestore.ktx)
+    //Storage
+    implementation("com.google.firebase:firebase-storage-ktx")
 
-
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.1.0")
 
 }
