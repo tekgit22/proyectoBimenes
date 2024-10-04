@@ -1,5 +1,6 @@
 package com.bimenesvive.bimenesvive.pantallas.usuario
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,8 @@ import com.bimenesvive.bimenesvive.modelo.Vivienda
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import android.net.Uri
+import coil.compose.rememberAsyncImagePainter
 
 
 
@@ -71,62 +74,140 @@ fun PantallaExplorar(
 }
 
 // TARJETA DE VIVIENDA
+//@Composable
+//fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(8.dp)
+//            .height(300.dp) // QUITAR, sólo para pruebas de scroll
+//            .clickable {
+//                navController.navigate("vivienda/${vivienda.documentID}")
+//            },
+//        shape = RoundedCornerShape(8.dp),
+//        elevation = CardDefaults.cardElevation(5.dp)
+//    ) {
+//        Row(modifier = Modifier.padding(16.dp)) {
+//            Image(
+//                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+//                contentDescription = null,
+//                modifier = Modifier.size(64.dp),
+//                contentScale = ContentScale.Crop
+//            )
+//            Spacer(modifier = Modifier.width(16.dp))
+//            Column {
+//                Text(text = vivienda.titulo)
+//                Text(text = vivienda.parroquia)
+//                Text(text = "Habitaciones: ${vivienda.habitaciones}")
+//            }
+//        }
+//    }
+//}
+
 @Composable
 fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
+    val fotos = remember { mutableStateOf<List<Uri>>(emptyList()) }
+
+    LaunchedEffect(vivienda.documentID) {
+        fotos.value = getFotosViviendaFromFirestore(vivienda.documentID)
+    }
+
+    val cardHeight = if (fotos.value.isEmpty()) 150.dp else 210.dp
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .height(300.dp) // QUITAR, sólo para pruebas de scroll
+            .height(cardHeight)
             .clickable {
                 navController.navigate("vivienda/${vivienda.documentID}")
             },
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(5.dp)
     ) {
-        Row(modifier = Modifier.padding(16.dp)) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = null,
-                modifier = Modifier.size(64.dp),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(text = vivienda.titulo)
-                Text(text = vivienda.parroquia)
-                Text(text = "Habitaciones: ${vivienda.habitaciones}")
+        Column(modifier = Modifier.padding(16.dp)) {
+            // Título
+            Text(text = vivienda.titulo, style = MaterialTheme.typography.bodyLarge)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Foto y datos
+            Row {
+                Image(
+                    painter = rememberAsyncImagePainter(fotos.value.firstOrNull() ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto")),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(150.dp)
+                        .padding(end = 16.dp),
+                    contentScale = ContentScale.Fit
+                )
+                Column {
+                    Text(text = vivienda.parroquia)
+                    Text(text = "${vivienda.habitaciones} habitaciones")
+                    Text(text = "${vivienda.metros} metros²")
+                }
             }
         }
     }
 }
 
+suspend fun getFotosViviendaFromFirestore(documentID: String): List<Uri> {
+    return try {
+        val snapshot = FirebaseFirestore.getInstance()
+            .collection("viviendas")
+            .document(documentID)
+            .collection("fotos")
+            .get()
+            .await()
+        snapshot.documents.mapNotNull { it.getString("url")?.let { Uri.parse(it) } }
+    } catch (e: Exception) {
+        Log.e("ViviendaItem", "Error al obtener las fotos: ${e.message}")
+        emptyList()
+    }
+}
+
+
 // TARJETA DE FINCA
 @Composable
 fun FincaItem(finca: Finca, navController: NavHostController) {
+    val fotos = remember { mutableStateOf<List<Uri>>(emptyList()) }
+
+    LaunchedEffect(finca.documentID) {
+        fotos.value = getFotosFincaFromFirestore(finca.documentID)
+    }
+
+    val cardHeight = if (fotos.value.isEmpty()) 150.dp else 210.dp
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .height(cardHeight)
             .clickable {
                 navController.navigate("finca/${finca.documentID}")
             },
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(5.dp)
     ) {
-        Row(modifier = Modifier.padding(16.dp)) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = null,
-                modifier = Modifier.size(64.dp),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(text = finca.titulo)
-                Text(text = finca.parroquia)
-                Text(text = "Metros: ${finca.metros}")
-                Text(text = "Edificable: ${if (finca.edificable) "Sí" else "No"}")
+        Column(modifier = Modifier.padding(16.dp)) {
+            // Título
+            Text(text = finca.titulo, style = MaterialTheme.typography.bodyLarge)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Foto y datos
+            Row {
+                Image(
+                    painter = rememberAsyncImagePainter(fotos.value.firstOrNull() ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto")),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(150.dp)
+                        .padding(end = 16.dp),
+                    contentScale = ContentScale.Fit
+                )
+                Column {
+                    Text(text = finca.parroquia)
+                    Text(text = "Metros: ${finca.metros}")
+                    Text(text = "Edificable: ${if (finca.edificable) "Sí" else "No"}")
+                }
             }
         }
     }
