@@ -251,7 +251,7 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
                 val documentID = documentReference.id
                 db.collection("fincas").document(documentID).update("documentID", documentID)
                 Toast.makeText(context, "Finca subida correctamente", Toast.LENGTH_SHORT).show()
-                navController.navigate("finca/$documentID")
+                navController.navigate("mifinca/$documentID")
             }.addOnFailureListener { e ->
                 Toast.makeText(context, "Se produjo un error", Toast.LENGTH_SHORT).show()
             }
