@@ -16,8 +16,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,13 +24,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.bimenesvive.bimenesvive.modelo.Vivienda
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import java.util.*
+import com.google.android.gms.tasks.Tasks
 
 @Composable
 fun PantallaMiVivienda(
@@ -56,20 +56,26 @@ fun PantallaMiVivienda(
     }
 
     LaunchedEffect(documentID) {
-        vivienda = getMiViviendaById(documentID)
-        imageUris = getFotosFromFirestore(documentID)
-        Log.d("PantallaVivienda", "Vivienda: $vivienda")
+        try {
+            vivienda = getMiViviendaById(documentID)
+            imageUris = getFotosFromFirestore(documentID)
+            Log.d("PantallaVivienda", "Vivienda: $vivienda")
+        } catch (e: Exception) {
+            Log.e("PantallaVivienda", "Error al cargar la vivienda: ${e.message}")
+            Toast.makeText(context, "Error al cargar la vivienda", Toast.LENGTH_SHORT).show()
+        }
     }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
-        if (uris.size <= 5) {
-            uris.forEach { uri ->
+        uris.forEach { uri ->
+            try {
                 subirFoto(uri, userID, documentID, FirebaseStorage.getInstance(), context) { downloadUri ->
                     imageUris = imageUris + downloadUri
                 }
+            } catch (e: Exception) {
+                Log.e("PantallaVivienda", "Error al subir la foto: ${e.message}")
+                Toast.makeText(context, "Error al subir la foto", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(context, "Puedes subir hasta 5 fotos", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -97,11 +103,9 @@ fun PantallaMiVivienda(
             LazyRow {
                 items(imageUris) { uri ->
                     Image(
-                        painter = rememberImagePainter(uri),
+                        painter = rememberAsyncImagePainter(uri),
                         contentDescription = null,
-                        modifier = Modifier
-                            .size(200.dp)
-                            .padding(8.dp)
+                        modifier = Modifier.size(128.dp).padding(4.dp)
                     )
                 }
             }
@@ -115,13 +119,93 @@ fun PantallaMiVivienda(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = {
-                // TO DO: Implementar lógica para borrar anuncio
+                try {
+                    borrarAnuncio(userID, documentID, imageUris, context, navController)
+                } catch (e: Exception) {
+                    Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
+                    Toast.makeText(context, "Error al borrar el anuncio", Toast.LENGTH_SHORT).show()
+                }
             }) {
                 Text("Borrar Anuncio")
             }
         }
     } ?: run {
         Log.d("PantallaVivienda", "No se encontró la vivienda con id: $documentID")
+    }
+}
+
+private fun borrarAnuncio(userID: String, documentID: String, imageUris: List<Uri>, context: Context, navController: NavHostController) {
+    val storageRef = FirebaseStorage.getInstance().reference
+    val db = FirebaseFirestore.getInstance()
+
+    // Eliminar las fotos de Storage si existen
+    if (imageUris.isNotEmpty()) {
+        val deleteTasks = imageUris.map { uri ->
+            // Extract only the file name from the URI
+            val fileName = uri.lastPathSegment?.substringAfterLast('/')
+            val photoRef = storageRef.child("$userID/$documentID/$fileName")
+            Log.d("PantallaVivienda", "userID: $userID")
+            Log.d("PantallaVivienda", "documentID: $documentID")
+            Log.d("PantallaVivienda", "fileName: $fileName")
+            Log.d("PantallaVivienda", "Ruta de la foto a borrar: ${photoRef.path}")
+            photoRef.delete().addOnFailureListener { e ->
+                val errorMessage = if (e.message?.contains("Object does not exist") == true) {
+                    "La foto no existe en la ubicación especificada"
+                } else {
+                    "Error al borrar la foto: ${e.message}"
+                }
+                Log.e("PantallaVivienda", errorMessage)
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        Tasks.whenAll(deleteTasks)
+            .addOnSuccessListener {
+                // Eliminar los documentos de las URIs de las fotos en Firestore
+                db.collection("viviendas").document(documentID).collection("fotos")
+                    .get()
+                    .addOnSuccessListener { snapshot ->
+                        val deletePhotoDocsTasks = snapshot.documents.map { it.reference.delete() }
+                        Tasks.whenAll(deletePhotoDocsTasks)
+                            .addOnSuccessListener {
+                                // Después de eliminar las fotos y sus documentos, eliminar el documento principal
+                                db.collection("viviendas").document(documentID)
+                                    .delete()
+                                    .addOnSuccessListener {
+                                        Toast.makeText(context, "Anuncio borrado correctamente", Toast.LENGTH_SHORT).show()
+                                        navController.navigate("inicio")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
+                                        Toast.makeText(context, "Error al borrar el anuncio: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("PantallaVivienda", "Error al borrar los documentos de las fotos: ${e.message}")
+                                Toast.makeText(context, "Error al borrar los documentos de las fotos: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("PantallaVivienda", "Error al obtener los documentos de las fotos: ${e.message}")
+                        Toast.makeText(context, "Error al obtener los documentos de las fotos: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("PantallaVivienda", "Error al borrar las fotos: ${e.message}")
+                Toast.makeText(context, "Error al borrar las fotos: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    } else {
+        // Si no hay fotos, eliminar directamente el documento principal
+        db.collection("viviendas").document(documentID)
+            .delete()
+            .addOnSuccessListener {
+                Toast.makeText(context, "Anuncio borrado correctamente", Toast.LENGTH_SHORT).show()
+                navController.navigate("inicio")
+            }
+            .addOnFailureListener { e ->
+                Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
+                Toast.makeText(context, "Error al borrar el anuncio: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 }
 
@@ -135,22 +219,6 @@ private fun subirFoto(uri: Uri, userID: String, documentID: String, storage: Fir
                 guardarFotoEnFirestore(downloadUri.toString(), userID, documentID)
                 Toast.makeText(context, "Foto subida correctamente", Toast.LENGTH_SHORT).show()
                 onSuccess(downloadUri)
-            }
-        }
-        .addOnFailureListener { e ->
-            Toast.makeText(context, "Error al subir la foto: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
-}
-
-private fun subirFoto(uri: Uri, userID: String, documentID: String, storage: FirebaseStorage, context: Context) {
-    val storageRef = storage.reference
-    val photoRef = storageRef.child("$userID/$documentID/${UUID.randomUUID()}.jpg")
-
-    photoRef.putFile(uri)
-        .addOnSuccessListener {
-            photoRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                guardarFotoEnFirestore(downloadUri.toString(), userID, documentID)
-                Toast.makeText(context, "Foto subida correctamente", Toast.LENGTH_SHORT).show()
             }
         }
         .addOnFailureListener { e ->
