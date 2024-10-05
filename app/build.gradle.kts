@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.preference.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -97,5 +98,11 @@ dependencies {
 
     // Coil
     implementation("io.coil-kt:coil-compose:2.1.0")
+
+    //OsmDroid (Open Street Maps)
+    implementation("org.osmdroid:osmdroid-android:6.1.13")
+
+
+
 
 }
