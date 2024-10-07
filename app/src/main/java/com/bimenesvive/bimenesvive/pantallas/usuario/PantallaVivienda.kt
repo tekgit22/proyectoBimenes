@@ -43,13 +43,12 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImagePainter
 import kotlinx.coroutines.launch
 
-
-
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1
-
-
 
 @Composable
 fun PantallaVivienda(
@@ -60,6 +59,7 @@ fun PantallaVivienda(
     var vivienda by remember { mutableStateOf<Vivienda?>(null) }
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     var showDialog by remember { mutableStateOf(false) }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return
     val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -100,6 +100,10 @@ fun PantallaVivienda(
                             modifier = Modifier
                                 .size(128.dp)
                                 .padding(4.dp)
+                                .clickable {
+                                    selectedImageUri = uri
+                                    showDialog = true
+                                }
                         )
                     }
                 }
@@ -180,33 +184,9 @@ fun PantallaVivienda(
                 AlertDialog(
                     onDismissRequest = { showDialog = false },
                     text = {
-                        AndroidView(factory = { context ->
-                            MapView(context).apply {
-                                setMultiTouchControls(true)
-                                controller.setZoom(18.0)
-                                it.localizacion?.let { loc ->
-                                    val geoPoint = GeoPoint(loc.latitude, loc.longitude)
-                                    controller.setCenter(geoPoint)
-
-                                    // Añadir un marcador
-                                    val marker = Marker(this)
-                                    marker.position = geoPoint
-                                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                    marker.title = it.titulo
-                                    marker.setOnMarkerClickListener { _, _ ->
-                                        val gmmIntentUri = Uri.parse("geo:${loc.latitude},${loc.longitude}")
-                                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                                        mapIntent.setPackage("com.google.android.apps.maps")
-                                        context.startActivity(mapIntent)
-                                        true
-                                    }
-                                    overlays.add(marker)
-                                }
-                                // Añadir un proveedor de tiles
-                                val tileProvider = org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK
-                                setTileSource(tileProvider)
-                            }
-                        }, modifier = Modifier.fillMaxSize())
+                        selectedImageUri?.let { uri ->
+                            RotarImagen(imageUri = uri)
+                        }
                     },
                     confirmButton = {
                         TextButton(onClick = { showDialog = false }) {
@@ -289,6 +269,47 @@ suspend fun getViviendaById(id: String): Vivienda? {
     } catch (e: Exception) {
         Log.e("PantallaVivienda", "Error al obtener la vivienda: ${e.message}")
         null
+    }
+}
+
+@Composable
+fun RotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
+    val painter = rememberAsyncImagePainter(model = imageUri)
+
+    var rotation by remember { mutableStateOf(0f) }
+    var contentScale by remember { mutableStateOf(ContentScale.Fit) }
+
+    LaunchedEffect(painter.state) {
+        when (painter.state) {
+            is AsyncImagePainter.State.Success -> {
+                val imageSize = (painter.state as AsyncImagePainter.State.Success).painter.intrinsicSize
+                if (imageSize.width > imageSize.height) {
+                    rotation = 90f
+                    contentScale = ContentScale.FillWidth
+                } else {
+                    contentScale = ContentScale.FillHeight
+                }
+            }
+            else -> {}
+        }
+    }
+
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painter,
+            contentDescription = null,
+            contentScale = contentScale,
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer(
+                    rotationZ = rotation,
+                    scaleX = if (rotation != 0f) 1.5f else 1f,
+                    scaleY = if (rotation != 0f) 1.5f else 1f
+                )
+        )
     }
 }
 
