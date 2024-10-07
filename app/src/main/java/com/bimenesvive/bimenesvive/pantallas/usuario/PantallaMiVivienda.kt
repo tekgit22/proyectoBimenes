@@ -134,7 +134,7 @@ fun PantallaMiVivienda(
     }
 }
 
-private fun borrarAnuncio(userID: String, documentID: String, imageUris: List<Uri>, context: Context, navController: NavHostController) {
+fun borrarAnuncio(userID: String, documentID: String, imageUris: List<Uri>, context: Context, navController: NavHostController) {
     val storageRef = FirebaseStorage.getInstance().reference
     val db = FirebaseFirestore.getInstance()
 

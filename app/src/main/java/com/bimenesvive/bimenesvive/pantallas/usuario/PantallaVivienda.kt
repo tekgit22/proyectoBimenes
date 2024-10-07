@@ -1,8 +1,15 @@
 package com.bimenesvive.bimenesvive.pantallas.usuario
 
-import android.content.Intent
+import android.Manifest
+import android.app.Activity
+import android.content.pm.PackageManager
+import android.location.Location
 import android.net.Uri
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -12,9 +19,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.bimenesvive.bimenesvive.modelo.Vivienda
+import com.google.android.gms.location.*
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import androidx.compose.ui.viewinterop.AndroidView
@@ -23,6 +33,23 @@ import org.osmdroid.views.MapView
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 import androidx.preference.PreferenceManager
+import com.google.android.gms.location.Priority
+import android.content.Intent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.launch
+
+
+
+private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+
+
 
 @Composable
 fun PantallaVivienda(
@@ -33,6 +60,9 @@ fun PantallaVivienda(
     var vivienda by remember { mutableStateOf<Vivienda?>(null) }
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     var showDialog by remember { mutableStateOf(false) }
+    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return
+    val coroutineScope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
 
     // Inicializar osmdroid
     val context = LocalContext.current
@@ -61,22 +91,89 @@ fun PantallaVivienda(
             Text(text = "Email: ${it.email}") //hacer clickable para enviar email
             Spacer(modifier = Modifier.height(15.dp))
 
-            LazyRow {
-                items(imageUris) { uri ->
-                    Image(
-                        painter = rememberAsyncImagePainter(uri),
-                        contentDescription = null,
+            Column {
+                LazyRow(state = listState) {
+                    items(imageUris) { uri ->
+                        Image(
+                            painter = rememberAsyncImagePainter(uri),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(128.dp)
+                                .padding(4.dp)
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Previous",
                         modifier = Modifier
-                            .size(128.dp)
-                            .padding(4.dp)
+                            .size(24.dp)
+                            .clickable {
+                                coroutineScope.launch {
+                                    listState.animateScrollToItem(
+                                        maxOf(listState.firstVisibleItemIndex - 1, 0)
+                                    )
+                                }
+                            },
+                        tint = Color.Gray
+                    )
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Next",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable {
+                                coroutineScope.launch {
+                                    listState.animateScrollToItem(
+                                        minOf(listState.firstVisibleItemIndex + 1, imageUris.size - 1)
+                                    )
+                                }
+                            },
+                        tint = Color.Gray
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            Button(onClick = { showDialog = true }) {
-                Text("Ver Localización")
+            Row {
+                Button(onClick = { showDialog = true }) {
+                    Text("Ver Localización")
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Button(onClick = {
+                    // Verificar permisos de ubicación antes de guardar la localización
+                    if (checkLocationPermission(context as Activity)) {
+                        Log.d("PantallaVivienda", "Permiso de ubicación concedido, guardando localización")
+                        saveLocation(it, context)
+                    } else {
+                        Log.d("PantallaVivienda", "Permiso de ubicación no concedido")
+                    }
+                }) {
+                    Text("Guardar Localización")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Botón para borrar anuncio
+            Button(onClick = {
+                try {
+                    borrarAnuncio(userID, documentID, imageUris, context, navController)
+                } catch (e: Exception) {
+                    Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
+                    Toast.makeText(context, "Error al borrar el anuncio", Toast.LENGTH_SHORT).show()
+                }
+            }) {
+                Text("Borrar Anuncio")
             }
 
             if (showDialog) {
@@ -86,7 +183,7 @@ fun PantallaVivienda(
                         AndroidView(factory = { context ->
                             MapView(context).apply {
                                 setMultiTouchControls(true)
-                                controller.setZoom(19.0)
+                                controller.setZoom(18.0)
                                 it.localizacion?.let { loc ->
                                     val geoPoint = GeoPoint(loc.latitude, loc.longitude)
                                     controller.setCenter(geoPoint)
@@ -96,13 +193,13 @@ fun PantallaVivienda(
                                     marker.position = geoPoint
                                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                     marker.title = it.titulo
-//                                    marker.setOnMarkerClickListener { _, _ ->
-//                                        val gmmIntentUri = Uri.parse("geo:${loc.latitude},${loc.longitude}")
-//                                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-//                                        mapIntent.setPackage("com.google.android.apps.maps")
-//                                        context.startActivity(mapIntent)
-//                                        true
-//                                    }
+                                    marker.setOnMarkerClickListener { _, _ ->
+                                        val gmmIntentUri = Uri.parse("geo:${loc.latitude},${loc.longitude}")
+                                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                                        mapIntent.setPackage("com.google.android.apps.maps")
+                                        context.startActivity(mapIntent)
+                                        true
+                                    }
                                     overlays.add(marker)
                                 }
                                 // Añadir un proveedor de tiles
@@ -124,6 +221,63 @@ fun PantallaVivienda(
     }
 }
 
+fun checkLocationPermission(activity: Activity): Boolean {
+    return if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+        false
+    } else {
+        true
+    }
+}
+
+fun getCurrentLocation(activity: Activity, onLocationReceived: (Location) -> Unit) {
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
+    val locationRequest = LocationRequest.Builder(10000)
+        .setMinUpdateIntervalMillis(5000)
+        .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+        .build()
+
+    if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+        return
+    }
+
+    fusedLocationClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            locationResult.lastLocation?.let { location ->
+                onLocationReceived(location)
+                fusedLocationClient.removeLocationUpdates(this)
+            }
+        }
+    }, Looper.getMainLooper())
+}
+
+fun saveLocation(vivienda: Vivienda, context: Activity) {
+    if (checkLocationPermission(context)) {
+        getCurrentLocation(context) { location ->
+            val db = FirebaseFirestore.getInstance()
+            val viviendaRef = db.collection("viviendas").document(vivienda.documentID)
+            val geoPoint = com.google.firebase.firestore.GeoPoint(location.latitude, location.longitude)
+
+            Log.d("PantallaVivienda", "Guardando localización: lat=${location.latitude}, lon=${location.longitude}")
+            Toast.makeText(context, "lat=${location.latitude}, lon=${location.longitude}", Toast.LENGTH_SHORT).show()
+
+            val data = mapOf("localizacion" to geoPoint)
+            viviendaRef.update(data)
+                .addOnSuccessListener {
+                    Log.d("PantallaVivienda", "Localización guardada exitosamente en Firestore")
+                    Toast.makeText(context, "Localización guardada exitosamente", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    Log.e("PantallaVivienda", "Error al guardar la localización en Firestore", e)
+                    Toast.makeText(context, "Error al guardar la localización", Toast.LENGTH_SHORT).show()
+                }
+        }
+    } else {
+        Log.d("PantallaVivienda", "Permiso de ubicación no concedido")
+    }
+}
+
 suspend fun getViviendaById(id: String): Vivienda? {
     return try {
         FirebaseFirestore.getInstance()
@@ -137,3 +291,4 @@ suspend fun getViviendaById(id: String): Vivienda? {
         null
     }
 }
+

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.bimenesvive.bimenesvive.modelo.Finca
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -32,6 +33,7 @@ fun PantallaFinca(
 ) {
     val finca = remember { mutableStateOf<Finca?>(null) }
     val fotos = remember { mutableStateOf<List<Uri>>(emptyList()) }
+
 
     LaunchedEffect(documentID) {
         finca.value = getMiFincaById(documentID)
