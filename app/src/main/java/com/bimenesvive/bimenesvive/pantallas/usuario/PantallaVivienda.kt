@@ -2,6 +2,7 @@ package com.bimenesvive.bimenesvive.pantallas.usuario
 
 import android.Manifest
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
@@ -11,42 +12,40 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
-import com.bimenesvive.bimenesvive.modelo.Vivienda
-import com.google.android.gms.location.*
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
-import androidx.compose.ui.viewinterop.AndroidView
-import org.osmdroid.config.Configuration
-import org.osmdroid.views.MapView
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.overlay.Marker
-import androidx.preference.PreferenceManager
-import com.google.android.gms.location.Priority
-import android.content.Intent
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import com.bimenesvive.bimenesvive.modelo.Vivienda
+import com.google.android.gms.location.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import org.osmdroid.config.Configuration
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
+import androidx.preference.PreferenceManager
 
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1
 
@@ -58,7 +57,8 @@ fun PantallaVivienda(
 ) {
     var vivienda by remember { mutableStateOf<Vivienda?>(null) }
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
-    var showDialog by remember { mutableStateOf(false) }
+    var showImageDialog by remember { mutableStateOf(false) }
+    var showMapDialog by remember { mutableStateOf(false) }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return
     val coroutineScope = rememberCoroutineScope()
@@ -102,7 +102,7 @@ fun PantallaVivienda(
                                 .padding(4.dp)
                                 .clickable {
                                     selectedImageUri = uri
-                                    showDialog = true
+                                    showImageDialog = true
                                 }
                         )
                     }
@@ -147,7 +147,7 @@ fun PantallaVivienda(
             Spacer(modifier = Modifier.height(15.dp))
 
             Row {
-                Button(onClick = { showDialog = true }) {
+                Button(onClick = { showMapDialog = true }) {
                     Text("Ver Localización")
                 }
 
@@ -180,16 +180,50 @@ fun PantallaVivienda(
                 Text("Borrar Anuncio")
             }
 
-            if (showDialog) {
+            if (showImageDialog) {
                 AlertDialog(
-                    onDismissRequest = { showDialog = false },
+                    onDismissRequest = { showImageDialog = false },
                     text = {
                         selectedImageUri?.let { uri ->
                             RotarImagen(imageUri = uri)
                         }
                     },
                     confirmButton = {
-                        TextButton(onClick = { showDialog = false }) {
+                        TextButton(onClick = { showImageDialog = false }) {
+                            Text("Cerrar")
+                        }
+                    }
+                )
+            }
+
+            if (showMapDialog) {
+                AlertDialog(
+                    onDismissRequest = { showMapDialog = false },
+                    text = {
+                        AndroidView(factory = { context ->
+                            MapView(context).apply {
+                                Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
+                                controller.setZoom(18.0)
+                                vivienda?.localizacion?.let { geoPoint ->
+                                    val startPoint = GeoPoint(geoPoint.latitude, geoPoint.longitude)
+                                    controller.setCenter(startPoint)
+                                    val marker = Marker(this)
+                                    marker.position = startPoint
+                                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                    marker.setOnMarkerClickListener { _, _ ->
+                                        val gmmIntentUri = Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}")
+                                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                                        mapIntent.setPackage("com.google.android.apps.maps")
+                                        context.startActivity(mapIntent)
+                                        true
+                                    }
+                                    overlays.add(marker)
+                                }
+                            }
+                        })
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showMapDialog = false }) {
                             Text("Cerrar")
                         }
                     }
@@ -272,6 +306,12 @@ suspend fun getViviendaById(id: String): Vivienda? {
     }
 }
 
+
+
+fun borrarAnuncio(userID: String, documentID: String, imageUris: List<Uri>, context: Activity, navController: NavHostController) {
+    // Implementación de la función para borrar el anuncio
+}
+
 @Composable
 fun RotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
     val painter = rememberAsyncImagePainter(model = imageUri)
@@ -312,4 +352,3 @@ fun RotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
         )
     }
 }
-
