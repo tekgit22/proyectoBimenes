@@ -41,6 +41,7 @@ fun PantallaMiVivienda(
 ) {
     var vivienda by remember { mutableStateOf<Vivienda?>(null) }
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    var ownerUserID by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current as Activity
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
@@ -59,6 +60,7 @@ fun PantallaMiVivienda(
         try {
             vivienda = getMiViviendaById(documentID)
             imageUris = getFotosFromFirestore(documentID)
+            ownerUserID = vivienda?.userID
             Log.d("PantallaVivienda", "Vivienda: $vivienda")
         } catch (e: Exception) {
             Log.e("PantallaVivienda", "Error al cargar la vivienda: ${e.message}")
@@ -118,15 +120,18 @@ fun PantallaMiVivienda(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(onClick = {
-                try {
-                    borrarAnuncio(userID, documentID, imageUris, context, navController)
-                } catch (e: Exception) {
-                    Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
-                    Toast.makeText(context, "Error al borrar el anuncio", Toast.LENGTH_SHORT).show()
+            // Mostrar el botón de borrar solo si el userID coincide con el ownerUserID
+            if (userID == ownerUserID) {
+                Button(onClick = {
+                    try {
+                        borrarAnuncio(userID, documentID, imageUris, context, navController)
+                    } catch (e: Exception) {
+                        Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
+                        Toast.makeText(context, "Error al borrar el anuncio", Toast.LENGTH_SHORT).show()
+                    }
+                }) {
+                    Text("Borrar Anuncio")
                 }
-            }) {
-                Text("Borrar Anuncio")
             }
         }
     } ?: run {
@@ -138,74 +143,89 @@ fun borrarAnuncio(userID: String, documentID: String, imageUris: List<Uri>, cont
     val storageRef = FirebaseStorage.getInstance().reference
     val db = FirebaseFirestore.getInstance()
 
-    // Eliminar las fotos de Storage si existen
-    if (imageUris.isNotEmpty()) {
-        val deleteTasks = imageUris.map { uri ->
-            // Extract only the file name from the URI
-            val fileName = uri.lastPathSegment?.substringAfterLast('/')
-            val photoRef = storageRef.child("$userID/$documentID/$fileName")
-            Log.d("PantallaVivienda", "userID: $userID")
-            Log.d("PantallaVivienda", "documentID: $documentID")
-            Log.d("PantallaVivienda", "fileName: $fileName")
-            Log.d("PantallaVivienda", "Ruta de la foto a borrar: ${photoRef.path}")
-            photoRef.delete().addOnFailureListener { e ->
-                val errorMessage = if (e.message?.contains("Object does not exist") == true) {
-                    "La foto no existe en la ubicación especificada"
-                } else {
-                    "Error al borrar la foto: ${e.message}"
-                }
-                Log.e("PantallaVivienda", errorMessage)
-                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-            }
-        }
+    // Verificar si el usuario actual es el propietario del anuncio
+    db.collection("viviendas").document(documentID).get().addOnSuccessListener { document ->
+        if (document.exists()) {
+            val ownerUserID = document.getString("userID")
+            Log.d("PantallaVivienda", "Current userID: $userID")
+            Log.d("PantallaVivienda", "Owner userID: $ownerUserID")
+            if (ownerUserID == userID) {
+                // Borrar imágenes del almacenamiento
+                if (imageUris.isNotEmpty()) {
+                    val deleteTasks = imageUris.map { uri ->
+                        val fileName = uri.lastPathSegment?.substringAfterLast('/')
+                        val photoRef = storageRef.child("$userID/$documentID/$fileName")
+                        Log.d("PantallaVivienda", "Ruta de la foto a borrar: ${photoRef.path}")
+                        photoRef.delete().addOnFailureListener { e ->
+                            val errorMessage = if (e.message?.contains("Object does not exist") == true) {
+                                "La foto no existe en la ubicación especificada"
+                            } else {
+                                "Error al borrar la foto: ${e.message}"
+                            }
+                            Log.e("PantallaVivienda", errorMessage)
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                        }
+                    }
 
-        Tasks.whenAll(deleteTasks)
-            .addOnSuccessListener {
-                // Eliminar los documentos de las URIs de las fotos en Firestore
-                db.collection("viviendas").document(documentID).collection("fotos")
-                    .get()
-                    .addOnSuccessListener { snapshot ->
-                        val deletePhotoDocsTasks = snapshot.documents.map { it.reference.delete() }
-                        Tasks.whenAll(deletePhotoDocsTasks)
-                            .addOnSuccessListener {
-                                // Después de eliminar las fotos y sus documentos, eliminar el documento principal
-                                db.collection("viviendas").document(documentID)
-                                    .delete()
-                                    .addOnSuccessListener {
-                                        Toast.makeText(context, "Anuncio borrado correctamente", Toast.LENGTH_SHORT).show()
-                                        navController.navigate("inicio")
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
-                                        Toast.makeText(context, "Error al borrar el anuncio: ${e.message}", Toast.LENGTH_SHORT).show()
-                                    }
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("PantallaVivienda", "Error al borrar los documentos de las fotos: ${e.message}")
-                                Toast.makeText(context, "Error al borrar los documentos de las fotos: ${e.message}", Toast.LENGTH_SHORT).show()
-                            }
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("PantallaVivienda", "Error al obtener los documentos de las fotos: ${e.message}")
-                        Toast.makeText(context, "Error al obtener los documentos de las fotos: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+                    Tasks.whenAll(deleteTasks)
+                        .addOnSuccessListener {
+                            // Borrar documentos de fotos de Firestore
+                            db.collection("viviendas").document(documentID).collection("fotos")
+                                .get()
+                                .addOnSuccessListener { snapshot ->
+                                    val deletePhotoDocsTasks = snapshot.documents.map { it.reference.delete() }
+                                    Tasks.whenAll(deletePhotoDocsTasks)
+                                        .addOnSuccessListener {
+                                            // Borrar el documento principal
+                                            db.collection("viviendas").document(documentID)
+                                                .delete()
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(context, "Anuncio borrado correctamente", Toast.LENGTH_SHORT).show()
+                                                    navController.navigate("inicio")
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
+                                                    Toast.makeText(context, "Error al borrar el anuncio: ${e.message}", Toast.LENGTH_SHORT).show()
+                                                }
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e("PantallaVivienda", "Error al borrar los documentos de las fotos: ${e.message}")
+                                            Toast.makeText(context, "Error al borrar los documentos de las fotos: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        }
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("PantallaVivienda", "Error al obtener los documentos de las fotos: ${e.message}")
+                                    Toast.makeText(context, "Error al obtener los documentos de las fotos: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("PantallaVivienda", "Error al borrar las fotos: ${e.message}")
+                            Toast.makeText(context, "Error al borrar las fotos: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                } else {
+                    // Si no hay fotos, borrar el documento principal directamente
+                    db.collection("viviendas").document(documentID)
+                        .delete()
+                        .addOnSuccessListener {
+                            Toast.makeText(context, "Anuncio borrado correctamente", Toast.LENGTH_SHORT).show()
+                            navController.navigate("inicio")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
+                            Toast.makeText(context, "Error al borrar el anuncio: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            } else {
+                Log.e("PantallaVivienda", "No tienes permiso para borrar este anuncio")
+                Toast.makeText(context, "No tienes permiso para borrar este anuncio", Toast.LENGTH_SHORT).show()
             }
-            .addOnFailureListener { e ->
-                Log.e("PantallaVivienda", "Error al borrar las fotos: ${e.message}")
-                Toast.makeText(context, "Error al borrar las fotos: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    } else {
-        // Si no hay fotos, eliminar directamente el documento principal
-        db.collection("viviendas").document(documentID)
-            .delete()
-            .addOnSuccessListener {
-                Toast.makeText(context, "Anuncio borrado correctamente", Toast.LENGTH_SHORT).show()
-                navController.navigate("inicio")
-            }
-            .addOnFailureListener { e ->
-                Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
-                Toast.makeText(context, "Error al borrar el anuncio: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+        } else {
+            Log.e("PantallaVivienda", "No se encontró la vivienda con id: $documentID")
+            Toast.makeText(context, "No se encontró la vivienda con id: $documentID", Toast.LENGTH_SHORT).show()
+        }
+    }.addOnFailureListener { e ->
+        Log.e("PantallaVivienda", "Error al obtener el anuncio: ${e.message}")
+        Toast.makeText(context, "Error al obtener el anuncio: ${e.message}", Toast.LENGTH_SHORT).show()
     }
 }
 

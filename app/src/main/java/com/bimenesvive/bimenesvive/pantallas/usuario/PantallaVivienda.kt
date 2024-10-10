@@ -2,6 +2,7 @@ package com.bimenesvive.bimenesvive.pantallas.usuario
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -46,6 +47,8 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import androidx.preference.PreferenceManager
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.storage.FirebaseStorage
 
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1
 
@@ -146,38 +149,76 @@ fun PantallaVivienda(
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            Row {
-                Button(onClick = { showMapDialog = true }) {
-                    Text("Ver Localización")
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Button(onClick = {
-                    // Verificar permisos de ubicación antes de guardar la localización
-                    if (checkLocationPermission(context as Activity)) {
-                        Log.d("PantallaVivienda", "Permiso de ubicación concedido, guardando localización")
-                        saveLocation(it, context)
-                    } else {
-                        Log.d("PantallaVivienda", "Permiso de ubicación no concedido")
+            Column {
+                if (it.localizacion?.latitude == 0.0 && it.localizacion.longitude == 0.0) {
+                    Button(
+                        onClick = {},
+                        enabled = false,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Text("Localización no disponible")
                     }
-                }) {
-                    Text("Guardar Localización")
+                } else {
+                    Button(
+                        onClick = { showMapDialog = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Text("Ver Localización")
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Column {
+                if (userID == it.userID) {
+                    Button(
+                        onClick = {
+                            // Verificar permisos de ubicación antes de guardar la localización
+                            if (checkLocationPermission(context as Activity)) {
+                                Log.d("PantallaVivienda", "Permiso de ubicación concedido, guardando localización")
+                                saveLocation(it, context, documentID) {
+                                    // Refrescar la UI después de guardar la localización
+                                    coroutineScope.launch {
+                                        vivienda = getViviendaById(documentID)
+                                    }
+                                }
+                            } else {
+                                Log.d("PantallaVivienda", "Permiso de ubicación no concedido")
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Text("Guardar Localización")
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Botón para borrar anuncio
-            Button(onClick = {
-                try {
-                    borrarAnuncio(userID, documentID, imageUris, context, navController)
-                } catch (e: Exception) {
-                    Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
-                    Toast.makeText(context, "Error al borrar el anuncio", Toast.LENGTH_SHORT).show()
+            if (userID == it.userID) {
+                Button(
+                    onClick = {
+                        try {
+                            borrarAnuncio(userID, documentID, imageUris, context, navController)
+                        } catch (e: Exception) {
+                            Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
+                            Toast.makeText(context, "Error al borrar el anuncio", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Text("Borrar Anuncio")
                 }
-            }) {
-                Text("Borrar Anuncio")
             }
 
             if (showImageDialog) {
@@ -211,10 +252,7 @@ fun PantallaVivienda(
                                     marker.position = startPoint
                                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                     marker.setOnMarkerClickListener { _, _ ->
-                                        val gmmIntentUri = Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}")
-                                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                                        mapIntent.setPackage("com.google.android.apps.maps")
-                                        context.startActivity(mapIntent)
+                                        Toast.makeText(context, "Localización: ${geoPoint.latitude}, ${geoPoint.longitude}", Toast.LENGTH_SHORT).show()
                                         true
                                     }
                                     overlays.add(marker)
@@ -231,7 +269,10 @@ fun PantallaVivienda(
             }
         }
     } ?: run {
-        Log.d("PantallaVivienda", "No se encontró la vivienda con id: $documentID")
+        // Log sólo para comprobar errores cambiando los modelos, da falsos positivos porque necesitamos
+        // tener en cuenta el tiempo de carga de Firestore, por lo que comento sólo para usarlo si es necesario
+
+       // Log.d("PantallaVivienda", "No se encontró la vivienda con id: $documentID")
     }
 }
 
@@ -266,11 +307,11 @@ fun getCurrentLocation(activity: Activity, onLocationReceived: (Location) -> Uni
     }, Looper.getMainLooper())
 }
 
-fun saveLocation(vivienda: Vivienda, context: Activity) {
+fun saveLocation(vivienda: Vivienda, context: Activity, documentID: String, onLocationSaved: (Location) -> Unit) {
     if (checkLocationPermission(context)) {
         getCurrentLocation(context) { location ->
             val db = FirebaseFirestore.getInstance()
-            val viviendaRef = db.collection("viviendas").document(vivienda.documentID)
+            val viviendaRef = db.collection("viviendas").document(documentID)
             val geoPoint = com.google.firebase.firestore.GeoPoint(location.latitude, location.longitude)
 
             Log.d("PantallaVivienda", "Guardando localización: lat=${location.latitude}, lon=${location.longitude}")
@@ -281,6 +322,7 @@ fun saveLocation(vivienda: Vivienda, context: Activity) {
                 .addOnSuccessListener {
                     Log.d("PantallaVivienda", "Localización guardada exitosamente en Firestore")
                     Toast.makeText(context, "Localización guardada exitosamente", Toast.LENGTH_SHORT).show()
+                    onLocationSaved(location)
                 }
                 .addOnFailureListener { e ->
                     Log.e("PantallaVivienda", "Error al guardar la localización en Firestore", e)
@@ -306,12 +348,6 @@ suspend fun getViviendaById(id: String): Vivienda? {
     }
 }
 
-
-
-fun borrarAnuncio(userID: String, documentID: String, imageUris: List<Uri>, context: Activity, navController: NavHostController) {
-    // Implementación de la función para borrar el anuncio
-}
-
 @Composable
 fun RotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
     val painter = rememberAsyncImagePainter(model = imageUri)
@@ -325,9 +361,7 @@ fun RotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
                 val imageSize = (painter.state as AsyncImagePainter.State.Success).painter.intrinsicSize
                 if (imageSize.width > imageSize.height) {
                     rotation = 90f
-                    contentScale = ContentScale.FillWidth
-                } else {
-                    contentScale = ContentScale.FillHeight
+                    contentScale = ContentScale.Crop
                 }
             }
             else -> {}
