@@ -103,6 +103,9 @@ dependencies {
     //OsmDroid (Open Street Maps)
     implementation("org.osmdroid:osmdroid-android:6.1.13")
 
+    //Iconos
+    implementation ("androidx.compose.material:material-icons-extended:<version>")
+
 
 
 

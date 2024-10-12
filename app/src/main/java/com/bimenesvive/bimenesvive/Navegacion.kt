@@ -10,6 +10,7 @@ import com.bimenesvive.bimenesvive.pantallas.invitado.PantallaInvitado
 import com.bimenesvive.bimenesvive.pantallas.autenticacion.PantallaLogin
 import com.bimenesvive.bimenesvive.pantallas.autenticacion.PantallaRegistro
 import com.bimenesvive.bimenesvive.pantallas.autenticacion.PantallaSplash
+import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaBimenes
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaExplorar
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaFinca
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaSubirPropiedad
@@ -49,11 +50,9 @@ fun Navegacion(modifier: Modifier = Modifier, authenticationViewModel: Authentic
         composable("subirPropiedad") {
             PantallaSubirPropiedad(modifier, navController)
         }
-
-//        composable("mifinca/{documentID}") { entry ->
-//            val documentID = entry.arguments?.getString("documentID") ?: ""
-//            PantallaMiFinca(modifier, navController, documentID)
-//        }
+        composable("bimenes") {
+            PantallaBimenes(modifier, navController)
+        }
 
     })
 }

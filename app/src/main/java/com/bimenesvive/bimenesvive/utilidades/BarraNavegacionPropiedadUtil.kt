@@ -23,6 +23,28 @@ fun NavBarViendoPropiedad(navController: NavHostController) {
     ) {
         NavigationBarItem(
             icon = { Icon(painter = painterResource(id = R.drawable.ic_atras), contentDescription = "Menú") },
+            label = { Text("Explorar") },
+            selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
+            onClick = { navController.navigate("explorar") }
+        )
+        NavigationBarItem(
+            icon = { Icon(painter = painterResource(id = R.drawable.ic_casa), contentDescription = "Menú") },
+            label = { Text("Menú") },
+            selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
+            onClick = { navController.navigate("inicio") }
+        )
+    }
+}
+
+@Composable
+fun NavBarVolverInicio(navController: NavHostController) {
+    NavigationBar(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
+    ) {
+        NavigationBarItem(
+            icon = { Icon(painter = painterResource(id = R.drawable.ic_casa), contentDescription = "Menú") },
             label = { Text("Menú") },
             selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
             onClick = { navController.navigate("inicio") }

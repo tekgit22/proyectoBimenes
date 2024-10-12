@@ -1,5 +1,6 @@
 package com.bimenesvive.bimenesvive.pantallas.usuario
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,11 +20,22 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bimenesvive.bimenesvive.AuthenticationState
 import com.bimenesvive.bimenesvive.AuthenticationViewModel
+import com.bimenesvive.bimenesvive.R
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.Park
+import androidx.compose.material3.Icon
+
 
 @Composable
 fun PantallaPrincipal(
@@ -31,11 +43,9 @@ fun PantallaPrincipal(
     navController: NavController,
     authenticationViewModel: AuthenticationViewModel
 ) {
-
-    //Estamos observando el estado de la autenticación para cambiar la UI
     val authenticationState = authenticationViewModel.authenticationState.observeAsState()
 
-    LaunchedEffect(authenticationState.value) {  //estudiar LaunchedEffect
+    LaunchedEffect(authenticationState.value) {
         when (authenticationState.value) {
             is AuthenticationState.Desautenticado -> navController.navigate("login")
             else -> Unit
@@ -44,17 +54,22 @@ fun PantallaPrincipal(
 
     Box(modifier = modifier.fillMaxSize()) {
         // Título
-        Box(modifier = Modifier.padding(8.dp).align(Alignment.TopCenter)) {
-            Text(text = "Bimenes Vive", fontSize = 35.sp)
+        Box(
+            modifier = Modifier
+                .padding(8.dp)
+                .align(Alignment.TopCenter)
+        ) {
+            Image(painter = painterResource(id = R.drawable.logotest), contentDescription = "Logo")
         }
 
         // Botones centrados
         Column(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(top = 32.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(15.dp))
             Button(
                 onClick = { navController.navigate("explorar") },
                 modifier = Modifier
@@ -62,7 +77,7 @@ fun PantallaPrincipal(
                     .padding(horizontal = 16.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "\uD83C\uDFE0") // Emoji de casa
+                    Icon(imageVector = Icons.Default.Home, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "Ver Inmuebles")
                 }
@@ -76,7 +91,7 @@ fun PantallaPrincipal(
                     .padding(horizontal = 16.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "\uD83D\uDCE5") // Emoji de nube con flecha hacia arriba
+                    Icon(imageVector = Icons.Default.CloudUpload, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "Subir Propiedad")
                 }
@@ -90,21 +105,7 @@ fun PantallaPrincipal(
                     .padding(horizontal = 16.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "\u2B50") // Emoji de estrella
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Favoritos")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(15.dp))
-            Button(
-                onClick = { /* TO DO */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "\uD83D\uDCC4") // Emoji de hojas de folio
+                    Icon(imageVector = Icons.AutoMirrored.Filled.Assignment, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "Mis Propiedades")
                 }
@@ -112,19 +113,34 @@ fun PantallaPrincipal(
 
             Spacer(modifier = Modifier.height(15.dp))
             Button(
+                onClick = { navController.navigate("bimenes") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(imageVector = Icons.Default.Park, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Conoce Bimenes")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(15.dp))
+            Button(
                 onClick = { /* TO DO */ },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "\uD83C\uDF32") // Emoji de árbol
+                    Icon(imageVector = Icons.Default.AutoStories, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Conoce Bimenes")
+                    Text(text = "Tablón de Anuncios")
                 }
             }
         }
     }
+
     // Botón de logoff en la parte inferior
     Box(
         modifier = Modifier
