@@ -1,0 +1,488 @@
+package com.bimenesvive.bimenesvive.deprecated
+
+//import android.Manifest
+//import android.app.Activity
+//import android.content.Context
+//import android.content.pm.PackageManager
+//import android.net.Uri
+//import android.os.Build
+//import android.util.Log
+//import android.widget.Toast
+//import androidx.activity.compose.rememberLauncherForActivityResult
+//import androidx.activity.result.contract.ActivityResultContracts
+//import androidx.compose.foundation.Image
+//import androidx.compose.foundation.clickable
+//import androidx.compose.foundation.layout.*
+//import androidx.compose.foundation.lazy.LazyRow
+//import androidx.compose.foundation.lazy.items
+//import androidx.compose.foundation.lazy.rememberLazyListState
+//import androidx.compose.material.icons.Icons
+//import androidx.compose.material.icons.automirrored.filled.ArrowBack
+//import androidx.compose.material.icons.automirrored.filled.ArrowForward
+//import androidx.compose.material3.*
+//import androidx.compose.runtime.*
+//import androidx.compose.ui.Modifier
+//import androidx.compose.ui.graphics.Color
+//import androidx.compose.ui.unit.dp
+//import androidx.compose.ui.platform.LocalContext
+//import androidx.core.app.ActivityCompat
+//import androidx.core.content.ContextCompat
+//import androidx.navigation.NavHostController
+//import coil.compose.rememberAsyncImagePainter
+//import com.bimenesvive.bimenesvive.modelo.Vivienda
+//import com.bimenesvive.bimenesvive.utilidades.*
+//import com.google.firebase.auth.FirebaseAuth
+//import com.google.firebase.firestore.FirebaseFirestore
+//import com.google.firebase.storage.FirebaseStorage
+//import kotlinx.coroutines.tasks.await
+//import java.util.*
+//import com.google.android.gms.tasks.Tasks
+//import org.osmdroid.config.Configuration
+//import org.osmdroid.util.GeoPoint
+//import org.osmdroid.views.MapView
+//import org.osmdroid.views.overlay.Marker
+//import androidx.compose.ui.viewinterop.AndroidView
+//import androidx.preference.PreferenceManager
+//import com.bimenesvive.bimenesvive.pantallas.usuario.RotarImagen
+//import kotlinx.coroutines.launch
+//
+//@Composable
+//fun PantallaVivienda(
+//    modifier: Modifier = Modifier,
+//    navController: NavHostController,
+//    documentID: String
+//) {
+//    var vivienda by remember { mutableStateOf<Vivienda?>(null) }
+//    var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+//    var showImageDialog by remember { mutableStateOf(false) }
+//    var showMapDialog by remember { mutableStateOf(false) }
+//    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+//    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return
+//    val coroutineScope = rememberCoroutineScope()
+//    val context = LocalContext.current as Activity
+//    var ownerUserID by remember { mutableStateOf<String?>(null) }
+//    val listState = rememberLazyListState() // Para controlar el scroll de las imágenes
+//
+//    // Solicitar permisos en tiempo de ejecución a usuarios con SO Android 13 +
+//    requestPhotoPermissions(context)
+//
+//    LaunchedEffect(documentID) {
+//        vivienda = getViviendaById(documentID)
+//        imageUris = getFotosViviendaDesdeFirestore(documentID)
+//    }
+//
+//    LaunchedEffect(documentID) {
+//        try {
+//            vivienda = getViviendaById(documentID)
+//            imageUris = com.bimenesvive.bimenesvive.utilidades.getFotosViviendaDesdeFirestore(documentID)
+//            ownerUserID = vivienda?.userID
+//            Log.d("PantallaVivienda", "Vivienda: $vivienda")
+//        } catch (e: Exception) {
+//            Log.e("PantallaVivienda", "Error al cargar la vivienda: ${e.message}")
+//            Toast.makeText(context, "Error al cargar la vivienda", Toast.LENGTH_SHORT).show()
+//        }
+//    }
+//
+//    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
+//        uris.forEach { uri ->
+//            try {
+//                subirFotoVivienda(
+//                    uri,
+//                    userID,
+//                    documentID,
+//                    FirebaseStorage.getInstance(),
+//                    context
+//                ) { downloadUri ->
+//                    imageUris = imageUris + downloadUri
+//                }
+//            } catch (e: Exception) {
+//                Log.e("PantallaVivienda", "Error al subir la foto: ${e.message}")
+//                Toast.makeText(context, "Error al subir la foto", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
+//
+//    Scaffold(
+//        bottomBar = { NavBarViendoPropiedad(navController) }
+//    ) { paddingValues ->
+//        Column(modifier = modifier.padding(paddingValues).fillMaxSize()) {
+//            Text(text = vivienda?.titulo ?: "")
+//            Spacer(modifier = Modifier.height(8.dp))
+//            Text(text = "Parroquia: ${vivienda?.parroquia}")
+//            Spacer(modifier = Modifier.height(8.dp))
+//            Text(text = vivienda?.descripcion ?: "")
+//            Spacer(modifier = Modifier.height(8.dp))
+//            Text(text = "Tamaño: ${vivienda?.metros} m²")
+//            Spacer(modifier = Modifier.height(8.dp))
+//            Text(text = "Teléfono: ${vivienda?.telefono}")
+//            Spacer(modifier = Modifier.height(8.dp))
+//            Text(text = "Email: ${vivienda?.email}")
+//            Spacer(modifier = Modifier.height(15.dp))
+//            Text(text = "FOTOGRAFÍAS")
+//            Spacer(modifier = Modifier.height(15.dp))
+//
+//            Column {
+//                LazyRow(state = listState) {
+//                    items(imageUris) { uri ->
+//                        Image(
+//                            painter = rememberAsyncImagePainter(uri),
+//                            contentDescription = null,
+//                            modifier = Modifier
+//                                .size(128.dp)
+//                                .padding(4.dp)
+//                                .clickable {
+//                                    selectedImageUri = uri
+//                                    showImageDialog = true
+//                                }
+//                        )
+//                    }
+//                }
+//
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    if (listState.firstVisibleItemIndex > 0) {
+//                        Icon(
+//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                            contentDescription = "Previous",
+//                            modifier = Modifier
+//                                .size(24.dp)
+//                                .clickable {
+//                                    coroutineScope.launch {
+//                                        listState.animateScrollToItem(listState.firstVisibleItemIndex - 1)
+//                                    }
+//                                },
+//                            tint = Color.Gray
+//                        )
+//                    } else {
+//                        Spacer(modifier = Modifier.size(24.dp))
+//                    }
+//
+//                    val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+//                    if (lastVisibleItemIndex < imageUris.size - 1) {
+//                        Icon(
+//                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+//                            contentDescription = "Next",
+//                            modifier = Modifier
+//                                .size(24.dp)
+//                                .clickable {
+//                                    coroutineScope.launch {
+//                                        listState.animateScrollToItem(listState.firstVisibleItemIndex + 1)
+//                                    }
+//                                },
+//                            tint = Color.Gray
+//                        )
+//                    } else {
+//                        Spacer(modifier = Modifier.size(24.dp))
+//                    }
+//                }
+//            }
+//
+//            Spacer(modifier = Modifier.height(16.dp))
+//
+//            Column {
+//                // si el userID == it.userID, crear boton para subir fotos
+//                if (userID == vivienda?.userID) {
+//                    Button(
+//                        onClick = {
+//                            launcher.launch("image/*")
+//                        },
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(horizontal = 16.dp)
+//                    ) {
+//                        Text("Subir Foto")
+//                    }
+//                }
+//            }
+//
+//            Spacer(modifier = Modifier.height(8.dp))
+//
+//            Column {
+//                if (vivienda?.localizacion?.latitude == 0.0 && vivienda?.localizacion?.longitude == 0.0) {
+//                    Button(
+//                        onClick = {},
+//                        enabled = false,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(horizontal = 16.dp)
+//                    ) {
+//                        Text("Localización no disponible")
+//                    }
+//                } else {
+//                    Button(
+//                        onClick = { showMapDialog = true },
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(horizontal = 16.dp)
+//                    ) {
+//                        Text("Ver Localización")
+//                    }
+//                }
+//            }
+//
+//            Spacer(modifier = Modifier.height(8.dp))
+//
+//            Column {
+//                if (userID == vivienda?.userID) {
+//                    Button(
+//                        onClick = {
+//                            // Verificar permisos de ubicación antes de guardar la localización
+//                            if (checkLocationPermission(context as Activity)) {
+//                                // Guardar la localización
+//                            } else {
+//                                // Solicitar permisos de ubicación
+//                            }
+//                        },
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(horizontal = 16.dp)
+//                    ) {
+//                        Text("Guardar Localización")
+//                    }
+//                }
+//            }
+//
+//            Spacer(modifier = Modifier.height(8.dp))
+//
+//            // El botón sólo existe para el usuario que creó el anuncio
+//            if (userID == vivienda?.userID) {
+//                // Botón para borrar anuncio
+//                Button(
+//                    onClick = {
+//                        try {
+//                            borrarAnuncio(
+//                                userID,
+//                                documentID,
+//                                imageUris,
+//                                context,
+//                                navController
+//                            )
+//                        } catch (e: Exception) {
+//                            Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
+//                            Toast.makeText(context, "Error al borrar el anuncio: ${e.message}", Toast.LENGTH_SHORT).show()
+//                        }
+//                    },
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(horizontal = 16.dp)
+//                ) {
+//                    Text("Borrar Anuncio")
+//                }
+//            }
+//
+//            if (showImageDialog) {
+//                AlertDialog(
+//                    onDismissRequest = { showImageDialog = false },
+//                    text = {
+//                        selectedImageUri?.let { uri ->
+//                            RotarImagen(imageUri = uri)
+//                        }
+//                    },
+//                    confirmButton = {
+//                        TextButton(onClick = { showImageDialog = false }) {
+//                            Text("Cerrar")
+//                        }
+//                    }
+//                )
+//            }
+//
+//            if (showMapDialog) {
+//                AlertDialog(
+//                    onDismissRequest = { showMapDialog = false },
+//                    text = {
+//                        AndroidView(factory = { context ->
+//                            MapView(context).apply {
+//                                Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
+//                                controller.setZoom(18.0)
+//                                vivienda?.localizacion?.let { geoPoint ->
+//                                    val startPoint = GeoPoint(geoPoint.latitude, geoPoint.longitude)
+//                                    controller.setCenter(startPoint)
+//                                    val marker = Marker(this)
+//                                    marker.position = startPoint
+//                                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+//                                    marker.setOnMarkerClickListener { _, _ ->
+//                                        true
+//                                    }
+//                                    overlays.add(marker)
+//                                }
+//                            }
+//                        })
+//                    },
+//                    confirmButton = {
+//                        TextButton(onClick = { showMapDialog = false }) {
+//                            Text("Cerrar")
+//                        }
+//                    }
+//                )
+//            }
+//        }
+//    } ?: run {
+//        // Log sólo para comprobar errores cambiando los modelos, da falsos positivos porque necesitamos
+//        // tener en cuenta el tiempo de carga de Firestore, por lo que comento sólo para usarlo si es necesario
+//
+//       // Log.d("PantallaVivienda", "No se encontró la vivienda con id: $documentID")
+//    }
+//}
+//
+//fun borrarAnuncio(userID: String, documentID: String, imageUris: List<Uri>, context: Context, navController: NavHostController) {
+//    val storageRef = FirebaseStorage.getInstance().reference
+//    val db = FirebaseFirestore.getInstance()
+//
+//    // Verificar si el usuario actual es el propietario del anuncio
+//    db.collection("viviendas").document(documentID).get().addOnSuccessListener { document ->
+//        if (document.exists()) {
+//            val ownerUserID = document.getString("userID")
+//            Log.d("PantallaVivienda", "Current userID: $userID")
+//            Log.d("PantallaVivienda", "Owner userID: $ownerUserID")
+//            if (ownerUserID == userID) {
+//                // Borrar imágenes del almacenamiento
+//                if (imageUris.isNotEmpty()) {
+//                    val deleteTasks = imageUris.map { uri ->
+//                        val fileName = uri.lastPathSegment?.substringAfterLast('/')
+//                        val photoRef = storageRef.child("$userID/$documentID/$fileName")
+//                        Log.d("PantallaVivienda", "Ruta de la foto a borrar: ${photoRef.path}")
+//                        photoRef.delete().addOnFailureListener { e ->
+//                            val errorMessage = if (e.message?.contains("Object does not exist") == true) {
+//                                "La foto no existe en la ubicación especificada"
+//                            } else {
+//                                "Error al borrar la foto: ${e.message}"
+//                            }
+//                            Log.e("PantallaVivienda", errorMessage)
+//                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
+//
+//                    Tasks.whenAll(deleteTasks)
+//                        .addOnSuccessListener {
+//                            // Borrar documentos de fotos de Firestore
+//                            db.collection("viviendas").document(documentID).collection("fotos")
+//                                .get()
+//                                .addOnSuccessListener { snapshot ->
+//                                    val deletePhotoDocsTasks = snapshot.documents.map { it.reference.delete() }
+//                                    Tasks.whenAll(deletePhotoDocsTasks)
+//                                        .addOnSuccessListener {
+//                                            db.collection("viviendas").document(documentID)
+//                                                .delete()
+//                                                .addOnSuccessListener {
+//                                                    Toast.makeText(
+//                                                        context,
+//                                                        "Anuncio borrado correctamente",
+//                                                        Toast.LENGTH_SHORT
+//                                                    ).show()
+//                                                    navController.navigate("inicio")
+//                                                }
+//                                                .addOnFailureListener { e ->
+//                                                    Log.e(
+//                                                        "PantallaVivienda",
+//                                                        "Error al borrar el anuncio: ${e.message}"
+//                                                    )
+//                                                    Toast.makeText(
+//                                                        context,
+//                                                        "Error al borrar el anuncio: ${e.message}",
+//                                                        Toast.LENGTH_SHORT
+//                                                    ).show()
+//                                                }
+//                                        }
+//                                        .addOnFailureListener { e ->
+//                                            Log.e(
+//                                                "PantallaVivienda",
+//                                                "Error al borrar los documentos de las fotos: ${e.message}"
+//                                            )
+//                                            Toast.makeText(
+//                                                context,
+//                                                "Error al borrar los documentos de las fotos: ${e.message}",
+//                                                Toast.LENGTH_SHORT
+//                                            ).show()
+//                                        }
+//                                }
+//                                .addOnFailureListener { e ->
+//                                    Log.e(
+//                                        "PantallaVivienda",
+//                                        "Error al obtener los documentos de las fotos: ${e.message}"
+//                                    )
+//                                    Toast.makeText(
+//                                        context,
+//                                        "Error al obtener los documentos de las fotos: ${e.message}",
+//                                        Toast.LENGTH_SHORT
+//                                    ).show()
+//                                }
+//                        }
+//                        .addOnFailureListener { e ->
+//                            Log.e("PantallaVivienda", "Error al borrar las fotos: ${e.message}")
+//                            Toast.makeText(
+//                                context,
+//                                "Error al borrar las fotos: ${e.message}",
+//                                Toast.LENGTH_SHORT
+//                            ).show()
+//                        }
+//                } else {
+//                    // Si no hay fotos, borrar el documento principal directamente
+//                    db.collection("viviendas").document(documentID)
+//                        .delete()
+//                        .addOnSuccessListener {
+//                            Toast.makeText(context, "Anuncio borrado correctamente", Toast.LENGTH_SHORT).show()
+//                            navController.navigate("inicio")
+//                        }
+//                        .addOnFailureListener { e ->
+//                            Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
+//                            Toast.makeText(
+//                                context,
+//                                "Error al borrar el anuncio: ${e.message}",
+//                                Toast.LENGTH_SHORT
+//                            ).show()
+//                        }
+//                }
+//            } else {
+//                Log.e("PantallaVivienda", "No tienes permiso para borrar este anuncio")
+//                Toast.makeText(context, "No tienes permiso para borrar este anuncio", Toast.LENGTH_SHORT).show()
+//            }
+//        } else {
+//            Log.e("PantallaVivienda", "No se encontró la vivienda con id: $documentID")
+//            Toast.makeText(context, "No se encontró la vivienda con id: $documentID", Toast.LENGTH_SHORT).show()
+//        }
+//    }.addOnFailureListener { e ->
+//        Log.e("PantallaVivienda", "Error al obtener el anuncio: ${e.message}")
+//        Toast.makeText(context, "Error al obtener el anuncio: ${e.message}", Toast.LENGTH_SHORT).show()
+//    }
+//}
+//
+//private fun subirFoto(uri: Uri, userID: String, documentID: String, storage: FirebaseStorage, context: Context, onSuccess: (Uri) -> Unit) {
+//    val storageRef = storage.reference
+//    val photoRef = storageRef.child("$userID/$documentID/${UUID.randomUUID()}.jpg")
+//
+//    photoRef.putFile(uri)
+//        .addOnSuccessListener {
+//            photoRef.downloadUrl.addOnSuccessListener { downloadUri ->
+//                guardarFotoEnFirestore(downloadUri.toString(), userID, documentID)
+//                Toast.makeText(context, "Foto subida correctamente", Toast.LENGTH_SHORT).show()
+//                onSuccess(downloadUri)
+//            }
+//        }
+//        .addOnFailureListener { e ->
+//            Toast.makeText(context, "Error al subir la foto: ${e.message}", Toast.LENGTH_SHORT).show()
+//        }
+//}
+//
+//private fun guardarFotoEnFirestore(url: String, userID: String, documentID: String) {
+//    val db = FirebaseFirestore.getInstance()
+//    val photoData = hashMapOf(
+//        "url" to url
+//    )
+//    db.collection("viviendas").document(documentID).collection("fotos").add(photoData)
+//}
+//
+//suspend fun getViviendaById(id: String): Vivienda? {
+//    return try {
+//        FirebaseFirestore.getInstance()
+//            .collection("viviendas")
+//            .document(id)
+//            .get()
+//            .await()
+//            .toObject(Vivienda::class.java)
+//    } catch (e: Exception) {
+//        Log.e("PantallaVivienda", "Error al obtener la vivienda: ${e.message}")
+//        null
+//    }
+//}

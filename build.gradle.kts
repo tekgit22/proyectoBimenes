@@ -4,10 +4,5 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     //Google services Gradle plugin
     id("com.google.gms.google-services") version "4.4.2" apply false
-    //fix
-  //  id("project-report")
 }
 
-//tasks.withType<HtmlDependencyReportTask> {
-  //  projectReportDirectory.set(project.layout.buildDirectory.dir("reports/custom"))
-//}

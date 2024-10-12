@@ -30,8 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import android.net.Uri
 import coil.compose.rememberAsyncImagePainter
-
-
+import com.bimenesvive.bimenesvive.utilidades.*
 
 
 // UI de la pantalla de explorar
@@ -73,43 +72,14 @@ fun PantallaExplorar(
     }
 }
 
-// TARJETA DE VIVIENDA
-//@Composable
-//fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
-//    Card(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(8.dp)
-//            .height(300.dp) // QUITAR, sólo para pruebas de scroll
-//            .clickable {
-//                navController.navigate("vivienda/${vivienda.documentID}")
-//            },
-//        shape = RoundedCornerShape(8.dp),
-//        elevation = CardDefaults.cardElevation(5.dp)
-//    ) {
-//        Row(modifier = Modifier.padding(16.dp)) {
-//            Image(
-//                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-//                contentDescription = null,
-//                modifier = Modifier.size(64.dp),
-//                contentScale = ContentScale.Crop
-//            )
-//            Spacer(modifier = Modifier.width(16.dp))
-//            Column {
-//                Text(text = vivienda.titulo)
-//                Text(text = vivienda.parroquia)
-//                Text(text = "Habitaciones: ${vivienda.habitaciones}")
-//            }
-//        }
-//    }
-//}
 
+//Tarjeta vivienda
 @Composable
 fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
     val fotos = remember { mutableStateOf<List<Uri>>(emptyList()) }
 
     LaunchedEffect(vivienda.documentID) {
-        fotos.value = getFotosViviendaFromFirestore(vivienda.documentID)
+        fotos.value = getFotosViviendaDesdeFirestore(vivienda.documentID)
     }
 
     val cardHeight = if (fotos.value.isEmpty()) 150.dp else 210.dp
@@ -132,13 +102,19 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
 
             // Foto y datos
             Row {
-                Image(
-                    painter = rememberAsyncImagePainter(fotos.value.firstOrNull() ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto")),
-                    contentDescription = null,
+//                Image(
+//                    painter = rememberAsyncImagePainter(fotos.value.firstOrNull() ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto")),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .size(150.dp)
+//                        .padding(end = 16.dp),
+//                    contentScale = ContentScale.Fit
+//                )
+                ImagenConPlaceholder(
+                    uri = fotos.value.firstOrNull() ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto"),
                     modifier = Modifier
                         .size(150.dp)
-                        .padding(end = 16.dp),
-                    contentScale = ContentScale.Fit
+                        .padding(end = 16.dp)
                 )
                 Column {
                     Text(text = vivienda.parroquia)
@@ -150,29 +126,15 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
     }
 }
 
-suspend fun getFotosViviendaFromFirestore(documentID: String): List<Uri> {
-    return try {
-        val snapshot = FirebaseFirestore.getInstance()
-            .collection("viviendas")
-            .document(documentID)
-            .collection("fotos")
-            .get()
-            .await()
-        snapshot.documents.mapNotNull { it.getString("url")?.let { Uri.parse(it) } }
-    } catch (e: Exception) {
-        Log.e("ViviendaItem", "Error al obtener las fotos: ${e.message}")
-        emptyList()
-    }
-}
 
 
-// TARJETA DE FINCA
+//Tarjeta de la finca
 @Composable
 fun FincaItem(finca: Finca, navController: NavHostController) {
     val fotos = remember { mutableStateOf<List<Uri>>(emptyList()) }
 
     LaunchedEffect(finca.documentID) {
-        fotos.value = getFotosFincaFromFirestore(finca.documentID)
+        fotos.value = getFotosFincaDesdeFirestore(finca.documentID)
     }
 
     val cardHeight = if (fotos.value.isEmpty()) 150.dp else 210.dp
@@ -195,13 +157,19 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
 
             // Foto y datos
             Row {
-                Image(
-                    painter = rememberAsyncImagePainter(fotos.value.firstOrNull() ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto")),
-                    contentDescription = null,
+//                Image(
+//                    painter = rememberAsyncImagePainter(fotos.value.firstOrNull() ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto")),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .size(150.dp)
+//                        .padding(end = 16.dp),
+//                    contentScale = ContentScale.Fit
+//                )
+                ImagenConPlaceholder(
+                    uri = fotos.value.firstOrNull() ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto"),
                     modifier = Modifier
                         .size(150.dp)
-                        .padding(end = 16.dp),
-                    contentScale = ContentScale.Fit
+                        .padding(end = 16.dp)
                 )
                 Column {
                     Text(text = finca.parroquia)
@@ -212,6 +180,8 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
         }
     }
 }
+
+
 
 suspend fun getViviendas(): List<Vivienda> {
     val db = FirebaseFirestore.getInstance()

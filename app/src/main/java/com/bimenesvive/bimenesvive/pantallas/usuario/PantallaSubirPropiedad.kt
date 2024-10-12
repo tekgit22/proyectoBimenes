@@ -153,7 +153,7 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
                 val documentID = documentReference.id
                 db.collection("viviendas").document(documentID).update("documentID", documentID)
                 Toast.makeText(context, "Vivienda subida correctamente", Toast.LENGTH_SHORT).show()
-                navController.navigate("mivivienda/$documentID")
+                navController.navigate("vivienda/$documentID")
             }.addOnFailureListener { e ->
                 Toast.makeText(context, "Se produjo un error", Toast.LENGTH_SHORT).show()
             }
@@ -251,7 +251,7 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
                 val documentID = documentReference.id
                 db.collection("fincas").document(documentID).update("documentID", documentID)
                 Toast.makeText(context, "Finca subida correctamente", Toast.LENGTH_SHORT).show()
-                navController.navigate("mifinca/$documentID")
+                navController.navigate("finca/$documentID")
             }.addOnFailureListener { e ->
                 Toast.makeText(context, "Se produjo un error", Toast.LENGTH_SHORT).show()
             }
