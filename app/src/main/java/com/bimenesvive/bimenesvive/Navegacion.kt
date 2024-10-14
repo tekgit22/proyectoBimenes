@@ -10,6 +10,7 @@ import com.bimenesvive.bimenesvive.pantallas.invitado.PantallaInvitado
 import com.bimenesvive.bimenesvive.pantallas.autenticacion.PantallaLogin
 import com.bimenesvive.bimenesvive.pantallas.autenticacion.PantallaRegistro
 import com.bimenesvive.bimenesvive.pantallas.autenticacion.PantallaSplash
+import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaAnuncio
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaBimenes
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaExplorar
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaFinca
@@ -52,6 +53,9 @@ fun Navegacion(modifier: Modifier = Modifier, authenticationViewModel: Authentic
         }
         composable("bimenes") {
             PantallaBimenes(modifier, navController)
+        }
+        composable("anuncio") {
+            PantallaAnuncio(modifier, navController)
         }
 
     })
