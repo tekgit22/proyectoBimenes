@@ -47,7 +47,10 @@ fun NavBarVolverInicio(navController: NavHostController) {
             icon = { Icon(painter = painterResource(id = R.drawable.ic_casa), contentDescription = "Menú") },
             label = { Text("Menú") },
             selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
-            onClick = { navController.navigate("inicio") }
+//            onClick = { navController.navigate("inicio") }
+            onClick = {
+                navController.popBackStack() //Vuelve a la pantalla anterior y elimina la actual
+            }
         )
     }
 }

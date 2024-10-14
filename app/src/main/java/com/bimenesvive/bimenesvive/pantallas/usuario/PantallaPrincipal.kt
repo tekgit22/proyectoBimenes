@@ -99,7 +99,7 @@ fun PantallaPrincipal(
 
             Spacer(modifier = Modifier.height(15.dp))
             Button(
-                onClick = { /* TO DO */ },
+                onClick = { navController.navigate("mispropiedades") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)

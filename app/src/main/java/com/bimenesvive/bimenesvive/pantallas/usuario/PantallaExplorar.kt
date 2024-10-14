@@ -29,6 +29,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import android.net.Uri
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Color
 import coil.compose.rememberAsyncImagePainter
 import com.bimenesvive.bimenesvive.utilidades.*
 
@@ -42,13 +44,15 @@ fun PantallaExplorar(
 ) {
     var propiedades by remember { mutableStateOf<List<Any>>(emptyList()) } // Lista de propiedades de Card, si quiero que sean distintas es necesario
     var inmuebleSeleccionado by remember { mutableStateOf("viviendas") } // Controla la selección del navbar inferior, viviendas está seleccionado por defecto
-    val scope = rememberCoroutineScope() // Las corrutinas son hilos de ejecución que se pueden pausar y reanudar
+    val scope =
+        rememberCoroutineScope() // Las corrutinas son hilos de ejecución que se pueden pausar y reanudar
     val context = LocalContext.current
 
     // LaunchedEffect se ejecuta cuando se compone por primera vez y cuando selectedTab cambia
     LaunchedEffect(inmuebleSeleccionado) {
         scope.launch {
-            propiedades = if (inmuebleSeleccionado == "viviendas") getViviendas() else getFincas() // Llamada a la base de datos
+            propiedades =
+                if (inmuebleSeleccionado == "viviendas") getViviendas() else getFincas() // Llamada a la base de datos
         }
     }
 
@@ -57,9 +61,17 @@ fun PantallaExplorar(
     }
 
     Scaffold(
-        bottomBar = { NavBarInferior(navController, inmuebleSeleccionado, ::onInmuebleSeleccionado) } // Paso una función como parámetro
+        bottomBar = {
+            NavBarInferior(
+                navController,
+                inmuebleSeleccionado,
+                ::onInmuebleSeleccionado
+            )
+        } // Paso una función como parámetro
     ) {
-        Column(modifier = modifier.fillMaxSize().padding(it)) {
+        Column(modifier = modifier
+            .fillMaxSize()
+            .padding(it)) {
             LazyColumn {
                 items(propiedades) { propiedad ->
                     when (propiedad) {
@@ -93,9 +105,13 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
                 navController.navigate("vivienda/${vivienda.documentID}")
             },
         shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(5.dp)
+        elevation = CardDefaults.cardElevation(5.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFBBDEFB))
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
             // Título
             Text(text = vivienda.titulo, style = MaterialTheme.typography.bodyLarge)
             Spacer(modifier = Modifier.height(16.dp))
@@ -111,7 +127,8 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
 //                    contentScale = ContentScale.Fit
 //                )
                 ImagenConPlaceholder(
-                    uri = fotos.value.firstOrNull() ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto"),
+                    uri = fotos.value.firstOrNull()
+                        ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto"),
                     modifier = Modifier
                         .size(150.dp)
                         .padding(end = 16.dp)
@@ -125,7 +142,6 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
         }
     }
 }
-
 
 
 //Tarjeta de la finca
@@ -148,12 +164,16 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
                 navController.navigate("finca/${finca.documentID}")
             },
         shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(5.dp)
+        elevation = CardDefaults.cardElevation(5.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFC8E6C9))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Título
             Text(text = finca.titulo, style = MaterialTheme.typography.bodyLarge)
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(
+                modifier = Modifier
+                    .height(16.dp)
+            )
 
             // Foto y datos
             Row {
@@ -166,7 +186,8 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
 //                    contentScale = ContentScale.Fit
 //                )
                 ImagenConPlaceholder(
-                    uri = fotos.value.firstOrNull() ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto"),
+                    uri = fotos.value.firstOrNull()
+                        ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto"),
                     modifier = Modifier
                         .size(150.dp)
                         .padding(end = 16.dp)
@@ -180,7 +201,6 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
         }
     }
 }
-
 
 
 suspend fun getViviendas(): List<Vivienda> {
@@ -204,28 +224,46 @@ suspend fun getFincas(): List<Finca> {
 }
 
 
-
 @Composable
-fun NavBarInferior(navController: NavHostController, seccionSeleccionada: String, alSeleccionarSeccion: (String) -> Unit) {
+fun NavBarInferior(
+    navController: NavHostController,
+    seccionSeleccionada: String,
+    alSeleccionarSeccion: (String) -> Unit
+) {
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
     ) {
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_atras), contentDescription = "Menú") },
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_atras),
+                    contentDescription = "Menú"
+                )
+            },
             label = { Text("Menú") },
             selected = seccionSeleccionada == "menu",
             onClick = { navController.navigate("inicio") }
         )
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_casa), contentDescription = "Viviendas") },
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_casa),
+                    contentDescription = "Viviendas"
+                )
+            },
             label = { Text("Viviendas") },
             selected = seccionSeleccionada == "viviendas",
             onClick = { alSeleccionarSeccion("viviendas") }
         )
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_finca), contentDescription = "Fincas") },
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_finca),
+                    contentDescription = "Fincas"
+                )
+            },
             label = { Text("Fincas") },
             selected = seccionSeleccionada == "fincas",
             onClick = { alSeleccionarSeccion("fincas") }
