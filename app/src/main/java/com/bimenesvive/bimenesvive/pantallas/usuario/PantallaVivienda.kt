@@ -61,14 +61,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Bed
+import androidx.compose.material.icons.filled.Euro
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.preference.PreferenceManager
 import coil.compose.AsyncImagePainter
 import com.bimenesvive.bimenesvive.modelo.EstadoVivienda
+import androidx.compose.material3.TopAppBar
 
 
 @Composable
@@ -130,6 +136,7 @@ fun PantallaVivienda(
         }
 
     Scaffold(
+
         bottomBar = { NavBarViendoPropiedad(navController) }
     ) { paddingValues ->
         Column(
@@ -162,7 +169,20 @@ fun PantallaVivienda(
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Ubicado en ${vivienda?.parroquia}")
+            Text(text = vivienda?.descripcion ?: "")
+            //Spacer(modifier = Modifier.height(8.dp))
+            //Text(text = "Ubicado en ${vivienda?.parroquia}")
+            AssistChip(
+                onClick = {},
+                label = { Text(vivienda?.parroquia ?: "") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Place,
+                        contentDescription = null,
+                        modifier = Modifier.size(AssistChipDefaults.IconSize)
+                    )
+                },
+            )
             // CHIPS
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -181,7 +201,7 @@ fun PantallaVivienda(
                                         modifier = Modifier.size(AssistChipDefaults.IconSize)
                                     )
                                 },
-                                modifier = Modifier.padding(4.dp)
+                                // modifier = Modifier.padding(4.dp)
                             )
                         }
 
@@ -196,7 +216,7 @@ fun PantallaVivienda(
                                         modifier = Modifier.size(AssistChipDefaults.IconSize)
                                     )
                                 },
-                                modifier = Modifier.padding(4.dp)
+                                // modifier = Modifier.padding(4.dp)
                             )
                         }
 
@@ -211,7 +231,7 @@ fun PantallaVivienda(
                                         modifier = Modifier.size(AssistChipDefaults.IconSize)
                                     )
                                 },
-                                modifier = Modifier.padding(4.dp)
+                                modifier = Modifier.padding(end = 8.dp)
                             )
                             AssistChip(
                                 onClick = {},
@@ -223,17 +243,76 @@ fun PantallaVivienda(
                                         modifier = Modifier.size(AssistChipDefaults.IconSize)
                                     )
                                 },
-                                modifier = Modifier.padding(4.dp)
+                                //  modifier = Modifier.padding(4.dp)
                             )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = vivienda?.descripcion ?: "")
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Tamaño: ${vivienda?.metros} m²")
+            //Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                AssistChip(
+                    onClick = {},
+                    label = { Text("${vivienda?.metros} m²") },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.SquareFoot,
+                            contentDescription = null,
+                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+                        )
+                    },
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                AssistChip(
+                    onClick = {},
+                    label = { Text("Habitaciones: ${vivienda?.habitaciones}") },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Bed,
+                            contentDescription = null,
+                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+                        )
+                    },
+                    //modifier = Modifier.padding(4.dp)
+                )
+            }
+            //Spacer(modifier = Modifier.height(8.dp))
+            Column(
+            ) {
+                if (vivienda?.precio == 0) {
+                    AssistChip(
+                        onClick = {},
+                        label = { Text("Precio no disponible") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Euro,
+                                contentDescription = null,
+                                modifier = Modifier.size(AssistChipDefaults.IconSize)
+                            )
+                        },
+
+                        )
+                } else {
+                    AssistChip(
+                        onClick = {},
+                        label = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = "Precio: ${vivienda?.precio} ")
+                                Icon(
+                                    imageVector = Icons.Default.Euro,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            }
+                        },
+
+                        )
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
@@ -274,8 +353,6 @@ fun PantallaVivienda(
                     }
                 )
             }
-            Spacer(modifier = Modifier.height(15.dp))
-
             Spacer(modifier = Modifier.height(15.dp))
 
             Column {
@@ -344,7 +421,7 @@ fun PantallaVivienda(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Column {
                 // si el userID == it.userID, crear boton para subir fotos

@@ -17,7 +17,8 @@ data class Vivienda(
     val email: String = "",
     val disponible: Boolean = true,
     val visitas: Int = 0,
-    val estado: EstadoVivienda = EstadoVivienda.VENTA
+    val estado: EstadoVivienda = EstadoVivienda.VENTA,
+    val precio: Int = 0
 )
 
 enum class EstadoVivienda {

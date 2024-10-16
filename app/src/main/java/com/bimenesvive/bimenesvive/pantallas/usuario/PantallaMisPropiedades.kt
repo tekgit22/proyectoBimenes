@@ -72,7 +72,7 @@ suspend fun getViviendas(userID: String): List<Vivienda> {
             .whereEqualTo("userID", userID)
             .get()
             .await()
-        resultadoConsulta.toObjects(Vivienda::class.java)
+        resultadoConsulta.toObjects(Vivienda::class.java).filter { it.disponible }
     } catch (e: Exception) {
         emptyList()
     }
@@ -85,7 +85,7 @@ suspend fun getFincas(userID: String): List<Finca> {
             .whereEqualTo("userID", userID)
             .get()
             .await()
-        resultadoConsulta.toObjects(Finca::class.java)
+        resultadoConsulta.toObjects(Finca::class.java).filter { it.disponible }
     } catch (e: Exception) {
         emptyList()
     }

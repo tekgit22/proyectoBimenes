@@ -12,5 +12,6 @@ data class Finca(
     val documentID: String = "",
     val telefono: String = "",
     val email: String = "",
-    val edificable: Boolean = false
+    val edificable: Boolean = false,
+    val disponible: Boolean = true
 )

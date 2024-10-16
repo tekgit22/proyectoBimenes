@@ -89,6 +89,8 @@ fun PantallaExplorar(
 @Composable
 fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
     val fotos = remember { mutableStateOf<List<Uri>>(emptyList()) }
+    val coroutineScope = rememberCoroutineScope() // Lo necesito para lanzar la corrutina que sube las visitas
+
 
     LaunchedEffect(vivienda.documentID) {
         fotos.value = getFotosViviendaDesdeFirestore(vivienda.documentID)
@@ -102,7 +104,10 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
             .padding(8.dp)
             .height(cardHeight)
             .clickable {
-                navController.navigate("vivienda/${vivienda.documentID}")
+                coroutineScope.launch {
+                    subirVisitaVivienda(vivienda.documentID)
+                    navController.navigate("vivienda/${vivienda.documentID}")
+                }
             },
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(5.dp),
@@ -185,17 +190,37 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
 //                        .padding(end = 16.dp),
 //                    contentScale = ContentScale.Fit
 //                )
+
+                // CON DP
+//                ImagenConPlaceholder(
+//                    uri = fotos.value.firstOrNull()
+//                        ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto"),
+//                    modifier = Modifier
+//                        .size(250.dp)
+//                        .padding(end = 16.dp)
+//                )
+//                Column {
+//                    Text(text = finca.parroquia)
+//                    Text(text = "Metros: ${finca.metros}")
+//                    Text(text = "Edificable: ${if (finca.edificable) "Sí" else "No"}")
+//                }
+
+                //CON WEIGHT
                 ImagenConPlaceholder(
                     uri = fotos.value.firstOrNull()
                         ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto"),
                     modifier = Modifier
-                        .size(150.dp)
+                        .weight(1f)
                         .padding(end = 16.dp)
                 )
-                Column {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .wrapContentSize()
+                ) {
                     Text(text = finca.parroquia)
                     Text(text = "Metros: ${finca.metros}")
-                    Text(text = "Edificable: ${if (finca.edificable) "Sí" else "No"}")
+                    Text(text = if (finca.edificable) "Edificable" else "No edificable")
                 }
             }
         }
@@ -207,7 +232,7 @@ suspend fun getViviendas(): List<Vivienda> {
     val db = FirebaseFirestore.getInstance()
     return try {
         val resultadoConsulta = db.collection("viviendas").get().await()
-        resultadoConsulta.toObjects(Vivienda::class.java) //Convierte los documentos obtenidos en una lista de objetos de la clase
+        resultadoConsulta.toObjects(Vivienda::class.java).filter { it.disponible } //Convierte los documentos obtenidos en una lista de objetos de la clase
     } catch (e: Exception) {
         emptyList()
     }
@@ -218,6 +243,7 @@ suspend fun getFincas(): List<Finca> {
     return try {
         val resultadoConsulta = db.collection("fincas").get().await()
         resultadoConsulta.toObjects(Finca::class.java)
+            .filter { it.disponible }
     } catch (e: Exception) {
         emptyList()
     }
@@ -269,6 +295,16 @@ fun NavBarInferior(
             onClick = { alSeleccionarSeccion("fincas") }
         )
     }
+}
+
+suspend fun subirVisitaVivienda(documentID: String) {
+    val db = FirebaseFirestore.getInstance()
+    val viviendaRef = db.collection("viviendas").document(documentID)
+    db.runTransaction { transaction ->
+        val snapshot = transaction.get(viviendaRef)
+        val nuevasVisitas = snapshot.getLong("visitas")?.plus(1) ?: 1
+        transaction.update(viviendaRef, "visitas", nuevasVisitas)
+    }.await()
 }
 
 

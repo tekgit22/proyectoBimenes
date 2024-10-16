@@ -290,7 +290,9 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
                 "userID" to userID,
                 "localizacion" to localizacion,
                 "estado" to estado.name,
-                "precio" to precio
+                "precio" to precio,
+                "visitas" to 0,
+                "disponible" to true
             )
             db.collection("viviendas").add(vivienda).addOnSuccessListener { documentReference ->
                 val documentID = documentReference.id
