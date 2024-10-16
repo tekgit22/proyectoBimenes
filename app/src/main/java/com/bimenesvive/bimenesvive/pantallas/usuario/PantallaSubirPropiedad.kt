@@ -25,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.LaunchedEffect
+import com.bimenesvive.bimenesvive.modelo.EstadoVivienda
 import kotlinx.coroutines.delay
 
 
@@ -47,7 +48,8 @@ fun PantallaSubirPropiedad(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Título
-                Text(text = "Subir Propiedad")
+                Text(text = "Subir Propiedad",
+                    style = MaterialTheme.typography.titleLarge)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -65,6 +67,104 @@ fun PantallaSubirPropiedad(
 }
 
 
+//@Composable
+//fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
+//    var titulo by remember { mutableStateOf("") }
+//    var descripcion by remember { mutableStateOf("") }
+//    var habitaciones by remember { mutableIntStateOf(0) }
+//    var metros by remember { mutableIntStateOf(0) }
+//    var parroquia by remember { mutableStateOf("") }
+//    var telefono by remember { mutableStateOf("") }
+//    var email by remember { mutableStateOf("") }
+//    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+//    val localizacion = GeoPoint(0.0, 0.0) // TO DO
+//    val scrollState = rememberScrollState()
+//    val context = LocalContext.current
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .verticalScroll(scrollState),
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        TextField(
+//            value = titulo,
+//            onValueChange = { titulo = it },
+//            label = { Text("Título") },
+//            modifier = Modifier.fillMaxWidth(),
+//            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
+//        )
+//        TextField(
+//            value = descripcion,
+//            onValueChange = { descripcion = it },
+//            label = { Text("Descripción") },
+//            modifier = Modifier.fillMaxWidth(),
+//            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
+//        )
+//        TextField(
+//            value = habitaciones.toString(),
+//            onValueChange = { habitaciones = it.toIntOrNull() ?: 0 },
+//            label = { Text("Habitaciones") },
+//            modifier = Modifier.fillMaxWidth(),
+//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
+//        )
+//        TextField(
+//            value = metros.toString(),
+//            onValueChange = { metros = it.toIntOrNull() ?: 0 },
+//            label = { Text("Metros cuadrados") },
+//            modifier = Modifier.fillMaxWidth(),
+//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
+//        )
+//        TextField(
+//            value = parroquia,
+//            onValueChange = { parroquia = it },
+//            label = { Text("Parroquia") },
+//            modifier = Modifier.fillMaxWidth(),
+//            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
+//        )
+//        TextField(
+//            value = telefono,
+//            onValueChange = { telefono = it },
+//            label = { Text("Teléfono") },
+//            modifier = Modifier.fillMaxWidth(),
+//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
+//        )
+//        TextField(
+//            value = email,
+//            onValueChange = { email = it },
+//            label = { Text("Email") },
+//            modifier = Modifier.fillMaxWidth(),
+//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Done)
+//        )
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        Button(onClick = {
+//            val vivienda = hashMapOf(
+//                "titulo" to titulo,
+//                "descripcion" to descripcion,
+//                "habitaciones" to habitaciones,
+//                "metros" to metros,
+//                "parroquia" to parroquia,
+//                "telefono" to telefono,
+//                "email" to email,
+//                "userID" to userID,
+//                "localizacion" to localizacion
+//            )
+//            db.collection("viviendas").add(vivienda).addOnSuccessListener { documentReference ->
+//                val documentID = documentReference.id
+//                db.collection("viviendas").document(documentID).update("documentID", documentID)
+//                Toast.makeText(context, "Vivienda subida correctamente", Toast.LENGTH_SHORT).show()
+//                navController.navigate("vivienda/$documentID")
+//            }.addOnFailureListener { e ->
+//                Toast.makeText(context, "Se produjo un error", Toast.LENGTH_SHORT).show()
+//            }
+//        }) {
+//            Text(text = "Subir Vivienda")
+//        }
+//    }
+//}
+
 @Composable
 fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
     var titulo by remember { mutableStateOf("") }
@@ -74,6 +174,8 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
     var parroquia by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var estado by remember { mutableStateOf(EstadoVivienda.VENTA) }
+    var precio by remember { mutableIntStateOf(0) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     val localizacion = GeoPoint(0.0, 0.0) // TO DO
     val scrollState = rememberScrollState()
@@ -83,8 +185,36 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Start // Alinea a la izquierda
     ) {
+        // Radio buttons
+        Text(text = "Tipo de anuncio")
+        Column(horizontalAlignment = Alignment.Start) { // Alinea a la izquierda
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = estado == EstadoVivienda.VENTA,
+                    onClick = { estado = EstadoVivienda.VENTA }
+                )
+                Text(text = "Venta")
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = estado == EstadoVivienda.ALQUILER,
+                    onClick = { estado = EstadoVivienda.ALQUILER }
+                )
+                Text(text = "Alquiler")
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = estado == EstadoVivienda.ALQUILER_Y_VENTA,
+                    onClick = { estado = EstadoVivienda.ALQUILER_Y_VENTA }
+                )
+                Text(text = "Alquiler y Venta")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         TextField(
             value = titulo,
             onValueChange = { titulo = it },
@@ -137,6 +267,17 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Precio
+        TextField(
+            value = precio.toString(),
+            onValueChange = { precio = it.toIntOrNull() ?: 0 },
+            label = { Text("Precio (opcional)") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Button(onClick = {
             val vivienda = hashMapOf(
                 "titulo" to titulo,
@@ -147,7 +288,9 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
                 "telefono" to telefono,
                 "email" to email,
                 "userID" to userID,
-                "localizacion" to localizacion
+                "localizacion" to localizacion,
+                "estado" to estado.name,
+                "precio" to precio
             )
             db.collection("viviendas").add(vivienda).addOnSuccessListener { documentReference ->
                 val documentID = documentReference.id

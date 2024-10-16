@@ -2,6 +2,8 @@ package com.bimenesvive.bimenesvive.modelo
 
 import com.google.firebase.firestore.GeoPoint
 
+
+
 data class Vivienda(
     val descripcion: String = "",
     val habitaciones: Int = 0,
@@ -12,5 +14,14 @@ data class Vivienda(
     val userID: String = "",
     val documentID: String = "",
     val telefono: String = "",
-    val email: String = ""
+    val email: String = "",
+    val disponible: Boolean = true,
+    val visitas: Int = 0,
+    val estado: EstadoVivienda = EstadoVivienda.VENTA
 )
+
+enum class EstadoVivienda {
+    VENTA,
+    ALQUILER,
+    ALQUILER_Y_VENTA
+}
