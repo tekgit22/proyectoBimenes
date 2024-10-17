@@ -1,6 +1,5 @@
 package com.bimenesvive.bimenesvive.pantallas.usuario
 
-import android.util.Log
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -23,10 +22,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import android.widget.Toast
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.runtime.LaunchedEffect
-import com.bimenesvive.bimenesvive.modelo.EstadoVivienda
-import kotlinx.coroutines.delay
+import androidx.compose.ui.graphics.Color
+import com.bimenesvive.bimenesvive.modelo.EstadoPropiedad
 
 
 @Composable
@@ -48,7 +48,7 @@ fun PantallaSubirPropiedad(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Título
-                Text(text = "Subir Propiedad",
+                Text(text = "Anuncia tu propiedad",
                     style = MaterialTheme.typography.titleLarge)
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -174,10 +174,10 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
     var parroquia by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var estado by remember { mutableStateOf(EstadoVivienda.VENTA) }
+    var estado by remember { mutableStateOf(EstadoPropiedad.VENTA) }
     var precio by remember { mutableIntStateOf(0) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-    val localizacion = GeoPoint(0.0, 0.0) // TO DO
+    val localizacion = GeoPoint(0.0, 0.0)
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
@@ -185,31 +185,36 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.Start // Alinea a la izquierda
+
+        horizontalAlignment = Alignment.CenterHorizontally // Alinea a la izquierda
     ) {
-        // Radio buttons
-        Text(text = "Tipo de anuncio")
-        Column(horizontalAlignment = Alignment.Start) { // Alinea a la izquierda
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = estado == EstadoVivienda.VENTA,
-                    onClick = { estado = EstadoVivienda.VENTA }
-                )
-                Text(text = "Venta")
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = estado == EstadoVivienda.ALQUILER,
-                    onClick = { estado = EstadoVivienda.ALQUILER }
-                )
-                Text(text = "Alquiler")
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = estado == EstadoVivienda.ALQUILER_Y_VENTA,
-                    onClick = { estado = EstadoVivienda.ALQUILER_Y_VENTA }
-                )
-                Text(text = "Alquiler y Venta")
+        // Radio buttons dentro de una box para poder alinearla a la izquierda
+        // Si modifico el Alignment de la Column directamente, no hace nada porque tiene un Column Parent
+        // que la alinea al centro
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopStart) {
+            Column(horizontalAlignment = Alignment.Start) {
+                Text(text = "Tipo de anuncio")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = estado == EstadoPropiedad.VENTA,
+                        onClick = { estado = EstadoPropiedad.VENTA }
+                    )
+                    Text(text = "Venta")
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = estado == EstadoPropiedad.ALQUILER,
+                        onClick = { estado = EstadoPropiedad.ALQUILER }
+                    )
+                    Text(text = "Alquiler")
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = estado == EstadoPropiedad.ALQUILER_Y_VENTA,
+                        onClick = { estado = EstadoPropiedad.ALQUILER_Y_VENTA }
+                    )
+                    Text(text = "Alquiler y Venta")
+                }
             }
         }
 
@@ -278,6 +283,7 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+
         Button(onClick = {
             val vivienda = hashMapOf(
                 "titulo" to titulo,
@@ -305,8 +311,46 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
         }) {
             Text(text = "Subir Vivienda")
         }
+        FloatingActionButton(
+            onClick = {
+                val vivienda = hashMapOf(
+                    "titulo" to titulo,
+                    "descripcion" to descripcion,
+                    "habitaciones" to habitaciones,
+                    "metros" to metros,
+                    "parroquia" to parroquia,
+                    "telefono" to telefono,
+                    "email" to email,
+                    "userID" to userID,
+                    "localizacion" to localizacion,
+                    "estado" to estado.name,
+                    "precio" to precio,
+                    "visitas" to 0,
+                    "disponible" to true
+                )
+                db.collection("viviendas").add(vivienda).addOnSuccessListener { documentReference ->
+                    val documentID = documentReference.id
+                    db.collection("viviendas").document(documentID).update("documentID", documentID)
+                    Toast.makeText(context, "Vivienda subida correctamente", Toast.LENGTH_SHORT).show()
+                    navController.navigate("vivienda/$documentID")
+                }.addOnFailureListener { e ->
+                    Toast.makeText(context, "Se produjo un error", Toast.LENGTH_SHORT).show()
+                }
+            },
+            shape = RoundedCornerShape(50), // Forma redondeada
+            containerColor = MaterialTheme.colorScheme.primary // Color de fondo
+        ) {
+            Icon(
+                imageVector = Icons.Default.CloudUpload, // Ícono de nube subir
+                contentDescription = "Subir Vivienda",
+                tint = Color.White // Color del ícono
+            )
+        }
     }
 }
+
+
+
 
 
 @Composable
@@ -318,6 +362,8 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
     var telefono by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var edificable by remember { mutableStateOf(false) }
+    var estado by remember { mutableStateOf(EstadoPropiedad.VENTA) }
+    var precio by remember { mutableIntStateOf(0) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     val localizacion = GeoPoint(0.0, 0.0) // Valor invisible al usuario
     val scrollState = rememberScrollState()
@@ -329,6 +375,36 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Radio buttons dentro de una box para poder alinearla a la izquierda
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopStart) {
+            Column(horizontalAlignment = Alignment.Start) {
+                Text(text = "Tipo de anuncio")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = estado == EstadoPropiedad.VENTA,
+                        onClick = { estado = EstadoPropiedad.VENTA }
+                    )
+                    Text(text = "Venta")
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = estado == EstadoPropiedad.ALQUILER,
+                        onClick = { estado = EstadoPropiedad.ALQUILER }
+                    )
+                    Text(text = "Alquiler")
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = estado == EstadoPropiedad.ALQUILER_Y_VENTA,
+                        onClick = { estado = EstadoPropiedad.ALQUILER_Y_VENTA }
+                    )
+                    Text(text = "Alquiler y Venta")
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         TextField(
             value = titulo,
             onValueChange = { titulo = it },
@@ -344,18 +420,18 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
         )
         TextField(
-            value = parroquia,
-            onValueChange = { parroquia = it },
-            label = { Text("Parroquia") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
-        )
-        TextField(
             value = metros.toString(),
             onValueChange = { metros = it.toIntOrNull() ?: 0 },
             label = { Text("Metros cuadrados") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
+        )
+        TextField(
+            value = parroquia,
+            onValueChange = { parroquia = it },
+            label = { Text("Parroquia") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
         )
         TextField(
             value = telefono,
@@ -372,11 +448,24 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Done)
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Precio
+        TextField(
+            value = precio.toString(),
+            onValueChange = { precio = it.toIntOrNull() ?: 0 },
+            label = { Text("Precio (opcional)") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done)
+        )
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = edificable, onCheckedChange = { edificable = it })
             Spacer(modifier = Modifier.width(8.dp))
             Text("Edificable")
         }
+
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -389,8 +478,12 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
                 "telefono" to telefono,
                 "email" to email,
                 "edificable" to edificable,
+                "estado" to estado.name,
+                "precio" to precio,
                 "userID" to userID,
-                "localizacion" to localizacion
+                "visitas" to 0,
+                "localizacion" to localizacion,
+                "disponible" to true
             )
             db.collection("fincas").add(finca).addOnSuccessListener { documentReference ->
                 val documentID = documentReference.id

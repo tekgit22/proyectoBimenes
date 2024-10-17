@@ -82,7 +82,7 @@ fun PantallaLogin(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+                painter = painterResource(id = R.drawable.logotest),
                 contentDescription = "Registro Image",
                 modifier = Modifier.height(100.dp)
             )

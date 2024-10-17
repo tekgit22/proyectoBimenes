@@ -35,33 +35,18 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import coil.compose.rememberAsyncImagePainter
-import com.bimenesvive.bimenesvive.utilidades.*
 
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Bed
 import androidx.compose.material.icons.filled.Euro
 import androidx.compose.material.icons.filled.Home
@@ -69,12 +54,10 @@ import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.preference.PreferenceManager
 import coil.compose.AsyncImagePainter
-import com.bimenesvive.bimenesvive.modelo.EstadoVivienda
-import androidx.compose.material3.TopAppBar
+import com.bimenesvive.bimenesvive.modelo.EstadoPropiedad
 
 
 @Composable
@@ -190,7 +173,7 @@ fun PantallaVivienda(
             ) {
                 vivienda?.let {
                     when (it.estado) {
-                        EstadoVivienda.VENTA -> {
+                        EstadoPropiedad.VENTA -> {
                             AssistChip(
                                 onClick = {},
                                 label = { Text("Se vende") },
@@ -205,7 +188,7 @@ fun PantallaVivienda(
                             )
                         }
 
-                        EstadoVivienda.ALQUILER -> {
+                        EstadoPropiedad.ALQUILER -> {
                             AssistChip(
                                 onClick = {},
                                 label = { Text("Se alquila") },
@@ -220,7 +203,7 @@ fun PantallaVivienda(
                             )
                         }
 
-                        EstadoVivienda.ALQUILER_Y_VENTA -> {
+                        EstadoPropiedad.ALQUILER_Y_VENTA -> {
                             AssistChip(
                                 onClick = {},
                                 label = { Text("Se vende") },
