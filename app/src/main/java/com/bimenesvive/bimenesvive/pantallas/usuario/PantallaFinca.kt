@@ -9,12 +9,14 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -31,6 +33,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -112,92 +116,129 @@ fun PantallaFinca(
         }
     }
 
+    val scrollState = rememberScrollState()
+
     Scaffold(
         bottomBar = { NavBarViendoPropiedad(navController) }
     ) { paddingValues ->
-        Column(
-            modifier = modifier
-                .padding(paddingValues)
-                .padding(16.dp)
+        Box(
+            modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .padding(paddingValues) // Aplicar paddingValues aquí
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Visibility,
-                    contentDescription = "Visitas",
-                    tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = finca?.visitas?.toString() ?: "0",
-                    color = Color.Gray
-                )
-            }
-            Text(
-                text = finca?.titulo ?: "",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = finca?.descripcion ?: "")
-            AssistChip(
-                onClick = {},
-                label = { Text(finca?.parroquia ?: "") },
-                leadingIcon = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Icon(
-                        imageVector = Icons.Default.Place,
-                        contentDescription = null,
-                        modifier = Modifier.size(AssistChipDefaults.IconSize)
+                        imageVector = Icons.Default.Visibility,
+                        contentDescription = "Visitas",
+                        tint = Color.Gray
                     )
-                },
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                finca?.let {
-            when (it.estado) {
-                EstadoPropiedad.VENTA -> {
-                    AssistChip(
-                        onClick = {},
-                        label = { Text("Se vende") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Home,
-                                contentDescription = null,
-                                modifier = Modifier.size(AssistChipDefaults.IconSize)
-                            )
-                        },
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = finca?.visitas?.toString() ?: "0",
+                        color = Color.Gray
                     )
                 }
+                Text(
+                    text = finca?.titulo ?: "",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = finca?.descripcion ?: "")
+                AssistChip(
+                    onClick = {},
+                    label = { Text(finca?.parroquia ?: "") },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Place,
+                            contentDescription = null,
+                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+                        )
+                    },
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    finca?.let {
+                        when (it.estado) {
+                            EstadoPropiedad.VENTA -> {
+                                AssistChip(
+                                    onClick = {},
+                                    label = { Text("Se vende") },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Home,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                        )
+                                    },
+                                )
+                            }
 
-                EstadoPropiedad.ALQUILER -> {
-                    AssistChip(
-                        onClick = {},
-                        label = { Text("Se alquila") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Key,
-                                contentDescription = null,
-                                modifier = Modifier.size(AssistChipDefaults.IconSize)
-                            )
-                        },
-                    )
+                            EstadoPropiedad.ALQUILER -> {
+                                AssistChip(
+                                    onClick = {},
+                                    label = { Text("Se alquila") },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Key,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                        )
+                                    },
+                                )
+                            }
+
+                            EstadoPropiedad.ALQUILER_Y_VENTA -> {
+                                AssistChip(
+                                    onClick = {},
+                                    label = { Text("Se vende") },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Home,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                        )
+                                    },
+                                    modifier = Modifier.padding(end = 8.dp)
+                                )
+                                AssistChip(
+                                    onClick = {},
+                                    label = { Text("Se alquila") },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Key,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                        )
+                                    },
+                                )
+                            }
+                        }
+                    }
                 }
 
-                EstadoPropiedad.ALQUILER_Y_VENTA -> {
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     AssistChip(
                         onClick = {},
-                        label = { Text("Se vende") },
+                        label = { Text("${finca?.metros} m²") },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Home,
+                                imageVector = Icons.Default.SquareFoot,
                                 contentDescription = null,
                                 modifier = Modifier.size(AssistChipDefaults.IconSize)
                             )
@@ -206,118 +247,87 @@ fun PantallaFinca(
                     )
                     AssistChip(
                         onClick = {},
-                        label = { Text("Se alquila") },
+                        label = { Text("Edificable: ${if (finca?.edificable == true) "Sí" else "No"}") },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Key,
+                                imageVector = Icons.Default.Home,
                                 contentDescription = null,
                                 modifier = Modifier.size(AssistChipDefaults.IconSize)
                             )
                         },
                     )
                 }
-            }
-        }
-    }
 
-    Row(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        AssistChip(
-            onClick = {},
-            label = { Text("${finca?.metros} m²") },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.SquareFoot,
-                    contentDescription = null,
-                    modifier = Modifier.size(AssistChipDefaults.IconSize)
-                )
-            },
-            modifier = Modifier.padding(end = 8.dp)
-        )
-        AssistChip(
-            onClick = {},
-            label = { Text("Edificable: ${if (finca?.edificable == true) "Sí" else "No"}") },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = null,
-                    modifier = Modifier.size(AssistChipDefaults.IconSize)
-                )
-            },
-        )
-    }
-
-    Column {
-        if (finca?.precio == 0) {
-            AssistChip(
-                onClick = {},
-                label = { Text("Precio no disponible") },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Euro,
-                        contentDescription = null,
-                        modifier = Modifier.size(AssistChipDefaults.IconSize)
-                    )
-                },
-            )
-        } else {
-            AssistChip(
-                onClick = {},
-                label = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Precio: ${finca?.precio} ")
-                        Icon(
-                            imageVector = Icons.Default.Euro,
-                            contentDescription = null,
-                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+                Column {
+                    if (finca?.precio == 0) {
+                        AssistChip(
+                            onClick = {},
+                            label = { Text("Precio no disponible") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Euro,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            },
+                        )
+                    } else {
+                        AssistChip(
+                            onClick = {},
+                            label = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = "Precio: ${finca?.precio} ")
+                                    Icon(
+                                        imageVector = Icons.Default.Euro,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                    )
+                                }
+                            },
                         )
                     }
-                },
-            )
-        }
-    }
-    Spacer(modifier = Modifier.height(8.dp))
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = Icons.Default.Phone,
-            contentDescription = "Teléfono",
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = finca?.telefono ?: "",
-            color = Color.Blue,
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier.clickable {
-                val telefonoPrefijoSpain = "+34${finca?.telefono}"
-                val intent = Intent(Intent.ACTION_DIAL).apply {
-                    data = Uri.parse("tel:$telefonoPrefijoSpain")
                 }
-                context.startActivity(intent)
-            }
-        )
-    }
-    Spacer(modifier = Modifier.height(8.dp))
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = Icons.Default.Email,
-            contentDescription = "Email",
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = finca?.email ?: "",
-            color = Color.Blue,
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier.clickable {
-                val email = finca?.email ?: return@clickable
-                val intent = Intent(Intent.ACTION_SENDTO).apply {
-                    data = Uri.parse("mailto:$email")
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Phone,
+                        contentDescription = "Teléfono",
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = finca?.telefono ?: "",
+                        color = Color.Blue,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.clickable {
+                            val telefonoPrefijoSpain = "+34${finca?.telefono}"
+                            val intent = Intent(Intent.ACTION_DIAL).apply {
+                                data = Uri.parse("tel:$telefonoPrefijoSpain")
+                            }
+                            context.startActivity(intent)
+                        }
+                    )
                 }
-                context.startActivity(intent)
-            }
-        )
-    }
-    Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = "Email",
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = finca?.email ?: "",
+                        color = Color.Blue,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.clickable {
+                            val email = finca?.email ?: return@clickable
+                            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                data = Uri.parse("mailto:$email")
+                            }
+                            context.startActivity(intent)
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(15.dp))
 
                 Column {
                     LazyRow(state = listState) {
@@ -383,155 +393,172 @@ fun PantallaFinca(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-            Column {
-                if (userID == finca?.userID) {
-                    Button(
-                        onClick = {
-                            launcher.launch("image/*")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        Text("Subir Foto")
+                Column {
+                    if (userID == finca?.userID) {
+                        Button(
+                            onClick = {
+                                launcher.launch("image/*")
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text("Subir Foto")
+                        }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            Column {
-                if (finca?.localizacion?.latitude == 0.0 && finca?.localizacion?.longitude == 0.0) {
-                    Button(
-                        onClick = {},
-                        enabled = false,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        Text("Localización no disponible")
-                    }
-                } else {
-                    Button(
-                        onClick = { showMapDialog = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        Text("Ver Localización")
+                Column {
+                    if (finca?.localizacion?.latitude == 0.0 && finca?.localizacion?.longitude == 0.0) {
+                        Button(
+                            onClick = {},
+                            enabled = false,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text("Localización no disponible")
+                        }
+                    } else {
+                        Button(
+                            onClick = { showMapDialog = true },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text("Ver Localización")
+                        }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            Column {
-                if (userID == finca?.userID) {
-                    Button(
-                        onClick = {
-                            if (checkLocationPermission(context as Activity)) {
-                                saveFincaLocation(finca!!, context, documentID) {
-                                    coroutineScope.launch {
-                                        finca = getFincaById(documentID)
+                Column {
+                    if (userID == finca?.userID) {
+                        Button(
+                            onClick = {
+                                if (checkLocationPermission(context as Activity)) {
+                                    saveFincaLocation(finca!!, context, documentID) {
+                                        coroutineScope.launch {
+                                            finca = getFincaById(documentID)
+                                        }
                                     }
                                 }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text("Guardar Localización")
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (userID == finca?.userID) {
+                    Button(
+                        onClick = {
+                            try {
+                                borrarAnuncio(
+                                    userID,
+                                    documentID,
+                                    imageUris,
+                                    context,
+                                    navController
+                                )
+                            } catch (e: Exception) {
+                                Log.e("PantallaFinca", "Error al borrar el anuncio: ${e.message}")
+                                Toast.makeText(
+                                    context,
+                                    "Error al borrar el anuncio",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                     ) {
-                        Text("Guardar Localización")
+                        Text("Borrar Anuncio")
                     }
+                }
+
+                if (showImageDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showImageDialog = false },
+                        text = {
+                            selectedImageUri?.let { uri ->
+                                RotarImagen(imageUri = uri)
+                            }
+                        },
+                        confirmButton = {
+                            TextButton(onClick = { showImageDialog = false }) {
+                                Text("Cerrar")
+                            }
+                        }
+                    )
+                }
+
+                if (showMapDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showMapDialog = false },
+                        text = {
+                            AndroidView(factory = { context ->
+                                MapView(context).apply {
+                                    Configuration.getInstance().load(
+                                        context,
+                                        PreferenceManager.getDefaultSharedPreferences(context)
+                                    )
+                                    controller.setZoom(18.0)
+                                    finca?.localizacion?.let { geoPoint ->
+                                        val startPoint = GeoPoint(geoPoint.latitude, geoPoint.longitude)
+                                        controller.setCenter(startPoint)
+                                        val marker = Marker(this)
+                                        marker.position = startPoint
+                                        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                        marker.setOnMarkerClickListener { _, _ ->
+                                            Toast.makeText(
+                                                context,
+                                                "Localización: ${geoPoint.latitude}, ${geoPoint.longitude}",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            true
+                                        }
+                                        overlays.add(marker)
+                                    }
+                                }
+                            })
+                        },
+                        confirmButton = {
+                            TextButton(onClick = { showMapDialog = false }) {
+                                Text("Cerrar")
+                            }
+                        }
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
 
-            if (userID == finca?.userID) {
-                Button(
-                    onClick = {
-                        try {
-                            borrarAnuncio(
-                                userID,
-                                documentID,
-                                imageUris,
-                                context,
-                                navController
-                            )
-                        } catch (e: Exception) {
-                            Log.e("PantallaFinca", "Error al borrar el anuncio: ${e.message}")
-                            Toast.makeText(
-                                context,
-                                "Error al borrar el anuncio",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    },
+
+        // Gradiente en la parte inferior
+            if (scrollState.value < scrollState.maxValue) {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Text("Borrar Anuncio")
-                }
-            }
-
-            if (showImageDialog) {
-                AlertDialog(
-                    onDismissRequest = { showImageDialog = false },
-                    text = {
-                        selectedImageUri?.let { uri ->
-                            RotarImagen(imageUri = uri)
-                        }
-                    },
-                    confirmButton = {
-                        TextButton(onClick = { showImageDialog = false }) {
-                            Text("Cerrar")
-                        }
-                    }
-                )
-            }
-
-            if (showMapDialog) {
-                AlertDialog(
-                    onDismissRequest = { showMapDialog = false },
-                    text = {
-                        AndroidView(factory = { context ->
-                            MapView(context).apply {
-                                Configuration.getInstance().load(
-                                    context,
-                                    PreferenceManager.getDefaultSharedPreferences(context)
-                                )
-                                controller.setZoom(18.0)
-                                finca?.localizacion?.let { geoPoint ->
-                                    val startPoint = GeoPoint(geoPoint.latitude, geoPoint.longitude)
-                                    controller.setCenter(startPoint)
-                                    val marker = Marker(this)
-                                    marker.position = startPoint
-                                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                    marker.setOnMarkerClickListener { _, _ ->
-                                        Toast.makeText(
-                                            context,
-                                            "Localización: ${geoPoint.latitude}, ${geoPoint.longitude}",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        true
-                                    }
-                                    overlays.add(marker)
-                                }
-                            }
-                        })
-                    },
-                    confirmButton = {
-                        TextButton(onClick = { showMapDialog = false }) {
-                            Text("Cerrar")
-                        }
-                    }
+                        .height(30.dp)
+                        .align(Alignment.BottomCenter)
+                        .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.3f))
+                            )
+                        )
                 )
             }
         }
-    } ?: run {
-        Log.d("PantallaFinca", "No se encontró la finca con id: $documentID")
     }
 }
 
