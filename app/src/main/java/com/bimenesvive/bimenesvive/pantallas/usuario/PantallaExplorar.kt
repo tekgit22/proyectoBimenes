@@ -208,8 +208,11 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
                     Column {
                         Text(text = vivienda.parroquia,
                             Modifier.padding(top = 16.dp))
-                        Text(text = "${vivienda.habitaciones} habitaciones")
-                        Text(text = "${vivienda.metros} metros²")
+                        Text(text = "${vivienda.habitaciones} ${if (vivienda.habitaciones == 1) "habitación" else "habitaciones"}")
+                        Text(text = "${vivienda.metros} m²")
+                        Text(text = if (vivienda.precio == 0) "Precio no disponible" else "Precio: ${vivienda.precio} €",
+                            modifier = Modifier.wrapContentWidth().wrapContentHeight()
+                        )
                     }
                 }
             }
@@ -349,8 +352,11 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
                     Column {
                         Text(text = finca.parroquia
                         , Modifier.padding(top = 16.dp))
-                        Text(text = "Metros: ${finca.metros}")
+                        Text(text = "${finca.metros} m²")
                         Text(text = if (finca.edificable) "Edificable" else "No edificable")
+                        Text(text = if (finca.precio == 0) "Precio no disponible" else "Precio: ${finca.precio} €",
+                            modifier = Modifier.wrapContentWidth().wrapContentHeight()
+                        )
                     }
                 }
             }

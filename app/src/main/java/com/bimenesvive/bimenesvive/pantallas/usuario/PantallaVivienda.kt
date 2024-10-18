@@ -500,6 +500,44 @@ fun PantallaVivienda(
                         }
                     )
                 }
+//                if (showMapDialog) {
+//                    AlertDialog(
+//                        onDismissRequest = { showMapDialog = false },
+//                        text = {
+//                            AndroidView(factory = { context ->
+//                                MapView(context).apply {
+//                                    Configuration.getInstance().load(
+//                                        context,
+//                                        PreferenceManager.getDefaultSharedPreferences(context)
+//                                    )
+//                                    controller.setZoom(18.0)
+//                                    vivienda?.localizacion?.let { geoPoint ->
+//                                        val startPoint =
+//                                            GeoPoint(geoPoint.latitude, geoPoint.longitude)
+//                                        controller.setCenter(startPoint)
+//                                        val marker = Marker(this)
+//                                        marker.position = startPoint
+//                                        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+//                                        marker.setOnMarkerClickListener { _, _ ->
+//                                            Toast.makeText(
+//                                                context,
+//                                                "Localización: ${geoPoint.latitude}, ${geoPoint.longitude}",
+//                                                Toast.LENGTH_SHORT
+//                                            ).show()
+//                                            true
+//                                        }
+//                                        overlays.add(marker)
+//                                    }
+//                                }
+//                            })
+//                        },
+//                        confirmButton = {
+//                            TextButton(onClick = { showMapDialog = false }) {
+//                                Text("Cerrar")
+//                            }
+//                        }
+//                    )
+//                }
                 if (showMapDialog) {
                     AlertDialog(
                         onDismissRequest = { showMapDialog = false },
@@ -512,18 +550,16 @@ fun PantallaVivienda(
                                     )
                                     controller.setZoom(18.0)
                                     vivienda?.localizacion?.let { geoPoint ->
-                                        val startPoint =
-                                            GeoPoint(geoPoint.latitude, geoPoint.longitude)
+                                        val startPoint = GeoPoint(geoPoint.latitude, geoPoint.longitude)
                                         controller.setCenter(startPoint)
                                         val marker = Marker(this)
                                         marker.position = startPoint
                                         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                         marker.setOnMarkerClickListener { _, _ ->
-                                            Toast.makeText(
-                                                context,
-                                                "Localización: ${geoPoint.latitude}, ${geoPoint.longitude}",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                            val gmmIntentUri = Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}?q=${geoPoint.latitude},${geoPoint.longitude}(Label+Name)")
+                                            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                                            mapIntent.setPackage("com.google.android.apps.maps")
+                                            context.startActivity(mapIntent)
                                             true
                                         }
                                         overlays.add(marker)
