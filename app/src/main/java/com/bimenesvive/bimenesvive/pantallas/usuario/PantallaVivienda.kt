@@ -101,24 +101,25 @@ fun PantallaVivienda(
         }
     }
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
-        uris.forEach { uri ->
-            try {
-                subirFotoVivienda(
-                    uri,
-                    userID,
-                    documentID,
-                    FirebaseStorage.getInstance(),
-                    context
-                ) { downloadUri ->
-                    imageUris = imageUris + downloadUri
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
+            uris.forEach { uri ->
+                try {
+                    subirFotoVivienda(
+                        uri,
+                        userID,
+                        documentID,
+                        FirebaseStorage.getInstance(),
+                        context
+                    ) { downloadUri ->
+                        imageUris = imageUris + downloadUri
+                    }
+                } catch (e: Exception) {
+                    Log.e("PantallaVivienda", "Error al subir la foto: ${e.message}")
+                    Toast.makeText(context, "Error al subir la foto", Toast.LENGTH_SHORT).show()
                 }
-            } catch (e: Exception) {
-                Log.e("PantallaVivienda", "Error al subir la foto: ${e.message}")
-                Toast.makeText(context, "Error al subir la foto", Toast.LENGTH_SHORT).show()
             }
         }
-    }
 
     val scrollState = rememberScrollState()
 
@@ -190,6 +191,7 @@ fun PantallaVivienda(
                                     },
                                 )
                             }
+
                             EstadoPropiedad.ALQUILER -> {
                                 AssistChip(
                                     onClick = {},
@@ -203,6 +205,7 @@ fun PantallaVivienda(
                                     },
                                 )
                             }
+
                             EstadoPropiedad.ALQUILER_Y_VENTA -> {
                                 AssistChip(
                                     onClick = {},
@@ -364,7 +367,8 @@ fun PantallaVivienda(
                         } else {
                             Spacer(modifier = Modifier.size(24.dp))
                         }
-                        val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+                        val lastVisibleItemIndex =
+                            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
                         if (lastVisibleItemIndex < imageUris.size - 1) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
@@ -426,10 +430,20 @@ fun PantallaVivienda(
                     if (userID == vivienda?.userID) {
                         Button(
                             onClick = {
+                                // Verificar permisos de ubicación antes de guardar la localización
                                 if (checkLocationPermission(context as Activity)) {
-                                    // Guardar localización
+                                    Log.d(
+                                        "PantallaVivienda",
+                                        "Permiso de ubicación concedido, guardando localización"
+                                    )
+                                    saveViviendaLocation(vivienda!!, context, documentID) {
+                                        // Refrescar la UI después de guardar la localización
+                                        coroutineScope.launch {
+                                            vivienda = getViviendaById(documentID)
+                                        }
+                                    }
                                 } else {
-                                    // Solicitar permisos
+                                    Log.d("PantallaVivienda", "Permiso de ubicación no concedido")
                                 }
                             },
                             modifier = Modifier
@@ -453,8 +467,15 @@ fun PantallaVivienda(
                                     navController
                                 )
                             } catch (e: Exception) {
-                                Log.e("PantallaVivienda", "Error al borrar el anuncio: ${e.message}")
-                                Toast.makeText(context, "Error al borrar el anuncio: ${e.message}", Toast.LENGTH_SHORT).show()
+                                Log.e(
+                                    "PantallaVivienda",
+                                    "Error al borrar el anuncio: ${e.message}"
+                                )
+                                Toast.makeText(
+                                    context,
+                                    "Error al borrar el anuncio: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         },
                         modifier = Modifier
@@ -491,7 +512,8 @@ fun PantallaVivienda(
                                     )
                                     controller.setZoom(18.0)
                                     vivienda?.localizacion?.let { geoPoint ->
-                                        val startPoint = GeoPoint(geoPoint.latitude, geoPoint.longitude)
+                                        val startPoint =
+                                            GeoPoint(geoPoint.latitude, geoPoint.longitude)
                                         controller.setCenter(startPoint)
                                         val marker = Marker(this)
                                         marker.position = startPoint
