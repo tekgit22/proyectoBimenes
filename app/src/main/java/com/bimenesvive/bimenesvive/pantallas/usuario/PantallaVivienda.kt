@@ -72,9 +72,9 @@ fun PantallaVivienda(
 ) {
     var vivienda by remember { mutableStateOf<Vivienda?>(null) }
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
-    var showImageDialog by remember { mutableStateOf(false) }
-    var showMapDialog by remember { mutableStateOf(false) }
+    var isFullScreenImage by remember { mutableStateOf(false) }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var showMapDialog by remember { mutableStateOf(false) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current as Activity
@@ -131,375 +131,905 @@ fun PantallaVivienda(
                 .fillMaxSize()
                 .padding(paddingValues) // Aplicar paddingValues aquí
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
+            if (isFullScreenImage && selectedImageUri != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black)
+                        .clickable { isFullScreenImage = false }
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Visibility,
-                        contentDescription = "Visitas",
-                        tint = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = vivienda?.visitas?.toString() ?: "0",
-                        color = Color.Gray
+                    RotarImagen(
+                        imageUri = selectedImageUri!!,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
-                Text(
-                    text = vivienda?.titulo ?: "",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = vivienda?.descripcion ?: "")
-                AssistChip(
-                    onClick = {},
-                    label = { Text(vivienda?.parroquia ?: "") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Place,
-                            contentDescription = null,
-                            modifier = Modifier.size(AssistChipDefaults.IconSize)
-                        )
-                    },
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start
+            } else {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
                 ) {
-                    vivienda?.let {
-                        when (it.estado) {
-                            EstadoPropiedad.VENTA -> {
-                                AssistChip(
-                                    onClick = {},
-                                    label = { Text("Se vende") },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Home,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
-                                        )
-                                    },
-                                )
-                            }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Visibility,
+                            contentDescription = "Visitas",
+                            tint = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = vivienda?.visitas?.toString() ?: "0",
+                            color = Color.Gray
+                        )
+                    }
+                    Text(
+                        text = vivienda?.titulo ?: "",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = vivienda?.descripcion ?: "")
+                    AssistChip(
+                        onClick = {},
+                        label = { Text(vivienda?.parroquia ?: "") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Place,
+                                contentDescription = null,
+                                modifier = Modifier.size(AssistChipDefaults.IconSize)
+                            )
+                        },
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        vivienda?.let {
+                            when (it.estado) {
+                                EstadoPropiedad.VENTA -> {
+                                    AssistChip(
+                                        onClick = {},
+                                        label = { Text("Se vende") },
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.Default.Home,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                            )
+                                        },
+                                    )
+                                }
 
-                            EstadoPropiedad.ALQUILER -> {
-                                AssistChip(
-                                    onClick = {},
-                                    label = { Text("Se alquila") },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Key,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
-                                        )
-                                    },
-                                )
-                            }
+                                EstadoPropiedad.ALQUILER -> {
+                                    AssistChip(
+                                        onClick = {},
+                                        label = { Text("Se alquila") },
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.Default.Key,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                            )
+                                        },
+                                    )
+                                }
 
-                            EstadoPropiedad.ALQUILER_Y_VENTA -> {
-                                AssistChip(
-                                    onClick = {},
-                                    label = { Text("Se vende") },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Home,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
-                                        )
-                                    },
-                                    modifier = Modifier.padding(end = 8.dp)
-                                )
-                                AssistChip(
-                                    onClick = {},
-                                    label = { Text("Se alquila") },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Key,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
-                                        )
-                                    },
-                                )
+                                EstadoPropiedad.ALQUILER_Y_VENTA -> {
+                                    AssistChip(
+                                        onClick = {},
+                                        label = { Text("Se vende") },
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.Default.Home,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                            )
+                                        },
+                                        modifier = Modifier.padding(end = 8.dp)
+                                    )
+                                    AssistChip(
+                                        onClick = {},
+                                        label = { Text("Se alquila") },
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.Default.Key,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                            )
+                                        },
+                                    )
+                                }
                             }
                         }
                     }
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    AssistChip(
-                        onClick = {},
-                        label = { Text("${vivienda?.metros} m²") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.SquareFoot,
-                                contentDescription = null,
-                                modifier = Modifier.size(AssistChipDefaults.IconSize)
-                            )
-                        },
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    AssistChip(
-                        onClick = {},
-                        label = { Text("Habitaciones: ${vivienda?.habitaciones}") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Bed,
-                                contentDescription = null,
-                                modifier = Modifier.size(AssistChipDefaults.IconSize)
-                            )
-                        },
-                    )
-                }
-                Column {
-                    if (vivienda?.precio == 0) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         AssistChip(
                             onClick = {},
-                            label = { Text("Precio no disponible") },
+                            label = { Text("${vivienda?.metros} m²") },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.Euro,
+                                    imageVector = Icons.Default.SquareFoot,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            },
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        AssistChip(
+                            onClick = {},
+                            label = { Text("Habitaciones: ${vivienda?.habitaciones}") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Bed,
                                     contentDescription = null,
                                     modifier = Modifier.size(AssistChipDefaults.IconSize)
                                 )
                             },
                         )
-                    } else {
-                        AssistChip(
-                            onClick = {},
-                            label = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = "Precio: ${vivienda?.precio} ")
+                    }
+                    Column {
+                        if (vivienda?.precio == 0) {
+                            AssistChip(
+                                onClick = {},
+                                label = { Text("Precio no disponible") },
+                                leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Euro,
                                         contentDescription = null,
                                         modifier = Modifier.size(AssistChipDefaults.IconSize)
                                     )
+                                },
+                            )
+                        } else {
+                            AssistChip(
+                                onClick = {},
+                                label = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(text = "Precio: ${vivienda?.precio} ")
+                                        Icon(
+                                            imageVector = Icons.Default.Euro,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                        )
+                                    }
+                                },
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Phone,
+                            contentDescription = "Teléfono",
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = vivienda?.telefono ?: "",
+                            color = Color.Blue,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable {
+                                val telefonoPrefijoSpain = "+34${vivienda?.telefono}"
+                                val intent = Intent(Intent.ACTION_DIAL).apply {
+                                    data = Uri.parse("tel:$telefonoPrefijoSpain")
+                                }
+                                context.startActivity(intent)
+                            }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = "Email",
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = vivienda?.email ?: "",
+                            color = Color.Blue,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable {
+                                val email = vivienda?.email ?: return@clickable
+                                val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                    data = Uri.parse("mailto:$email")
+                                }
+                                context.startActivity(intent)
+                            }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Column {
+                        LazyRow(state = listState) {
+                            items(imageUris) { uri ->
+                                Image(
+                                    painter = rememberAsyncImagePainter(uri),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(128.dp)
+                                        .padding(4.dp)
+                                        .clickable {
+                                            selectedImageUri = uri
+                                            isFullScreenImage = true
+                                        }
+                                )
+                            }
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            if (listState.firstVisibleItemIndex > 0) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Previous",
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clickable {
+                                            coroutineScope.launch {
+                                                listState.animateScrollToItem(listState.firstVisibleItemIndex - 1)
+                                            }
+                                        },
+                                    tint = Color.Gray
+                                )
+                            } else {
+                                Spacer(modifier = Modifier.size(24.dp))
+                            }
+                            val lastVisibleItemIndex =
+                                listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+                            if (lastVisibleItemIndex < imageUris.size - 1) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                    contentDescription = "Next",
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clickable {
+                                            coroutineScope.launch {
+                                                listState.animateScrollToItem(listState.firstVisibleItemIndex + 1)
+                                            }
+                                        },
+                                    tint = Color.Gray
+                                )
+                            } else {
+                                Spacer(modifier = Modifier.size(24.dp))
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Column {
+                        if (userID == vivienda?.userID) {
+                            Button(
+                                onClick = {
+                                    launcher.launch("image/*")
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                Text("Subir Foto")
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Column {
+                        if (vivienda?.localizacion?.latitude == 0.0 && vivienda?.localizacion?.longitude == 0.0) {
+                            Button(
+                                onClick = {},
+                                enabled = false,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                Text("Localización no disponible")
+                            }
+                        } else {
+                            Button(
+                                onClick = { showMapDialog = true },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                Text("Ver Localización")
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Column {
+                        if (userID == vivienda?.userID) {
+                            Button(
+                                onClick = {
+                                    // Verificar permisos de ubicación antes de guardar la localización
+                                    if (checkLocationPermission(context as Activity)) {
+                                        Log.d(
+                                            "PantallaVivienda",
+                                            "Permiso de ubicación concedido, guardando localización"
+                                        )
+                                        saveViviendaLocation(vivienda!!, context, documentID) {
+                                            // Refrescar la UI después de guardar la localización
+                                            coroutineScope.launch {
+                                                vivienda = getViviendaById(documentID)
+                                            }
+                                        }
+                                    } else {
+                                        Log.d("PantallaVivienda", "Permiso de ubicación no concedido")
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                Text("Guardar Localización")
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    if (userID == vivienda?.userID) {
+                        Button(
+                            onClick = {
+                                try {
+                                    borrarAnuncio(
+                                        userID,
+                                        documentID,
+                                        imageUris,
+                                        context,
+                                        navController
+                                    )
+                                } catch (e: Exception) {
+                                    Log.e(
+                                        "PantallaVivienda",
+                                        "Error al borrar el anuncio: ${e.message}"
+                                    )
+                                    Toast.makeText(
+                                        context,
+                                        "Error al borrar el anuncio: ${e.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text("Borrar Anuncio")
+                        }
+                    }
+                    if (showMapDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showMapDialog = false },
+                            text = {
+                                AndroidView(factory = { context ->
+                                    MapView(context).apply {
+                                        Configuration.getInstance().load(
+                                            context,
+                                            PreferenceManager.getDefaultSharedPreferences(context)
+                                        )
+                                        controller.setZoom(18.0)
+                                        vivienda?.localizacion?.let { geoPoint ->
+                                            val startPoint = GeoPoint(geoPoint.latitude, geoPoint.longitude)
+                                            controller.setCenter(startPoint)
+                                            val marker = Marker(this)
+                                            marker.position = startPoint
+                                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                            marker.setOnMarkerClickListener { _, _ ->
+                                                val gmmIntentUri = Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}?q=${geoPoint.latitude},${geoPoint.longitude}(Label+Name)")
+                                                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                                                mapIntent.setPackage("com.google.android.apps.maps")
+                                                context.startActivity(mapIntent)
+                                                true
+                                            }
+                                            overlays.add(marker)
+                                        }
+                                    }
+                                })
+                            },
+                            confirmButton = {
+                                TextButton(onClick = { showMapDialog = false }) {
+                                    Text("Cerrar")
+                                }
+                            }
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Phone,
-                        contentDescription = "Teléfono",
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = vivienda?.telefono ?: "",
-                        color = Color.Blue,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable {
-                            val telefonoPrefijoSpain = "+34${vivienda?.telefono}"
-                            val intent = Intent(Intent.ACTION_DIAL).apply {
-                                data = Uri.parse("tel:$telefonoPrefijoSpain")
-                            }
-                            context.startActivity(intent)
-                        }
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Email,
-                        contentDescription = "Email",
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = vivienda?.email ?: "",
-                        color = Color.Blue,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable {
-                            val email = vivienda?.email ?: return@clickable
-                            val intent = Intent(Intent.ACTION_SENDTO).apply {
-                                data = Uri.parse("mailto:$email")
-                            }
-                            context.startActivity(intent)
-                        }
-                    )
-                }
-                Spacer(modifier = Modifier.height(15.dp))
-                Column {
-                    LazyRow(state = listState) {
-                        items(imageUris) { uri ->
-                            Image(
-                                painter = rememberAsyncImagePainter(uri),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(128.dp)
-                                    .padding(4.dp)
-                                    .clickable {
-                                        selectedImageUri = uri
-                                        showImageDialog = true
-                                    }
-                            )
-                        }
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        if (listState.firstVisibleItemIndex > 0) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Previous",
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .clickable {
-                                        coroutineScope.launch {
-                                            listState.animateScrollToItem(listState.firstVisibleItemIndex - 1)
-                                        }
-                                    },
-                                tint = Color.Gray
-                            )
-                        } else {
-                            Spacer(modifier = Modifier.size(24.dp))
-                        }
-                        val lastVisibleItemIndex =
-                            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
-                        if (lastVisibleItemIndex < imageUris.size - 1) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = "Next",
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .clickable {
-                                        coroutineScope.launch {
-                                            listState.animateScrollToItem(listState.firstVisibleItemIndex + 1)
-                                        }
-                                    },
-                                tint = Color.Gray
-                            )
-                        } else {
-                            Spacer(modifier = Modifier.size(24.dp))
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Column {
-                    if (userID == vivienda?.userID) {
-                        Button(
-                            onClick = {
-                                launcher.launch("image/*")
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            Text("Subir Foto")
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Column {
-                    if (vivienda?.localizacion?.latitude == 0.0 && vivienda?.localizacion?.longitude == 0.0) {
-                        Button(
-                            onClick = {},
-                            enabled = false,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            Text("Localización no disponible")
-                        }
-                    } else {
-                        Button(
-                            onClick = { showMapDialog = true },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            Text("Ver Localización")
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Column {
-                    if (userID == vivienda?.userID) {
-                        Button(
-                            onClick = {
-                                // Verificar permisos de ubicación antes de guardar la localización
-                                if (checkLocationPermission(context as Activity)) {
-                                    Log.d(
-                                        "PantallaVivienda",
-                                        "Permiso de ubicación concedido, guardando localización"
-                                    )
-                                    saveViviendaLocation(vivienda!!, context, documentID) {
-                                        // Refrescar la UI después de guardar la localización
-                                        coroutineScope.launch {
-                                            vivienda = getViviendaById(documentID)
-                                        }
-                                    }
-                                } else {
-                                    Log.d("PantallaVivienda", "Permiso de ubicación no concedido")
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            Text("Guardar Localización")
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                if (userID == vivienda?.userID) {
-                    Button(
-                        onClick = {
-                            try {
-                                borrarAnuncio(
-                                    userID,
-                                    documentID,
-                                    imageUris,
-                                    context,
-                                    navController
-                                )
-                            } catch (e: Exception) {
-                                Log.e(
-                                    "PantallaVivienda",
-                                    "Error al borrar el anuncio: ${e.message}"
-                                )
-                                Toast.makeText(
-                                    context,
-                                    "Error al borrar el anuncio: ${e.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        },
+
+                // Gradiente en la parte inferior
+                if (scrollState.value < scrollState.maxValue) {
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        Text("Borrar Anuncio")
-                    }
-                }
-                if (showImageDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showImageDialog = false },
-                        text = {
-                            selectedImageUri?.let { uri ->
-                                RotarImagen(imageUri = uri)
-                            }
-                        },
-                        confirmButton = {
-                            TextButton(onClick = { showImageDialog = false }) {
-                                Text("Cerrar")
-                            }
-                        }
+                            .height(30.dp)
+                            .align(Alignment.BottomCenter)
+                            .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.3f))
+                                )
+                            )
                     )
                 }
+            }
+        }
+    }
+}
+
+//@Composable
+//fun PantallaVivienda(
+//    modifier: Modifier = Modifier,
+//    navController: NavHostController,
+//    documentID: String
+//) {
+//    var vivienda by remember { mutableStateOf<Vivienda?>(null) }
+//    var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+//    var showImageDialog by remember { mutableStateOf(false) }
+//    var showMapDialog by remember { mutableStateOf(false) }
+//    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+//    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return
+//    val coroutineScope = rememberCoroutineScope()
+//    val context = LocalContext.current as Activity
+//    var ownerUserID by remember { mutableStateOf<String?>(null) }
+//    val listState = rememberLazyListState() // Para controlar el scroll de las imágenes
+//
+//    // Solicitar permisos en tiempo de ejecución a usuarios con SO Android 13 +
+//    requestPhotoPermissions(context)
+//
+//    LaunchedEffect(documentID) {
+//        vivienda = getViviendaById(documentID)
+//        imageUris = getFotosViviendaDesdeFirestore(documentID)
+//    }
+//
+//    LaunchedEffect(documentID) {
+//        try {
+//            vivienda = getViviendaById(documentID)
+//            imageUris = getFotosViviendaDesdeFirestore(documentID)
+//            ownerUserID = vivienda?.userID
+//            Log.d("PantallaVivienda", "Vivienda: $vivienda")
+//        } catch (e: Exception) {
+//            Log.e("PantallaVivienda", "Error al cargar la vivienda: ${e.message}")
+//            Toast.makeText(context, "Error al cargar la vivienda", Toast.LENGTH_SHORT).show()
+//        }
+//    }
+//
+//    val launcher =
+//        rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
+//            uris.forEach { uri ->
+//                try {
+//                    subirFotoVivienda(
+//                        uri,
+//                        userID,
+//                        documentID,
+//                        FirebaseStorage.getInstance(),
+//                        context
+//                    ) { downloadUri ->
+//                        imageUris = imageUris + downloadUri
+//                    }
+//                } catch (e: Exception) {
+//                    Log.e("PantallaVivienda", "Error al subir la foto: ${e.message}")
+//                    Toast.makeText(context, "Error al subir la foto", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//        }
+//
+//    val scrollState = rememberScrollState()
+//
+//    Scaffold(
+//        bottomBar = { NavBarViendoPropiedad(navController) }
+//    ) { paddingValues ->
+//        Box(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(paddingValues) // Aplicar paddingValues aquí
+//        ) {
+//            Column(
+//                modifier = Modifier
+//                    .padding(16.dp)
+//                    .fillMaxSize()
+//                    .verticalScroll(scrollState)
+//            ) {
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.End,
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.Visibility,
+//                        contentDescription = "Visitas",
+//                        tint = Color.Gray
+//                    )
+//                    Spacer(modifier = Modifier.width(4.dp))
+//                    Text(
+//                        text = vivienda?.visitas?.toString() ?: "0",
+//                        color = Color.Gray
+//                    )
+//                }
+//                Text(
+//                    text = vivienda?.titulo ?: "",
+//                    style = MaterialTheme.typography.titleMedium,
+//                    modifier = Modifier.fillMaxWidth(),
+//                    textAlign = TextAlign.Center
+//                )
+//                Spacer(modifier = Modifier.height(8.dp))
+//                Text(text = vivienda?.descripcion ?: "")
+//                AssistChip(
+//                    onClick = {},
+//                    label = { Text(vivienda?.parroquia ?: "") },
+//                    leadingIcon = {
+//                        Icon(
+//                            imageVector = Icons.Default.Place,
+//                            contentDescription = null,
+//                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+//                        )
+//                    },
+//                )
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.Start
+//                ) {
+//                    vivienda?.let {
+//                        when (it.estado) {
+//                            EstadoPropiedad.VENTA -> {
+//                                AssistChip(
+//                                    onClick = {},
+//                                    label = { Text("Se vende") },
+//                                    leadingIcon = {
+//                                        Icon(
+//                                            imageVector = Icons.Default.Home,
+//                                            contentDescription = null,
+//                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+//                                        )
+//                                    },
+//                                )
+//                            }
+//
+//                            EstadoPropiedad.ALQUILER -> {
+//                                AssistChip(
+//                                    onClick = {},
+//                                    label = { Text("Se alquila") },
+//                                    leadingIcon = {
+//                                        Icon(
+//                                            imageVector = Icons.Default.Key,
+//                                            contentDescription = null,
+//                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+//                                        )
+//                                    },
+//                                )
+//                            }
+//
+//                            EstadoPropiedad.ALQUILER_Y_VENTA -> {
+//                                AssistChip(
+//                                    onClick = {},
+//                                    label = { Text("Se vende") },
+//                                    leadingIcon = {
+//                                        Icon(
+//                                            imageVector = Icons.Default.Home,
+//                                            contentDescription = null,
+//                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+//                                        )
+//                                    },
+//                                    modifier = Modifier.padding(end = 8.dp)
+//                                )
+//                                AssistChip(
+//                                    onClick = {},
+//                                    label = { Text("Se alquila") },
+//                                    leadingIcon = {
+//                                        Icon(
+//                                            imageVector = Icons.Default.Key,
+//                                            contentDescription = null,
+//                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
+//                                        )
+//                                    },
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
+//                Row(
+//                    modifier = Modifier.fillMaxWidth()
+//                ) {
+//                    AssistChip(
+//                        onClick = {},
+//                        label = { Text("${vivienda?.metros} m²") },
+//                        leadingIcon = {
+//                            Icon(
+//                                imageVector = Icons.Default.SquareFoot,
+//                                contentDescription = null,
+//                                modifier = Modifier.size(AssistChipDefaults.IconSize)
+//                            )
+//                        },
+//                        modifier = Modifier.padding(end = 8.dp)
+//                    )
+//                    AssistChip(
+//                        onClick = {},
+//                        label = { Text("Habitaciones: ${vivienda?.habitaciones}") },
+//                        leadingIcon = {
+//                            Icon(
+//                                imageVector = Icons.Default.Bed,
+//                                contentDescription = null,
+//                                modifier = Modifier.size(AssistChipDefaults.IconSize)
+//                            )
+//                        },
+//                    )
+//                }
+//                Column {
+//                    if (vivienda?.precio == 0) {
+//                        AssistChip(
+//                            onClick = {},
+//                            label = { Text("Precio no disponible") },
+//                            leadingIcon = {
+//                                Icon(
+//                                    imageVector = Icons.Default.Euro,
+//                                    contentDescription = null,
+//                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+//                                )
+//                            },
+//                        )
+//                    } else {
+//                        AssistChip(
+//                            onClick = {},
+//                            label = {
+//                                Row(verticalAlignment = Alignment.CenterVertically) {
+//                                    Text(text = "Precio: ${vivienda?.precio} ")
+//                                    Icon(
+//                                        imageVector = Icons.Default.Euro,
+//                                        contentDescription = null,
+//                                        modifier = Modifier.size(AssistChipDefaults.IconSize)
+//                                    )
+//                                }
+//                            },
+//                        )
+//                    }
+//                }
+//                Spacer(modifier = Modifier.height(8.dp))
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Icon(
+//                        imageVector = Icons.Default.Phone,
+//                        contentDescription = "Teléfono",
+//                    )
+//                    Spacer(modifier = Modifier.width(8.dp))
+//                    Text(
+//                        text = vivienda?.telefono ?: "",
+//                        color = Color.Blue,
+//                        textDecoration = TextDecoration.Underline,
+//                        modifier = Modifier.clickable {
+//                            val telefonoPrefijoSpain = "+34${vivienda?.telefono}"
+//                            val intent = Intent(Intent.ACTION_DIAL).apply {
+//                                data = Uri.parse("tel:$telefonoPrefijoSpain")
+//                            }
+//                            context.startActivity(intent)
+//                        }
+//                    )
+//                }
+//                Spacer(modifier = Modifier.height(8.dp))
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Icon(
+//                        imageVector = Icons.Default.Email,
+//                        contentDescription = "Email",
+//                    )
+//                    Spacer(modifier = Modifier.width(8.dp))
+//                    Text(
+//                        text = vivienda?.email ?: "",
+//                        color = Color.Blue,
+//                        textDecoration = TextDecoration.Underline,
+//                        modifier = Modifier.clickable {
+//                            val email = vivienda?.email ?: return@clickable
+//                            val intent = Intent(Intent.ACTION_SENDTO).apply {
+//                                data = Uri.parse("mailto:$email")
+//                            }
+//                            context.startActivity(intent)
+//                        }
+//                    )
+//                }
+//                Spacer(modifier = Modifier.height(15.dp))
+//                Column {
+//                    LazyRow(state = listState) {
+//                        items(imageUris) { uri ->
+//                            Image(
+//                                painter = rememberAsyncImagePainter(uri),
+//                                contentDescription = null,
+//                                modifier = Modifier
+//                                    .size(128.dp)
+//                                    .padding(4.dp)
+//                                    .clickable {
+//                                        selectedImageUri = uri
+//                                        showImageDialog = true
+//                                    }
+//                            )
+//                        }
+//                    }
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.SpaceBetween
+//                    ) {
+//                        if (listState.firstVisibleItemIndex > 0) {
+//                            Icon(
+//                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                                contentDescription = "Previous",
+//                                modifier = Modifier
+//                                    .size(24.dp)
+//                                    .clickable {
+//                                        coroutineScope.launch {
+//                                            listState.animateScrollToItem(listState.firstVisibleItemIndex - 1)
+//                                        }
+//                                    },
+//                                tint = Color.Gray
+//                            )
+//                        } else {
+//                            Spacer(modifier = Modifier.size(24.dp))
+//                        }
+//                        val lastVisibleItemIndex =
+//                            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+//                        if (lastVisibleItemIndex < imageUris.size - 1) {
+//                            Icon(
+//                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+//                                contentDescription = "Next",
+//                                modifier = Modifier
+//                                    .size(24.dp)
+//                                    .clickable {
+//                                        coroutineScope.launch {
+//                                            listState.animateScrollToItem(listState.firstVisibleItemIndex + 1)
+//                                        }
+//                                    },
+//                                tint = Color.Gray
+//                            )
+//                        } else {
+//                            Spacer(modifier = Modifier.size(24.dp))
+//                        }
+//                    }
+//                }
+//                Spacer(modifier = Modifier.height(8.dp))
+//                Column {
+//                    if (userID == vivienda?.userID) {
+//                        Button(
+//                            onClick = {
+//                                launcher.launch("image/*")
+//                            },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(horizontal = 16.dp)
+//                        ) {
+//                            Text("Subir Foto")
+//                        }
+//                    }
+//                }
+//                Spacer(modifier = Modifier.height(8.dp))
+//                Column {
+//                    if (vivienda?.localizacion?.latitude == 0.0 && vivienda?.localizacion?.longitude == 0.0) {
+//                        Button(
+//                            onClick = {},
+//                            enabled = false,
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(horizontal = 16.dp)
+//                        ) {
+//                            Text("Localización no disponible")
+//                        }
+//                    } else {
+//                        Button(
+//                            onClick = { showMapDialog = true },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(horizontal = 16.dp)
+//                        ) {
+//                            Text("Ver Localización")
+//                        }
+//                    }
+//                }
+//                Spacer(modifier = Modifier.height(8.dp))
+//                Column {
+//                    if (userID == vivienda?.userID) {
+//                        Button(
+//                            onClick = {
+//                                // Verificar permisos de ubicación antes de guardar la localización
+//                                if (checkLocationPermission(context as Activity)) {
+//                                    Log.d(
+//                                        "PantallaVivienda",
+//                                        "Permiso de ubicación concedido, guardando localización"
+//                                    )
+//                                    saveViviendaLocation(vivienda!!, context, documentID) {
+//                                        // Refrescar la UI después de guardar la localización
+//                                        coroutineScope.launch {
+//                                            vivienda = getViviendaById(documentID)
+//                                        }
+//                                    }
+//                                } else {
+//                                    Log.d("PantallaVivienda", "Permiso de ubicación no concedido")
+//                                }
+//                            },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(horizontal = 16.dp)
+//                        ) {
+//                            Text("Guardar Localización")
+//                        }
+//                    }
+//                }
+//                Spacer(modifier = Modifier.height(8.dp))
+//                if (userID == vivienda?.userID) {
+//                    Button(
+//                        onClick = {
+//                            try {
+//                                borrarAnuncio(
+//                                    userID,
+//                                    documentID,
+//                                    imageUris,
+//                                    context,
+//                                    navController
+//                                )
+//                            } catch (e: Exception) {
+//                                Log.e(
+//                                    "PantallaVivienda",
+//                                    "Error al borrar el anuncio: ${e.message}"
+//                                )
+//                                Toast.makeText(
+//                                    context,
+//                                    "Error al borrar el anuncio: ${e.message}",
+//                                    Toast.LENGTH_SHORT
+//                                ).show()
+//                            }
+//                        },
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(horizontal = 16.dp)
+//                    ) {
+//                        Text("Borrar Anuncio")
+//                    }
+//                }
+//                if (showImageDialog) {
+//                    AlertDialog(
+//                        onDismissRequest = { showImageDialog = false },
+//                        text = {
+//                            selectedImageUri?.let { uri ->
+//                                RotarImagen(imageUri = uri)
+//                            }
+//                        },
+//                        confirmButton = {
+//                            TextButton(onClick = { showImageDialog = false }) {
+//                                Text("Cerrar")
+//                            }
+//                        }
+//                    )
+//                }
+////                if (showMapDialog) {
+////                    AlertDialog(
+////                        onDismissRequest = { showMapDialog = false },
+////                        text = {
+////                            AndroidView(factory = { context ->
+////                                MapView(context).apply {
+////                                    Configuration.getInstance().load(
+////                                        context,
+////                                        PreferenceManager.getDefaultSharedPreferences(context)
+////                                    )
+////                                    controller.setZoom(18.0)
+////                                    vivienda?.localizacion?.let { geoPoint ->
+////                                        val startPoint =
+////                                            GeoPoint(geoPoint.latitude, geoPoint.longitude)
+////                                        controller.setCenter(startPoint)
+////                                        val marker = Marker(this)
+////                                        marker.position = startPoint
+////                                        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+////                                        marker.setOnMarkerClickListener { _, _ ->
+////                                            Toast.makeText(
+////                                                context,
+////                                                "Localización: ${geoPoint.latitude}, ${geoPoint.longitude}",
+////                                                Toast.LENGTH_SHORT
+////                                            ).show()
+////                                            true
+////                                        }
+////                                        overlays.add(marker)
+////                                    }
+////                                }
+////                            })
+////                        },
+////                        confirmButton = {
+////                            TextButton(onClick = { showMapDialog = false }) {
+////                                Text("Cerrar")
+////                            }
+////                        }
+////                    )
+////                }
 //                if (showMapDialog) {
 //                    AlertDialog(
 //                        onDismissRequest = { showMapDialog = false },
@@ -512,18 +1042,16 @@ fun PantallaVivienda(
 //                                    )
 //                                    controller.setZoom(18.0)
 //                                    vivienda?.localizacion?.let { geoPoint ->
-//                                        val startPoint =
-//                                            GeoPoint(geoPoint.latitude, geoPoint.longitude)
+//                                        val startPoint = GeoPoint(geoPoint.latitude, geoPoint.longitude)
 //                                        controller.setCenter(startPoint)
 //                                        val marker = Marker(this)
 //                                        marker.position = startPoint
 //                                        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 //                                        marker.setOnMarkerClickListener { _, _ ->
-//                                            Toast.makeText(
-//                                                context,
-//                                                "Localización: ${geoPoint.latitude}, ${geoPoint.longitude}",
-//                                                Toast.LENGTH_SHORT
-//                                            ).show()
+//                                            val gmmIntentUri = Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}?q=${geoPoint.latitude},${geoPoint.longitude}(Label+Name)")
+//                                            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+//                                            mapIntent.setPackage("com.google.android.apps.maps")
+//                                            context.startActivity(mapIntent)
 //                                            true
 //                                        }
 //                                        overlays.add(marker)
@@ -538,62 +1066,26 @@ fun PantallaVivienda(
 //                        }
 //                    )
 //                }
-                if (showMapDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showMapDialog = false },
-                        text = {
-                            AndroidView(factory = { context ->
-                                MapView(context).apply {
-                                    Configuration.getInstance().load(
-                                        context,
-                                        PreferenceManager.getDefaultSharedPreferences(context)
-                                    )
-                                    controller.setZoom(18.0)
-                                    vivienda?.localizacion?.let { geoPoint ->
-                                        val startPoint = GeoPoint(geoPoint.latitude, geoPoint.longitude)
-                                        controller.setCenter(startPoint)
-                                        val marker = Marker(this)
-                                        marker.position = startPoint
-                                        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                        marker.setOnMarkerClickListener { _, _ ->
-                                            val gmmIntentUri = Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}?q=${geoPoint.latitude},${geoPoint.longitude}(Label+Name)")
-                                            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                                            mapIntent.setPackage("com.google.android.apps.maps")
-                                            context.startActivity(mapIntent)
-                                            true
-                                        }
-                                        overlays.add(marker)
-                                    }
-                                }
-                            })
-                        },
-                        confirmButton = {
-                            TextButton(onClick = { showMapDialog = false }) {
-                                Text("Cerrar")
-                            }
-                        }
-                    )
-                }
-            }
-
-            // Gradiente en la parte inferior
-            if (scrollState.value < scrollState.maxValue) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp)
-                        .align(Alignment.BottomCenter)
-                        .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.3f))
-                            )
-                        )
-                )
-            }
-        }
-    }
-}
+//            }
+//
+//            // Gradiente en la parte inferior
+//            if (scrollState.value < scrollState.maxValue) {
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(30.dp)
+//                        .align(Alignment.BottomCenter)
+//                        .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
+//                        .background(
+//                            Brush.verticalGradient(
+//                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.3f))
+//                            )
+//                        )
+//                )
+//            }
+//        }
+//    }
+//}
 
 
 @Composable
