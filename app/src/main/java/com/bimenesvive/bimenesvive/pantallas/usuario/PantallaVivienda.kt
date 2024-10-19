@@ -38,18 +38,15 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.viewinterop.AndroidView
 
 import kotlinx.coroutines.launch
-import org.osmdroid.config.Configuration
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Bed
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Euro
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Key
@@ -59,7 +56,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
-import androidx.preference.PreferenceManager
 import coil.compose.AsyncImagePainter
 import com.bimenesvive.bimenesvive.modelo.EstadoPropiedad
 
@@ -72,8 +68,8 @@ fun PantallaVivienda(
 ) {
     var vivienda by remember { mutableStateOf<Vivienda?>(null) }
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
-    var isFullScreenImage by remember { mutableStateOf(false) }
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var esImagenGrande by remember { mutableStateOf(false) }
+    var imagenSeleccionada by remember { mutableStateOf<Uri?>(null) }
     var showMapDialog by remember { mutableStateOf(false) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return
     val coroutineScope = rememberCoroutineScope()
@@ -131,17 +127,31 @@ fun PantallaVivienda(
                 .fillMaxSize()
                 .padding(paddingValues) // Aplicar paddingValues aquí
         ) {
-            if (isFullScreenImage && selectedImageUri != null) {
+            if (esImagenGrande && imagenSeleccionada != null) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black)
-                        .clickable { isFullScreenImage = false }
+                        .background(Color.White)
                 ) {
-                    RotarImagen(
-                        imageUri = selectedImageUri!!,
+                    rotarImagen(
+                        imageUri = imagenSeleccionada!!,
                         modifier = Modifier.fillMaxSize()
+
+
                     )
+                    IconButton(
+                        onClick = { esImagenGrande = false },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(16.dp)
+                            .background(Color.LightGray, shape = CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Cerrar",
+                            tint = Color.White
+                        )
+                    }
                 }
             } else {
                 Column(
@@ -354,8 +364,8 @@ fun PantallaVivienda(
                                         .size(128.dp)
                                         .padding(4.dp)
                                         .clickable {
-                                            selectedImageUri = uri
-                                            isFullScreenImage = true
+                                            imagenSeleccionada = uri
+                                            esImagenGrande = true
                                         }
                                 )
                             }
@@ -429,7 +439,16 @@ fun PantallaVivienda(
                             }
                         } else {
                             Button(
-                                onClick = { showMapDialog = true },
+                                onClick = {
+                                    vivienda?.localizacion?.let { geoPoint ->
+                                        val googleMapsIntentUri = Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}?q=${geoPoint.latitude},${geoPoint.longitude}(${vivienda?.titulo})")
+                                        val mapIntent = Intent(Intent.ACTION_VIEW, googleMapsIntentUri).apply {
+                                            setPackage("com.google.android.apps.maps")
+                                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        }
+                                        context.startActivity(mapIntent)
+                                    }
+                                },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp)
@@ -498,43 +517,43 @@ fun PantallaVivienda(
                             Text("Borrar Anuncio")
                         }
                     }
-                    if (showMapDialog) {
-                        AlertDialog(
-                            onDismissRequest = { showMapDialog = false },
-                            text = {
-                                AndroidView(factory = { context ->
-                                    MapView(context).apply {
-                                        Configuration.getInstance().load(
-                                            context,
-                                            PreferenceManager.getDefaultSharedPreferences(context)
-                                        )
-                                        controller.setZoom(18.0)
-                                        vivienda?.localizacion?.let { geoPoint ->
-                                            val startPoint = GeoPoint(geoPoint.latitude, geoPoint.longitude)
-                                            controller.setCenter(startPoint)
-                                            val marker = Marker(this)
-                                            marker.position = startPoint
-                                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                            marker.setOnMarkerClickListener { _, _ ->
-                                                val gmmIntentUri = Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}?q=${geoPoint.latitude},${geoPoint.longitude}(Label+Name)")
-                                                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                                                mapIntent.setPackage("com.google.android.apps.maps")
-                                                context.startActivity(mapIntent)
-                                                true
-                                            }
-                                            overlays.add(marker)
-                                        }
-                                    }
-                                })
-                            },
-                            confirmButton = {
-                                TextButton(onClick = { showMapDialog = false }) {
-                                    Text("Cerrar")
-                                }
-                            }
-                        )
-                    }
-                }
+//                    if (showMapDialog) {
+//                        AlertDialog(
+//                            onDismissRequest = { showMapDialog = false },
+//                            text = {
+//                                AndroidView(factory = { context ->
+//                                    MapView(context).apply {
+//                                        Configuration.getInstance().load(
+//                                            context,
+//                                            PreferenceManager.getDefaultSharedPreferences(context)
+//                                        )
+//                                        controller.setZoom(18.0)
+//                                        vivienda?.localizacion?.let { geoPoint ->
+//                                            val startPoint = GeoPoint(geoPoint.latitude, geoPoint.longitude)
+//                                            controller.setCenter(startPoint)
+//                                            val marker = Marker(this)
+//                                            marker.position = startPoint
+//                                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+//                                            marker.setOnMarkerClickListener { _, _ ->
+//                                                val googleMapsIntentUri = Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}?q=${geoPoint.latitude},${geoPoint.longitude}(${vivienda?.titulo})")
+//                                                val mapIntent = Intent(Intent.ACTION_VIEW, googleMapsIntentUri)
+//                                                mapIntent.setPackage("com.google.android.apps.maps")
+//                                                context.startActivity(mapIntent)
+//                                                true
+//                                            }
+//                                            overlays.add(marker)
+//                                        }
+//                                    }
+//                                })
+//                            },
+//                            confirmButton = {
+//                                TextButton(onClick = { showMapDialog = false }) {
+//                                    Text("Cerrar")
+//                                }
+//                            }
+//                        )
+//                    }
+                } //final de la columna scrollable
 
                 // Gradiente en la parte inferior
                 if (scrollState.value < scrollState.maxValue) {
@@ -1089,7 +1108,7 @@ fun PantallaVivienda(
 
 
 @Composable
-fun RotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
+fun rotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
     val painter = rememberAsyncImagePainter(model = imageUri)
 
     var rotation by remember { mutableStateOf(0f) }
@@ -1113,7 +1132,8 @@ fun RotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
     }
 
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize()
+            .padding(top = 8.dp),
         contentAlignment = Alignment.Center
     ) {
         Image(
