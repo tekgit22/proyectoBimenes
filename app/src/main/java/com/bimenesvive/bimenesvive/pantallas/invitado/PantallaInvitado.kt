@@ -118,7 +118,7 @@ fun PantallaInvitado(
 
             Spacer(modifier = Modifier.height(15.dp))
             Button(
-                onClick = { /* TO DO */ },
+                onClick = { /* TO DO , recordar que no puede escribir anuncios */ },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)

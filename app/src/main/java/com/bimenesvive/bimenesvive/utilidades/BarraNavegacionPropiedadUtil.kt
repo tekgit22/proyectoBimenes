@@ -22,10 +22,10 @@ fun NavBarViendoPropiedad(navController: NavHostController) {
             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
     ) {
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_atras), contentDescription = "Menú") },
+            icon = { Icon(painter = painterResource(id = R.drawable.ic_atras), contentDescription = "Explorar") },
             label = { Text("Explorar") },
             selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
-            onClick = { navController.navigate("explorar") }
+            onClick = { navController.popBackStack() }
         )
         NavigationBarItem(
             icon = { Icon(painter = painterResource(id = R.drawable.ic_casa), contentDescription = "Menú") },

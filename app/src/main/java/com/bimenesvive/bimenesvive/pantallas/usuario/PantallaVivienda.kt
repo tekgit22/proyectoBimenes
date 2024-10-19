@@ -71,7 +71,8 @@ fun PantallaVivienda(
     var esImagenGrande by remember { mutableStateOf(false) }
     var imagenSeleccionada by remember { mutableStateOf<Uri?>(null) }
     var showMapDialog by remember { mutableStateOf(false) }
-    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return
+    //val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return
+    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current as Activity
     var ownerUserID by remember { mutableStateOf<String?>(null) }

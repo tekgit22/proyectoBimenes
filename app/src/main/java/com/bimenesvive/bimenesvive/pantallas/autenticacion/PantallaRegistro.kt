@@ -1,5 +1,6 @@
 package com.bimenesvive.bimenesvive.pantallas.autenticacion
 
+import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -113,8 +114,15 @@ fun PantallaRegistro(
 
         Button(
             onClick = {
+                // Validar el formato del email
+                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    Toast.makeText(
+                        context,
+                        "Introduce un email válido",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 // Si el password o el email están vacíos, no permito el registro
-                if (email.isNotEmpty() && password.isNotEmpty()) {
+                }else if (email.isNotEmpty() && password.isNotEmpty()) {
                     authenticationViewModel.registro(email, password)
                 } else {
                     Toast.makeText(
@@ -127,7 +135,7 @@ fun PantallaRegistro(
             //El botón estará enabled siempre que no esté autenticando, así el usuario no puede hacer click varias veces mientras firebase responde
             enabled = authenticationState.value != AuthenticationState.ProcesandoAutentificacion
         ) {
-            Text(text = "Crear Cuenta") //ARCHIVO DE TEXTO
+            Text(text = "Crear Cuenta")
         }
 
         Spacer(modifier = Modifier.height(10.dp))

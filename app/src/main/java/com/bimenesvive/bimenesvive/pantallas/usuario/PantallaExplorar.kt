@@ -407,7 +407,8 @@ fun NavBarInferior(
             },
             label = { Text("Menú") },
             selected = seccionSeleccionada == "menu",
-            onClick = { navController.navigate("inicio") }
+            //onClick = { navController.navigate("inicio") }
+            onClick = { navController.popBackStack() } //reciclable para invitado
         )
         NavigationBarItem(
             icon = {
