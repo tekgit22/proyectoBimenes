@@ -129,7 +129,7 @@ fun PantallaFinca(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black)
+                        .background(Color.White)
                 ) {
                     rotarImagen(
                         imageUri = imagenSeleccionada!!,

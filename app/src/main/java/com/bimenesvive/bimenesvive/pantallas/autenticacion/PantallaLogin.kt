@@ -5,11 +5,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -43,7 +45,7 @@ fun PantallaLogin(
     authenticationViewModel: AuthenticationViewModel
 ) {
     val context = LocalContext.current
-    //recurda que con null sin localcontext la app crashea
+    // recuerda que con null sin localcontext la app crashea
 
     var email by remember {
         mutableStateOf("")
@@ -53,7 +55,20 @@ fun PantallaLogin(
         mutableStateOf("")
     }
 
-    //Estamos observando el estado de la autenticación para cambiar la UI
+    // Dialog para recordar la contraseña
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        recordarPasswordDialog(
+            onDismiss = { showDialog = false },
+            onSendEmail = { email ->
+                // Implement the logic to send the password reset email
+                authenticationViewModel.sendPasswordResetEmail(email,context)
+            }
+        )
+    }
+
+    // Estamos observando el estado de la autenticación para cambiar la UI
     val authenticationState = authenticationViewModel.authenticationState.observeAsState()
 
     LaunchedEffect(authenticationState.value) {
@@ -61,22 +76,21 @@ fun PantallaLogin(
             is AuthenticationState.Autenticado -> navController.navigate("inicio")
             is AuthenticationState.AutentificacionFallida -> {
                 Toast.makeText(context, "Error en la autenticación", Toast.LENGTH_SHORT)
-                    .show() //podría usar el mensaje de error que viene en el estado
-                //y en vez de un toast, mejor usar un snackbar ?
-                //Tengo que mirar cómo diferenciar un error al autenticarse o que pass/email son incorrectos
+                    .show() // podría usar el mensaje de error que viene en el estado
+                // y en vez de un toast, mejor usar un snackbar ?
+                // Tengo que mirar cómo diferenciar un error al autenticarse o que pass/email son incorrectos
 
-                //Hago un reset del estado para que el Toast no salte sin parar si navegamos por la UI
+                // Hago un reset del estado para que el Toast no salte sin parar si navegamos por la UI
                 authenticationViewModel.reiniciarEstadoAutenticacion()
             }
 
             else -> Unit
         }
-
     }
 
-    Box(modifier = modifier.fillMaxSize()) { //Utilizo el box para centrar el contenido
+    Box(modifier = modifier.fillMaxSize()) { // Utilizo el box para centrar el contenido
         Column(
-            //MODIFICAR UI
+            // MODIFICAR UI
             modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -89,7 +103,6 @@ fun PantallaLogin(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-
             Text(text = "INICIAR SESION", fontSize = 35.sp)
             Spacer(modifier = Modifier.height(20.dp))
             OutlinedTextField(
@@ -98,7 +111,7 @@ fun PantallaLogin(
                 },
                 label = { Text("Email") },
                 keyboardOptions = KeyboardOptions(
-                    autoCorrectEnabled = true,
+                    autoCorrect = true,
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
                 )
@@ -113,53 +126,96 @@ fun PantallaLogin(
                 label = { Text("Contraseña") },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
-                    autoCorrectEnabled = false,
+                    autoCorrect = false,
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 )
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = {
-                    // Si el password o el email están vacíos, no permito el login
-                    if (email.isNotEmpty() && password.isNotEmpty()) {
-                        authenticationViewModel.login(email, password)
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Por favor, rellena todos los campos",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                },
-                //El botón estará enabled siempre que no esté autenticando, así el usuario no puede hacer click varias veces mientras firebase responde
-                enabled = authenticationState.value != AuthenticationState.ProcesandoAutentificacion
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Acceder") //ARCHIVO DE TEXTO
+                Button(
+                    onClick = {
+                        // Si el password o el email están vacíos, no permito el login
+                        if (email.isNotEmpty() && password.isNotEmpty()) {
+                            authenticationViewModel.login(email, password)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Por favor, rellena todos los campos",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    },
+                    // El botón estará enabled siempre que no esté autenticando, así el usuario no puede hacer click varias veces mientras firebase responde
+                    enabled = authenticationState.value != AuthenticationState.ProcesandoAutentificacion
+                ) {
+                    Text(text = "Acceder")
+                }
+
+                Button(onClick = { showDialog = true }) {
+                    Text("Olvidé mi contraseña")
+                }
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
             TextButton(onClick = { navController.navigate("registro") }) {
-                Text(text = "Todavía no tengo cuenta, quiero registrarme") //ARCHIVO DE TEXTO
+                Text(text = "Todavía no tengo cuenta, quiero registrarme") // ARCHIVO DE TEXTO
             }
         }
 
-        Box( //Este box está para alojar el TextButton en el fondo de la pantalla
+        Box( // Este box está para alojar el TextButton en el fondo de la pantalla
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = 8.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
             TextButton(onClick = { navController.navigate("invitado") }) {
-                Text(text = "\uD83D\uDC64 Entrar como invitado",
-                color = Color(0xFF8B4513)
+                Text(
+                    text = "\uD83D\uDC64 Entrar como invitado",
+                    color = Color(0xFF8B4513)
                 )
             }
         }
-
-
     }
+}
+
+
+@Composable
+fun recordarPasswordDialog(onDismiss: () -> Unit, onSendEmail: (String) -> Unit) {
+    var email by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "Recuperar Contraseña") },
+        text = {
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Done
+                )
+            )
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                onSendEmail(email)
+                onDismiss()
+            }) {
+                Text("Enviar")
+            }
+        }
+    )
 }

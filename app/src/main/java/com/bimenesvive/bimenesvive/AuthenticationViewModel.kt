@@ -1,9 +1,11 @@
 package com.bimenesvive.bimenesvive
 
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
+import android.content.Context
 
 class AuthenticationViewModel : ViewModel() {
 
@@ -24,6 +26,17 @@ class AuthenticationViewModel : ViewModel() {
         } else {
             _authenticationState.value = AuthenticationState.Autenticado
         }
+    }
+
+    fun sendPasswordResetEmail(email: String, context: Context) {
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(context, "Se envió un correo a tu cuenta", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Se produjo un error, inténtalo más tarde", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 
 
