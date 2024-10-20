@@ -118,7 +118,7 @@ fun PantallaInvitado(
 
             Spacer(modifier = Modifier.height(15.dp))
             Button(
-                onClick = { /* TO DO , recordar que no puede escribir anuncios */ },
+                onClick = { navController.navigate("anuncio") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)

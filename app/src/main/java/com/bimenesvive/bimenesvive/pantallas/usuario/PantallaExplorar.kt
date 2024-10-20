@@ -32,6 +32,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import coil.compose.rememberAsyncImagePainter
 import com.bimenesvive.bimenesvive.utilidades.*
@@ -201,7 +202,7 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
         fotos.value = getFotosViviendaDesdeFirestore(vivienda.documentID)
     }
 
-    val alturaTarjeta = if (fotos.value.isEmpty()) 150.dp else 210.dp
+    val alturaTarjeta = if (fotos.value.isEmpty()) 200.dp else 210.dp
 
     val gradiente = Brush.linearGradient(
         colors = listOf(
@@ -234,7 +235,7 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
                     .padding(16.dp)
             ) {
                 // Título
-                Text(text = vivienda.titulo, style = MaterialTheme.typography.titleMedium)
+                Text(text = vivienda.titulo, style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Foto y datos
@@ -246,7 +247,9 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
                             .size(150.dp)
                             .padding(end = 16.dp)
                     )
-                    Column {
+                    Column(modifier = Modifier
+                        .weight(1f)
+                        .align(Alignment.CenterVertically)) {
                         Text(text = vivienda.parroquia,
                             Modifier.padding(top = 16.dp))
                         Text(text = "${vivienda.habitaciones} ${if (vivienda.habitaciones == 1) "habitación" else "habitaciones"}")
@@ -348,7 +351,7 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
         fotos.value = getFotosFincaDesdeFirestore(finca.documentID)
     }
 
-    val alturaTarjeta = if (fotos.value.isEmpty()) 150.dp else 210.dp
+    val alturaTarjeta = if (fotos.value.isEmpty()) 200.dp else 210.dp
 
     val gradiente = Brush.linearGradient(
         colors = listOf(
@@ -378,7 +381,7 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 // Título
-                Text(text = finca.titulo, style = MaterialTheme.typography.titleMedium)
+                Text(text = finca.titulo, style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Foto y datos

@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostController) {
-    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
     var anuncios by remember { mutableStateOf(listOf<Anuncio>()) }
     var showDialog by remember { mutableStateOf(false) }
     var userAnuncio by remember { mutableStateOf<Anuncio?>(null) }
@@ -41,20 +41,23 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
     Scaffold(
         bottomBar = { NavBarVolverInicio(navController) },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                if (userAnuncio != null) {
-                    borrarAnuncio(userAnuncio!!) // !! = // Lanza NullPointerException si userAnuncio es null
-                    userAnuncio = null
-                    anuncios = anuncios.filter { it.userID != userID } // Actualizo la lista de anuncios, filtro los del usuario para asegurar
+            if (userID != "invitado") {
+                FloatingActionButton(onClick = {
+                    if (userAnuncio != null) {
+                        borrarAnuncio(userAnuncio!!) // !! = // Lanza NullPointerException si userAnuncio es null
+                        userAnuncio = null
+                        anuncios =
+                            anuncios.filter { it.userID != userID } // Actualizo la lista de anuncios, filtro los del usuario para asegurar
                         // que no aparezca el anuncio que acabo de borrar, en caso de que Firebase tardase en actualizar
-                } else {
-                    showDialog = true
+                    } else {
+                        showDialog = true
+                    }
+                }) {
+                    Icon(
+                        imageVector = if (userAnuncio != null) Icons.Default.Delete else Icons.Default.Add,
+                        contentDescription = if (userAnuncio != null) "Borrar Anuncio" else "Añadir Anuncio"
+                    )
                 }
-            }) {
-                Icon(
-                    imageVector = if (userAnuncio != null) Icons.Default.Delete else Icons.Default.Add,
-                    contentDescription = if (userAnuncio != null) "Borrar Anuncio" else "Añadir Anuncio"
-                )
             }
         },
         floatingActionButtonPosition = FabPosition.End
@@ -79,8 +82,12 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 itemsIndexed(anuncios) { index, anuncio ->
-                    val colorIndex = index % backgroundColors.size // Cambia el color de fondo de cada anuncio
-                    CardAnuncio(anuncio, backgroundColors[colorIndex]) // Paso el color de fondo por parámetro
+                    val colorIndex =
+                        index % backgroundColors.size // Cambia el color de fondo de cada anuncio
+                    CardAnuncio(
+                        anuncio,
+                        backgroundColors[colorIndex]
+                    ) // Paso el color de fondo por parámetro
                 }
             }
         }
@@ -88,7 +95,8 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
 
     if (showDialog) {
         AnuncioDialog(onDismiss = { showDialog = false }) { newAnuncio ->
-            val nuevoAnuncio = newAnuncio.copy(userID = userID) //nuevo anuncio con el userID del usuario actual
+            val nuevoAnuncio =
+                newAnuncio.copy(userID = userID) //nuevo anuncio con el userID del usuario actual
             addAnuncio(nuevoAnuncio)
             anuncios = anuncios + nuevoAnuncio
             userAnuncio = nuevoAnuncio
@@ -106,7 +114,8 @@ suspend fun importarAnunciosFireBase(): List<Anuncio> {
             .collection("anuncios")
             .get()
             .await()
-        val anuncios = snapshot.documents.mapNotNull { it.toObject(Anuncio::class.java) } // Convierte los documentos en objetos de la clase Anuncio
+        val anuncios =
+            snapshot.documents.mapNotNull { it.toObject(Anuncio::class.java) } // Convierte los documentos en objetos de la clase Anuncio
         return anuncios    // Devuelve la lista de anuncios (puedo omitir la palabra return)
     } catch (e: Exception) {
         emptyList()

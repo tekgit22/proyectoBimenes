@@ -25,13 +25,27 @@ fun NavBarViendoPropiedad(navController: NavHostController) {
             icon = { Icon(painter = painterResource(id = R.drawable.ic_atras), contentDescription = "Explorar") },
             label = { Text("Explorar") },
             selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
-            onClick = { navController.popBackStack() }
+            //onClick = { navController.navigate("explorar") }
+            onClick = {
+                navController.navigate("explorar") {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                }
+            }
         )
         NavigationBarItem(
             icon = { Icon(painter = painterResource(id = R.drawable.ic_casa), contentDescription = "Menú") },
             label = { Text("Menú") },
             selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
-            onClick = { navController.navigate("inicio") }
+            //onClick = { navController.navigate("inicio") }
+            onClick = {
+                navController.navigate("inicio") {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                }
+            }
         )
     }
 }
