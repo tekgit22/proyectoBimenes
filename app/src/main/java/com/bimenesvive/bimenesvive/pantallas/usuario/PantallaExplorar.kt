@@ -29,12 +29,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.Color
 import coil.compose.rememberAsyncImagePainter
 import com.bimenesvive.bimenesvive.utilidades.*
 import androidx.compose.ui.graphics.Brush
-
+import com.bimenesvive.bimenesvive.AuthenticationState
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
 
 
 // UI de la pantalla de explorar
@@ -46,9 +50,46 @@ fun PantallaExplorar(
 ) {
     var propiedades by remember { mutableStateOf<List<Any>>(emptyList()) } // Lista de propiedades de Card, si quiero que sean distintas es necesario
     var inmuebleSeleccionado by remember { mutableStateOf("viviendas") } // Controla la selección del navbar inferior, viviendas está seleccionado por defecto
-    val scope =
-        rememberCoroutineScope() // Las corrutinas son hilos de ejecución que se pueden pausar y reanudar
+    val scope = rememberCoroutineScope() // Las corrutinas son hilos de ejecución que se pueden pausar y reanudar
     val context = LocalContext.current
+//    val authenticationState by authenticationViewModel.authenticationState.observeAsState()
+//    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
+//
+//
+//    /**
+//     * Este LaunchEffect está ligado al listener que controla cambios en la autentificación,
+//     * Si un usuario está logado y su conexión pasa a ser desautenticada, se le redirige a la pantalla de login
+//     */
+//    LaunchedEffect(authenticationState) {
+//        if (userID != "invitado") { // Si es invitado, ignoro el estado de autenticación
+//            if (authenticationState is AuthenticationState.Desautenticado) {
+//                Toast.makeText(context, "Tu sesión ha expirado", Toast.LENGTH_SHORT).show()
+//                //Envío al usuario a la pantalla de login
+//                navController.navigate("login") {
+//                    // Borro todas las pantallas del backstack, así no podrá volver a esta pantalla sin logarse
+//                    popUpTo(navController.graph.startDestinationId) {
+//                        inclusive = true
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+
+//    val estadoAutentificacion = authenticationViewModel.authenticationState.observeAsState()
+//    LaunchedEffect(estadoAutentificacion.value) {
+//        when (estadoAutentificacion.value) {
+//            is AuthenticationState.Desautenticado -> {
+//                Toast.makeText(context, "Tu sesión ha expirado", Toast.LENGTH_SHORT).show()
+//                navController.navigate("login") {
+//                    popUpTo(navController.graph.startDestinationId) {
+//                        inclusive = true
+//                    }
+//                }
+//            }
+//            else -> Unit
+//        }
+//    }
 
     // LaunchedEffect se ejecuta cuando se compone por primera vez y cuando selectedTab cambia
     LaunchedEffect(inmuebleSeleccionado) {

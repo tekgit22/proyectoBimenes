@@ -13,9 +13,15 @@ class AuthenticationViewModel : ViewModel() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     //el _ privado es necesario para las variables privadas que tienen un LiveData de una variable publica asociada
     private val _authenticationState = MutableLiveData<AuthenticationState>()
-    val authenticationState: LiveData<AuthenticationState> = _authenticationState //
+    val authenticationState: LiveData<AuthenticationState> = _authenticationState
 
-    //
+    /** variable _privada con una pública asociada:
+     * Mantiene la encapsulación de la variable privada y permite que la variable pública sea mutable
+     * Esto asegura que solo el ViewModel pueda cambiar el estado de autenticación
+     * El resto de la app (las otras clases) sólo pueden observar el estado de autenticación
+     */
+
+
     init {
         comprobarEstadoAutenticacion()
     }
@@ -28,7 +34,7 @@ class AuthenticationViewModel : ViewModel() {
         }
     }
 
-    fun sendPasswordResetEmail(email: String, context: Context) {
+    fun enviarCorreoRecordarPassword(email: String, context: Context) {
         auth.sendPasswordResetEmail(email)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -98,8 +104,6 @@ sealed class AuthenticationState {
     object Autenticado : AuthenticationState()
     object ProcesandoAutentificacion : AuthenticationState()
     data class AutentificacionFallida(val message: String) : AuthenticationState()
-    //data class genera automáticamente equals, hashcode, toString, copy
-    //lo estoy utilizando para trasladar un mensaje de error, puedo refactorizar y simplificar
-
-
 }
+//data class genera automáticamente equals, hashcode, toString, copy
+//lo estoy utilizando para trasladar un mensaje de error, puedo refactorizar y simplificar

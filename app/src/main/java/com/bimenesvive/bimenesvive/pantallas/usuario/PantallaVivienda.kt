@@ -57,6 +57,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
 import com.bimenesvive.bimenesvive.modelo.EstadoPropiedad
 
 
@@ -356,10 +359,31 @@ fun PantallaVivienda(
                     }
                     Spacer(modifier = Modifier.height(15.dp))
                     Column {
+//                        LazyRow(state = listState) {
+//                            items(imageUris) { uri ->
+//                                Image(
+//                                    painter = rememberAsyncImagePainter(uri),
+//                                    contentDescription = null,
+//                                    modifier = Modifier
+//                                        .size(128.dp)
+//                                        .padding(4.dp)
+//                                        .clickable {
+//                                            imagenSeleccionada = uri
+//                                            esImagenGrande = true
+//                                        }
+//                                )
+//                            }
+//                        }
                         LazyRow(state = listState) {
                             items(imageUris) { uri ->
                                 Image(
-                                    painter = rememberAsyncImagePainter(uri),
+                                    painter = rememberAsyncImagePainter(
+                                        ImageRequest.Builder(
+                                            LocalContext.current
+                                        ).data(data = uri).apply(block = fun ImageRequest.Builder.() {
+                                            transformations(CircleCropTransformation())
+                                        }).build()
+                                    ),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(128.dp)

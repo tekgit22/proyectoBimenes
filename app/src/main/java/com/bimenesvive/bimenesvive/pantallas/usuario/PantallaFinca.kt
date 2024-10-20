@@ -45,6 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
 import com.bimenesvive.bimenesvive.modelo.EstadoPropiedad
 import com.bimenesvive.bimenesvive.modelo.Finca
 import com.bimenesvive.bimenesvive.utilidades.checkLocationPermission
@@ -69,7 +72,7 @@ fun PantallaFinca(
     // var showMapDialog by remember { mutableStateOf(false) }
     var imagenSeleccionada by remember { mutableStateOf<Uri?>(null) }
     var esImagenGrande by remember { mutableStateOf(false) }
-    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return
+    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current as Activity
     var ownerUserID by remember { mutableStateOf<String?>(null) }
@@ -277,7 +280,7 @@ fun PantallaFinca(
                         )
                         AssistChip(
                             onClick = {},
-                            label = { Text("Edificable: ${if (finca?.edificable == true) "Sí" else "No"}") },
+                            label = { Text(if (finca?.edificable == true) "Edificable" else "No edificable") },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Home,
@@ -360,10 +363,31 @@ fun PantallaFinca(
                     Spacer(modifier = Modifier.height(15.dp))
 
                     Column {
+//                        LazyRow(state = listState) {
+//                            items(imageUris) { uri ->
+//                                Image(
+//                                    painter = rememberAsyncImagePainter(uri),
+//                                    contentDescription = null,
+//                                    modifier = Modifier
+//                                        .size(128.dp)
+//                                        .padding(4.dp)
+//                                        .clickable {
+//                                            imagenSeleccionada = uri
+//                                            esImagenGrande = true
+//                                        }
+//                                )
+//                            }
+//                        }
                         LazyRow(state = listState) {
                             items(imageUris) { uri ->
                                 Image(
-                                    painter = rememberAsyncImagePainter(uri),
+                                    painter = rememberAsyncImagePainter(
+                                        ImageRequest.Builder(
+                                            LocalContext.current
+                                        ).data(data = uri).apply(block = fun ImageRequest.Builder.() {
+                                            transformations(CircleCropTransformation())
+                                        }).build()
+                                    ),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(128.dp)

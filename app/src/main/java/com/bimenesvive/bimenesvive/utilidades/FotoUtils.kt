@@ -25,6 +25,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import coil.transform.CircleCropTransformation
 
 
 /**
@@ -162,6 +163,7 @@ fun ImagenConPlaceholder(uri: Uri, modifier: Modifier = Modifier) {
             .size(Size.ORIGINAL)
             .placeholder(R.drawable.loading_spinner)
             .crossfade(true)
+            .transformations(CircleCropTransformation())
             .build()
     )
 

@@ -59,11 +59,11 @@ fun PantallaLogin(
     var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
-        recordarPasswordDialog(
+        RecordarPasswordDialog(
             onDismiss = { showDialog = false },
             onSendEmail = { email ->
-                // Implement the logic to send the password reset email
-                authenticationViewModel.sendPasswordResetEmail(email,context)
+                // lógica para enviar el email
+                authenticationViewModel.enviarCorreoRecordarPassword(email,context)
             }
         )
     }
@@ -101,7 +101,7 @@ fun PantallaLogin(
                 modifier = Modifier.height(100.dp)
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(text = "INICIAR SESION", fontSize = 35.sp)
             Spacer(modifier = Modifier.height(20.dp))
@@ -111,13 +111,13 @@ fun PantallaLogin(
                 },
                 label = { Text("Email") },
                 keyboardOptions = KeyboardOptions(
-                    autoCorrect = true,
+                    autoCorrectEnabled = true,
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
                 )
             )
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = password, onValueChange = {
@@ -126,7 +126,7 @@ fun PantallaLogin(
                 label = { Text("Contraseña") },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
-                    autoCorrect = false,
+                    autoCorrectEnabled = false,
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 )
@@ -162,7 +162,7 @@ fun PantallaLogin(
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             TextButton(onClick = { navController.navigate("registro") }) {
                 Text(text = "Todavía no tengo cuenta, quiero registrarme") // ARCHIVO DE TEXTO
@@ -187,7 +187,7 @@ fun PantallaLogin(
 
 
 @Composable
-fun recordarPasswordDialog(onDismiss: () -> Unit, onSendEmail: (String) -> Unit) {
+fun RecordarPasswordDialog(onDismiss: () -> Unit, onSendEmail: (String) -> Unit) {
     var email by remember { mutableStateOf("") }
 
     AlertDialog(
