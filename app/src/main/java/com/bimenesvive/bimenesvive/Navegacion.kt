@@ -16,6 +16,7 @@ import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaExplorar
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaFinca
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaMisPropiedades
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaSubirPropiedad
+import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaTransados
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaVivienda
 
 
@@ -60,6 +61,9 @@ fun Navegacion(modifier: Modifier = Modifier, authenticationViewModel: Authentic
         }
         composable("mispropiedades") {
             PantallaMisPropiedades(modifier, navController)
+        }
+        composable("transados") {
+            PantallaTransados(modifier, navController)
         }
 
     })

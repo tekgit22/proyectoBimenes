@@ -124,70 +124,9 @@ fun PantallaExplorar(
 }
 
 
-//Tarjeta vivienda
-//@Composable
-//fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
-//    val fotos = remember { mutableStateOf<List<Uri>>(emptyList()) }
-//    val coroutineScope = rememberCoroutineScope() // Lo necesito para lanzar la corrutina que sube las visitas
-//
-//
-//    LaunchedEffect(vivienda.documentID) {
-//        fotos.value = getFotosViviendaDesdeFirestore(vivienda.documentID)
-//    }
-//
-//    val cardHeight = if (fotos.value.isEmpty()) 150.dp else 210.dp
-//
-//    Card(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(8.dp)
-//            .height(cardHeight)
-//            .clickable {
-//                coroutineScope.launch {
-//                    subirVisitaVivienda(vivienda.documentID)
-//                    navController.navigate("vivienda/${vivienda.documentID}")
-//                }
-//            },
-//        shape = RoundedCornerShape(8.dp),
-//        elevation = CardDefaults.cardElevation(5.dp),
-//        colors = CardDefaults.cardColors(containerColor = Color(0xFFBBDEFB))
-//    ) {
-//        Column(
-//            modifier = Modifier
-//                .padding(16.dp)
-//        ) {
-//            // Título
-//            Text(text = vivienda.titulo, style = MaterialTheme.typography.bodyLarge)
-//            Spacer(modifier = Modifier.height(16.dp))
-//
-//            // Foto y datos
-//            Row {
-////                Image(
-////                    painter = rememberAsyncImagePainter(fotos.value.firstOrNull() ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto")),
-////                    contentDescription = null,
-////                    modifier = Modifier
-////                        .size(150.dp)
-////                        .padding(end = 16.dp),
-////                    contentScale = ContentScale.Fit
-////                )
-//                ImagenConPlaceholder(
-//                    uri = fotos.value.firstOrNull()
-//                        ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto"),
-//                    modifier = Modifier
-//                        .size(150.dp)
-//                        .padding(end = 16.dp)
-//                )
-//                Column {
-//                    Text(text = vivienda.parroquia)
-//                    Text(text = "${vivienda.habitaciones} habitaciones")
-//                    Text(text = "${vivienda.metros} metros²")
-//                }
-//            }
-//        }
-//    }
-//}
 
 
+// Tarjeta vivienda
 @Composable
 fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
     val fotos = remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -259,84 +198,7 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
     }
 }
 
-//Tarjeta de la finca
-//@Composable
-//fun FincaItem(finca: Finca, navController: NavHostController) {
-//    val fotos = remember { mutableStateOf<List<Uri>>(emptyList()) }
-//
-//    LaunchedEffect(finca.documentID) {
-//        fotos.value = getFotosFincaDesdeFirestore(finca.documentID)
-//    }
-//
-//    val cardHeight = if (fotos.value.isEmpty()) 150.dp else 210.dp
-//
-//    Card(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(8.dp)
-//            .height(cardHeight)
-//            .clickable {
-//                navController.navigate("finca/${finca.documentID}")
-//            },
-//        shape = RoundedCornerShape(8.dp),
-//        elevation = CardDefaults.cardElevation(5.dp),
-//        colors = CardDefaults.cardColors(containerColor = Color(0xFFC8E6C9))
-//    ) {
-//        Column(modifier = Modifier.padding(16.dp)) {
-//            // Título
-//            Text(text = finca.titulo, style = MaterialTheme.typography.bodyLarge)
-//            Spacer(
-//                modifier = Modifier
-//                    .height(16.dp)
-//            )
-//
-//            // Foto y datos
-//            Row {
-////                Image(
-////                    painter = rememberAsyncImagePainter(fotos.value.firstOrNull() ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto")),
-////                    contentDescription = null,
-////                    modifier = Modifier
-////                        .size(150.dp)
-////                        .padding(end = 16.dp),
-////                    contentScale = ContentScale.Fit
-////                )
-//
-//                // CON DP
-////                ImagenConPlaceholder(
-////                    uri = fotos.value.firstOrNull()
-////                        ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto"),
-////                    modifier = Modifier
-////                        .size(250.dp)
-////                        .padding(end = 16.dp)
-////                )
-////                Column {
-////                    Text(text = finca.parroquia)
-////                    Text(text = "Metros: ${finca.metros}")
-////                    Text(text = "Edificable: ${if (finca.edificable) "Sí" else "No"}")
-////                }
-//
-//                //CON WEIGHT
-//                ImagenConPlaceholder(
-//                    uri = fotos.value.firstOrNull()
-//                        ?: Uri.parse("android.resource://com.bimenesvive.bimenesvive/drawable/nofoto"),
-//                    modifier = Modifier
-//                        .weight(1f)
-//                        .padding(end = 16.dp)
-//                )
-//                Column(
-//                    modifier = Modifier
-//                        .weight(1f)
-//                        .wrapContentSize()
-//                ) {
-//                    Text(text = finca.parroquia)
-//                    Text(text = "Metros: ${finca.metros}")
-//                    Text(text = if (finca.edificable) "Edificable" else "No edificable")
-//                }
-//            }
-//        }
-//    }
-//}
-
+// Tarjeta finca
 @Composable
 fun FincaItem(finca: Finca, navController: NavHostController) {
     val fotos = remember { mutableStateOf<List<Uri>>(emptyList()) }

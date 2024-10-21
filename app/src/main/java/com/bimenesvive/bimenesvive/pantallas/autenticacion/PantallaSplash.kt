@@ -35,6 +35,6 @@ fun PantallaSplash(navController: NavController, authenticationViewModel: Authen
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Image(painter = painterResource(id = R.drawable.logoapp), contentDescription = "Logo")
+        Image(painter = painterResource(id = R.drawable.logotest), contentDescription = "Logo")
     }
 }

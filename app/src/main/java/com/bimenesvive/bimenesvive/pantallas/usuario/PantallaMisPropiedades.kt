@@ -60,12 +60,12 @@ fun PantallaMisPropiedades(modifier: Modifier = Modifier, navController: NavHost
 }
 
 suspend fun cargarPropiedades(userID: String): List<Any> {
-    val viviendas = getViviendas(userID)
-    val fincas = getFincas(userID)
+    val viviendas = getMisViviendas(userID)
+    val fincas = getMisFincas(userID)
     return viviendas + fincas
 }
 
-suspend fun getViviendas(userID: String): List<Vivienda> {
+suspend fun getMisViviendas(userID: String): List<Vivienda> {
     val db = FirebaseFirestore.getInstance()
     return try {
         val resultadoConsulta = db.collection("viviendas")
@@ -78,7 +78,7 @@ suspend fun getViviendas(userID: String): List<Vivienda> {
     }
 }
 
-suspend fun getFincas(userID: String): List<Finca> {
+suspend fun getMisFincas(userID: String): List<Finca> {
     val db = FirebaseFirestore.getInstance()
     return try {
         val resultadoConsulta = db.collection("fincas")

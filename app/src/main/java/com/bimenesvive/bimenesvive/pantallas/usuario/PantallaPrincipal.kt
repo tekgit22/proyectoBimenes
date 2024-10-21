@@ -34,7 +34,9 @@ import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Park
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
@@ -44,6 +46,8 @@ fun PantallaPrincipal(
     authenticationViewModel: AuthenticationViewModel
 ) {
     val authenticationState = authenticationViewModel.authenticationState.observeAsState()
+    val userID = FirebaseAuth.getInstance().currentUser?.uid
+    val adminID = "4wOzuh8c8GhYeP3qbgn6Ja888F02"
 
     LaunchedEffect(authenticationState.value) {
         when (authenticationState.value) {
@@ -52,82 +56,97 @@ fun PantallaPrincipal(
         }
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
         // Título
-        Box(
-            modifier = Modifier
-                .padding(8.dp)
-                .align(Alignment.TopCenter)
-        ) {
-            Image(painter = painterResource(id = R.drawable.logotest), contentDescription = "Logo")
-        }
+        Image(
+            painter = painterResource(id = R.drawable.logotest),
+            contentDescription = "Logo",
+            modifier = Modifier.padding(8.dp)
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
 
         // Botones centrados
-        Column(
+        Button(
+            onClick = { navController.navigate("explorar") },
             modifier = Modifier
-                .align(Alignment.Center)
-                .padding(top = 32.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         ) {
-            Button(
-                onClick = { navController.navigate("explorar") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Default.Home, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Ver Inmuebles")
-                }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(imageVector = Icons.Default.Home, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Ver Inmuebles")
             }
+        }
 
+        Spacer(modifier = Modifier.height(15.dp))
+        Button(
+            onClick = { navController.navigate("subirPropiedad") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(imageVector = Icons.Default.CloudUpload, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Subir Propiedad")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(15.dp))
+        Button(
+            onClick = { navController.navigate("mispropiedades") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(imageVector = Icons.AutoMirrored.Filled.Assignment, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Mis Propiedades")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(15.dp))
+        Button(
+            onClick = { navController.navigate("bimenes") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(imageVector = Icons.Default.Park, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Conoce Bimenes")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(15.dp))
+        Button(
+            onClick = { navController.navigate("anuncio") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(imageVector = Icons.Default.AutoStories, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Tablón de Anuncios")
+            }
+        }
+
+        if (userID == adminID) {
             Spacer(modifier = Modifier.height(15.dp))
             Button(
-                onClick = { navController.navigate("subirPropiedad") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Default.CloudUpload, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Subir Propiedad")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(15.dp))
-            Button(
-                onClick = { navController.navigate("mispropiedades") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.Assignment, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Mis Propiedades")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(15.dp))
-            Button(
-                onClick = { navController.navigate("bimenes") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Default.Park, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Conoce Bimenes")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(15.dp))
-            Button(
-                onClick = { navController.navigate("anuncio") },
+                onClick = { navController.navigate("transados") },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0)),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -135,23 +154,23 @@ fun PantallaPrincipal(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(imageVector = Icons.Default.AutoStories, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Tablón de Anuncios")
+                    Text(text = "Inmuebles Transados")
                 }
             }
         }
-    }
 
-    // Botón de logoff en la parte inferior
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 8.dp),
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        TextButton(onClick = {
-            authenticationViewModel.cerrarSesion()
-            navController.navigate("login")
-        }) {
+        Spacer(modifier = Modifier.weight(1f))
+        //Este spacer se encarga de que los botones anteriores no se peguen al borde inferior de la pantalla
+
+
+        // Botón de logoff en la parte inferior
+        TextButton(
+            onClick = {
+                authenticationViewModel.cerrarSesion()
+                navController.navigate("login")
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
             Text(text = "Cerrar sesión")
         }
     }
