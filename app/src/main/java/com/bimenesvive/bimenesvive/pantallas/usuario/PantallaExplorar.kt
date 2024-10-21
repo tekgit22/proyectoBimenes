@@ -15,13 +15,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.bimenesvive.bimenesvive.AuthenticationViewModel
 import com.bimenesvive.bimenesvive.R
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.*
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import com.bimenesvive.bimenesvive.modelo.Finca
 import com.bimenesvive.bimenesvive.modelo.Vivienda
@@ -34,12 +32,9 @@ import androidx.compose.foundation.background
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import coil.compose.rememberAsyncImagePainter
 import com.bimenesvive.bimenesvive.utilidades.*
 import androidx.compose.ui.graphics.Brush
-import com.bimenesvive.bimenesvive.AuthenticationState
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
 
 
 // UI de la pantalla de explorar
@@ -437,6 +432,8 @@ fun NavBarInferior(
     seccionSeleccionada: String,
     alSeleccionarSeccion: (String) -> Unit
 ) {
+    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
+
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
@@ -451,8 +448,14 @@ fun NavBarInferior(
             },
             label = { Text("Menú") },
             selected = seccionSeleccionada == "menu",
-            //onClick = { navController.navigate("inicio") }
-            onClick = { navController.popBackStack() } //reciclable para invitado
+            onClick = {
+                if (userID == "invitado") {
+                    navController.navigate("invitado")
+                } else {
+                    navController.navigate("inicio")
+                }
+            }
+
         )
         NavigationBarItem(
             icon = {
