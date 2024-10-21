@@ -235,14 +235,14 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
         )
         TextField(
-            value = habitaciones.toString(),
+            value = if (habitaciones == 0) "" else habitaciones.toString(),
             onValueChange = { habitaciones = it.toIntOrNull() ?: 0 },
             label = { Text("Habitaciones") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
         )
         TextField(
-            value = metros.toString(),
+            value = if (metros == 0) "" else metros.toString(),
             onValueChange = { metros = it.toIntOrNull() ?: 0 },
             label = { Text("Metros cuadrados") },
             modifier = Modifier.fillMaxWidth(),
@@ -420,7 +420,7 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
         )
         TextField(
-            value = metros.toString(),
+            value = if (metros == 0) "" else metros.toString(),
             onValueChange = { metros = it.toIntOrNull() ?: 0 },
             label = { Text("Metros cuadrados") },
             modifier = Modifier.fillMaxWidth(),
