@@ -22,7 +22,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.AddLocationAlt
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Euro
 import androidx.compose.material.icons.filled.Home
@@ -363,30 +366,16 @@ fun PantallaFinca(
                     Spacer(modifier = Modifier.height(15.dp))
 
                     Column {
-//                        LazyRow(state = listState) {
-//                            items(imageUris) { uri ->
-//                                Image(
-//                                    painter = rememberAsyncImagePainter(uri),
-//                                    contentDescription = null,
-//                                    modifier = Modifier
-//                                        .size(128.dp)
-//                                        .padding(4.dp)
-//                                        .clickable {
-//                                            imagenSeleccionada = uri
-//                                            esImagenGrande = true
-//                                        }
-//                                )
-//                            }
-//                        }
                         LazyRow(state = listState) {
                             items(imageUris) { uri ->
                                 Image(
                                     painter = rememberAsyncImagePainter(
                                         ImageRequest.Builder(
                                             LocalContext.current
-                                        ).data(data = uri).apply(block = fun ImageRequest.Builder.() {
-                                            transformations(CircleCropTransformation())
-                                        }).build()
+                                        ).data(data = uri)
+                                            .apply(block = fun ImageRequest.Builder.() {
+                                                transformations(CircleCropTransformation())
+                                            }).build()
                                     ),
                                     contentDescription = null,
                                     modifier = Modifier
@@ -450,20 +439,78 @@ fun PantallaFinca(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Column {
-                        if (userID == finca?.userID) {
+
+                    //BOTONES
+
+                    if (userID == finca?.userID) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Button(
+                                onClick = { launcher.launch("image/*") },
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AddAPhoto,
+                                    contentDescription = "Icono subir foto"
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Subir")
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
                             Button(
                                 onClick = {
-                                    launcher.launch("image/*")
+                                    // Verificar permisos de ubicación antes de guardar la localización
+                                    if (checkLocationPermission(context as Activity)) {
+                                        Log.d(
+                                            "PantallaFinca",
+                                            "Permiso de ubicación concedido, guardando localización"
+                                        )
+                                        saveFincaLocation(finca!!, context, documentID) {
+                                            // Refrescar la UI después de guardar la localización
+                                            coroutineScope.launch {
+                                                finca = getFincaById(documentID)
+                                            }
+                                        }
+                                    } else {
+                                        Log.d(
+                                            "PantallaFinca",
+                                            "Permiso de ubicación no concedido"
+                                        )
+                                    }
                                 },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
+                                modifier = Modifier.weight(1f),
                             ) {
-                                Text("Subir Foto")
+                                Icon(
+                                    imageVector = Icons.Default.AddLocationAlt,
+                                    contentDescription = "Icono guardar localización"
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Guardar")
                             }
                         }
                     }
+
+
+//                    Column {
+//                        if (userID == finca?.userID) {
+//                            Button(
+//                                onClick = {
+//                                    launcher.launch("image/*")
+//                                },
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .padding(horizontal = 16.dp)
+//                            ) {
+//                                Text("Subir Foto")
+//                            }
+//                        }
+//                    }
+//
+
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -503,116 +550,148 @@ fun PantallaFinca(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Column {
-                        if (userID == finca?.userID) {
-                            Button(
-                                onClick = {
-                                    if (checkLocationPermission(context as Activity)) {
-                                        saveFincaLocation(finca!!, context, documentID) {
-                                            coroutineScope.launch {
-                                                finca = getFincaById(documentID)
-                                            }
-                                        }
-                                    }
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
-                            ) {
-                                Text("Guardar Localización")
-                            }
-                        }
-                    }
+//                    Column {
+//                        if (userID == finca?.userID) {
+//                            Button(
+//                                onClick = {
+//                                    if (checkLocationPermission(context as Activity)) {
+//                                        saveFincaLocation(finca!!, context, documentID) {
+//                                            coroutineScope.launch {
+//                                                finca = getFincaById(documentID)
+//                                            }
+//                                        }
+//                                    }
+//                                },
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .padding(horizontal = 16.dp)
+//                            ) {
+//                                Text("Guardar Localización")
+//                            }
+//                        }
+//                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     if (userID == finca?.userID) {
-                        Button(
-                            onClick = {
-                                try {
-                                    borrarAnuncio(
-                                        userID,
-                                        documentID,
-                                        imageUris,
-                                        context,
-                                        navController
-                                    )
-                                } catch (e: Exception) {
-                                    Log.e(
-                                        "PantallaFinca",
-                                        "Error al borrar el anuncio: ${e.message}"
-                                    )
-                                    Toast.makeText(
-                                        context,
-                                        "Error al borrar el anuncio",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            },
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
+                                .padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text("Borrar Anuncio")
+                            Button(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        try {
+                                            fincaTransada(documentID)
+                                            Toast.makeText(
+                                                context,
+                                                "El anuncio se ha archivado",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            navController.navigate("inicio") {
+                                                popUpTo(navController.graph.startDestinationId) {
+                                                    inclusive = true
+                                                }
+                                            }
+                                        } catch (e: Exception) {
+                                            Log.e(
+                                                "PantallaFinca",
+                                                "Error al cambiar disponibilidad: ${e.message}"
+                                            )
+                                            Toast.makeText(
+                                                context,
+                                                "Error al marcar como transada",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF4CAF50)
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Euro, // Replace with your desired icon
+                                    contentDescription = "Símbolo €"
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Transado")
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Button(
+                                onClick = {
+                                    try {
+                                        borrarAnuncio(
+                                            userID,
+                                            documentID,
+                                            imageUris,
+                                            context,
+                                            navController
+                                        )
+                                    } catch (e: Exception) {
+                                        Log.e(
+                                            "PantallaFinca",
+                                            "Error al borrar el anuncio: ${e.message}"
+                                        )
+                                        Toast.makeText(
+                                            context,
+                                            "Error al borrar el anuncio: ${e.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFF44336)
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Icono papelera"
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Borrar")
+                            }
                         }
                     }
 
-//                if (showImageDialog) {
-//                    AlertDialog(
-//                        onDismissRequest = { showImageDialog = false },
-//                        text = {
-//                            imagenSeleccionada?.let { uri ->
-//                                RotarImagen(imageUri = uri)
-//                            }
-//                        },
-//                        confirmButton = {
-//                            TextButton(onClick = { showImageDialog = false }) {
-//                                Text("Cerrar")
-//                            }
-//                        }
-//                    )
-//                }
 
-//                if (showMapDialog) {
-//                    AlertDialog(
-//                        onDismissRequest = { showMapDialog = false },
-//                        text = {
-//                            AndroidView(factory = { context ->
-//                                MapView(context).apply {
-//                                    Configuration.getInstance().load(
+//                    if (userID == finca?.userID) {
+//                        Button(
+//                            onClick = {
+//                                try {
+//                                    borrarAnuncio(
+//                                        userID,
+//                                        documentID,
+//                                        imageUris,
 //                                        context,
-//                                        PreferenceManager.getDefaultSharedPreferences(context)
+//                                        navController
 //                                    )
-//                                    controller.setZoom(18.0)
-//                                    finca?.localizacion?.let { geoPoint ->
-//                                        val startPoint = GeoPoint(geoPoint.latitude, geoPoint.longitude)
-//                                        controller.setCenter(startPoint)
-//                                        val marker = Marker(this)
-//                                        marker.position = startPoint
-//                                        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-//                                        marker.setOnMarkerClickListener { _, _ ->
-//                                            Toast.makeText(
-//                                                context,
-//                                                "Localización: ${geoPoint.latitude}, ${geoPoint.longitude}",
-//                                                Toast.LENGTH_SHORT
-//                                            ).show()
-//                                            true
-//                                        }
-//                                        overlays.add(marker)
-//                                    }
+//                                } catch (e: Exception) {
+//                                    Log.e(
+//                                        "PantallaFinca",
+//                                        "Error al borrar el anuncio: ${e.message}"
+//                                    )
+//                                    Toast.makeText(
+//                                        context,
+//                                        "Error al borrar el anuncio",
+//                                        Toast.LENGTH_SHORT
+//                                    ).show()
 //                                }
-//                            })
-//                        },
-//                        confirmButton = {
-//                            TextButton(onClick = { showMapDialog = false }) {
-//                                Text("Cerrar")
-//                            }
+//                            },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(horizontal = 16.dp)
+//                        ) {
+//                            Text("Borrar Anuncio")
 //                        }
-//                    )
+//                    }
 //                }
+
                 }
-
-
                 // Gradiente en la parte inferior
                 if (scrollState.value < scrollState.maxValue) {
                     Box(
@@ -636,8 +715,6 @@ fun PantallaFinca(
     }
 }
 
-
-private const val REQUEST_CODE_SELECT_IMAGE = 1001
 
 private fun borrarAnuncio(
     userID: String,

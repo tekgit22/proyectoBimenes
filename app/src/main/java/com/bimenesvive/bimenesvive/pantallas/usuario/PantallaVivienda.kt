@@ -425,6 +425,10 @@ fun PantallaVivienda(
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
+
+                    //Primera row de botones
+
+
                     if (userID == vivienda?.userID) {
                         Row(
                             modifier = Modifier
