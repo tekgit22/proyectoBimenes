@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
+import com.bimenesvive.bimenesvive.componentes.TextLimiteTitulo
 import com.bimenesvive.bimenesvive.modelo.EstadoPropiedad
 
 
@@ -220,13 +221,23 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+//        Text(
+//            text = "${titulo.length} / 30",
+//            style = MaterialTheme.typography.bodySmall,
+//            color = if (titulo.length == 30) Color.Red else Color.Gray,
+//            modifier = Modifier.align(Alignment.End).padding(end = 16.dp)
+//        )
+
+        TextLimiteTitulo(currentLength = titulo.length, maxLength = 30)
+
         TextField(
             value = titulo,
-            onValueChange = { titulo = it },
+            onValueChange = { if (it.length <= 30) titulo = it },
             label = { Text("Título") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
         )
+
         TextField(
             value = descripcion,
             onValueChange = { descripcion = it },
@@ -404,6 +415,9 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+
+        TextLimiteTitulo(currentLength = titulo.length, maxLength = 30)
 
         TextField(
             value = titulo,
