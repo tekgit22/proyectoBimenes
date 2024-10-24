@@ -68,6 +68,7 @@ fun PantallaSubirPropiedad(
 }
 
 
+
 //@Composable
 //fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
 //    var titulo by remember { mutableStateOf("") }
