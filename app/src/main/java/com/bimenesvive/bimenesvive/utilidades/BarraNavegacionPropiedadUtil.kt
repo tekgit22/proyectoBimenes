@@ -13,6 +13,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.bimenesvive.bimenesvive.R
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun NavBarViendoPropiedad(navController: NavHostController) {
@@ -40,9 +41,18 @@ fun NavBarViendoPropiedad(navController: NavHostController) {
             selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
             //onClick = { navController.navigate("inicio") }
             onClick = {
-                navController.navigate("inicio") {
-                    popUpTo(navController.graph.startDestinationId) {
-                        inclusive = true
+                val userID = FirebaseAuth.getInstance().currentUser?.uid
+                if (userID == null) {
+                    navController.navigate("invitado") {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
+                } else {
+                    navController.navigate("inicio") {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
                     }
                 }
             }
