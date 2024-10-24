@@ -9,7 +9,7 @@ data class Vivienda(
     val habitaciones: Int = 0,
     val localizacion: GeoPoint? = null,
     val metros: Int = 0,
-    val parroquia: String = "",
+    val ubicacion: String = "",
     val titulo: String = "",
     val userID: String = "",
     val documentID: String = "",

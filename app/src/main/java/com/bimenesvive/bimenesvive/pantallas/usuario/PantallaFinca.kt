@@ -48,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.bimenesvive.bimenesvive.modelo.EstadoPropiedad
@@ -194,7 +193,7 @@ fun PantallaFinca(
                     Text(text = finca?.descripcion ?: "")
                     AssistChip(
                         onClick = {},
-                        label = { Text(finca?.parroquia ?: "") },
+                        label = { Text(finca?.ubicacion ?: "") },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Place,

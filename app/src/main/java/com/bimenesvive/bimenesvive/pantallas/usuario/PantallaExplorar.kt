@@ -1,6 +1,5 @@
 package com.bimenesvive.bimenesvive.pantallas.usuario
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,9 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import com.bimenesvive.bimenesvive.utilidades.*
@@ -184,7 +181,7 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
                     Column(modifier = Modifier
                         .weight(1f)
                         .align(Alignment.CenterVertically)) {
-                        Text(text = vivienda.parroquia,
+                        Text(text = vivienda.ubicacion,
                             Modifier.padding(top = 16.dp))
                         Text(text = "${vivienda.habitaciones} ${if (vivienda.habitaciones == 1) "habitación" else "habitaciones"}")
                         Text(text = "${vivienda.metros} m²")
@@ -251,7 +248,7 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
                             .padding(end = 16.dp)
                     )
                     Column {
-                        Text(text = finca.parroquia
+                        Text(text = finca.ubicacion
                         , Modifier.padding(top = 16.dp))
                         Text(text = "${finca.metros} m²")
                         Text(text = if (finca.edificable) "Edificable" else "No edificable")

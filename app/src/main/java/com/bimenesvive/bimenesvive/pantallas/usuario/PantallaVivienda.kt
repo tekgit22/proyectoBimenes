@@ -60,7 +60,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.bimenesvive.bimenesvive.modelo.EstadoPropiedad
@@ -193,7 +192,7 @@ fun PantallaVivienda(
                     Text(text = vivienda?.descripcion ?: "")
                     AssistChip(
                         onClick = {},
-                        label = { Text(vivienda?.parroquia ?: "") },
+                        label = { Text(vivienda?.ubicacion ?: "") },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Place,

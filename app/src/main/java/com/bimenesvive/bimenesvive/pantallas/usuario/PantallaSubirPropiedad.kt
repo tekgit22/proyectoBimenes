@@ -172,7 +172,7 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
     var descripcion by remember { mutableStateOf("") }
     var habitaciones by remember { mutableIntStateOf(0) }
     var metros by remember { mutableIntStateOf(0) }
-    var parroquia by remember { mutableStateOf("") }
+    var ubicacion by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var estado by remember { mutableStateOf(EstadoPropiedad.VENTA) }
@@ -260,9 +260,9 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
         )
         TextField(
-            value = parroquia,
-            onValueChange = { parroquia = it },
-            label = { Text("Parroquia") },
+            value = ubicacion,
+            onValueChange = { ubicacion = it },
+            label = { Text("Ubicación") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
         )
@@ -301,7 +301,7 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
                 "descripcion" to descripcion,
                 "habitaciones" to habitaciones,
                 "metros" to metros,
-                "parroquia" to parroquia,
+                "ubicacion" to ubicacion,
                 "telefono" to telefono,
                 "email" to email,
                 "userID" to userID,
@@ -329,7 +329,7 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
                     "descripcion" to descripcion,
                     "habitaciones" to habitaciones,
                     "metros" to metros,
-                    "parroquia" to parroquia,
+                    "ubicacion" to ubicacion,
                     "telefono" to telefono,
                     "email" to email,
                     "userID" to userID,
@@ -368,7 +368,7 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
 fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
     var titulo by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
-    var parroquia by remember { mutableStateOf("") }
+    var ubicacion by remember { mutableStateOf("") }
     var metros by remember { mutableIntStateOf(0) }
     var telefono by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -441,9 +441,9 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
         )
         TextField(
-            value = parroquia,
-            onValueChange = { parroquia = it },
-            label = { Text("Parroquia") },
+            value = ubicacion,
+            onValueChange = { ubicacion = it },
+            label = { Text("Ubicación") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
         )
@@ -487,7 +487,7 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
             val finca = hashMapOf(
                 "titulo" to titulo,
                 "descripcion" to descripcion,
-                "parroquia" to parroquia,
+                "ubicacion" to ubicacion,
                 "metros" to metros,
                 "telefono" to telefono,
                 "email" to email,

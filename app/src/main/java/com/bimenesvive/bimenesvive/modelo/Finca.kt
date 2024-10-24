@@ -6,7 +6,7 @@ data class Finca(
     val descripcion: String = "",
     val localizacion: GeoPoint? = null,
     val metros: Int = 0,
-    val parroquia: String = "",
+    val ubicacion: String = "",
     val titulo: String = "",
     val userID: String = "",
     val documentID: String = "",
