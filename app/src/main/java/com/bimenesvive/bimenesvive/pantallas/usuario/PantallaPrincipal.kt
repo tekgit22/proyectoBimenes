@@ -1,5 +1,6 @@
 package com.bimenesvive.bimenesvive.pantallas.usuario
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,7 +37,14 @@ import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Park
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalContext
 
 
 @Composable
@@ -47,8 +55,21 @@ fun PantallaPrincipal(
 ) {
     val authenticationState = authenticationViewModel.authenticationState.observeAsState()
     val userID = FirebaseAuth.getInstance().currentUser?.uid
-    val adminID = "4wOzuh8c8GhYeP3qbgn6Ja888F02"
+//    val adminID = "4wOzuh8c8GhYeP3qbgn6Ja888F02"
+    var isAdmin by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
+    /**
+     * Comprueba si el usuario actual es el administrador
+     */
+    LaunchedEffect(userID) {
+       // Toast.makeText(context, "userID=($userID)", Toast.LENGTH_SHORT).show()
+        comprobarAdmin { result ->
+            isAdmin = result
+        }
+    }
+
+    // REVISAR SU UTILIDAD
     LaunchedEffect(authenticationState.value) {
         when (authenticationState.value) {
             is AuthenticationState.Desautenticado -> navController.navigate("login")
@@ -142,7 +163,8 @@ fun PantallaPrincipal(
             }
         }
 
-        if (userID == adminID) {
+//
+        if (isAdmin) {
             Spacer(modifier = Modifier.height(15.dp))
             Button(
                 onClick = { navController.navigate("transados") },
@@ -174,4 +196,21 @@ fun PantallaPrincipal(
             Text(text = "Cerrar sesión")
         }
     }
+}
+
+fun comprobarAdmin(onResult: (Boolean) -> Unit) {
+    val db = FirebaseFirestore.getInstance()
+    val adminRef = db.collection("config").document("L2OLHKzjbA9wzA5N9D5W")
+    val userID = FirebaseAuth.getInstance().currentUser?.uid
+
+    adminRef.get()
+        .addOnSuccessListener { document ->
+            if (document != null) {
+                val adminID = document.getString("adminID")
+                onResult(userID == adminID)
+            } else {
+                onResult(false)
+            }
+        }
+
 }
