@@ -1,9 +1,7 @@
 package com.bimenesvive.bimenesvive.pantallas.usuario
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,14 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bimenesvive.bimenesvive.AuthenticationState
-import com.bimenesvive.bimenesvive.AuthenticationViewModel
+import com.bimenesvive.bimenesvive.AutenticacionViewModel
 import com.bimenesvive.bimenesvive.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Assignment
-import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.CloudUpload
@@ -44,16 +40,15 @@ import androidx.compose.runtime.setValue
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalContext
 
 
 @Composable
 fun PantallaPrincipal(
     modifier: Modifier = Modifier,
     navController: NavController,
-    authenticationViewModel: AuthenticationViewModel
+    autenticacionViewModel: AutenticacionViewModel
 ) {
-    val authenticationState = authenticationViewModel.authenticationState.observeAsState()
+    val authenticationState = autenticacionViewModel.estadoAutenticacion.observeAsState()
     val userID = FirebaseAuth.getInstance().currentUser?.uid
 //    val adminID = "4wOzuh8c8GhYeP3qbgn6Ja888F02"
     var isAdmin by remember { mutableStateOf(false) }
@@ -188,7 +183,7 @@ fun PantallaPrincipal(
         // Botón de logoff en la parte inferior
         TextButton(
             onClick = {
-                authenticationViewModel.cerrarSesion()
+                autenticacionViewModel.cerrarSesion()
                 navController.navigate("login")
             },
             modifier = Modifier.align(Alignment.CenterHorizontally)

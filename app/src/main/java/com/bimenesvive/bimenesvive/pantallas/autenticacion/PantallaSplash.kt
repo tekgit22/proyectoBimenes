@@ -10,15 +10,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.bimenesvive.bimenesvive.AuthenticationState
-import com.bimenesvive.bimenesvive.AuthenticationViewModel
+import com.bimenesvive.bimenesvive.AutenticacionViewModel
 import com.bimenesvive.bimenesvive.R
 import kotlinx.coroutines.delay
 
 @Composable
-fun PantallaSplash(navController: NavController, authenticationViewModel: AuthenticationViewModel) {
+fun PantallaSplash(navController: NavController, autenticacionViewModel: AutenticacionViewModel) {
     LaunchedEffect(Unit) {
         delay(3000) // Espera 3 segundos
-        val pantallaDestino = if (authenticationViewModel.authenticationState.value is AuthenticationState.Autenticado) {
+        val pantallaDestino = if (autenticacionViewModel.estadoAutenticacion.value is AuthenticationState.Autenticado) {
             "inicio"
         } else {
             "login"

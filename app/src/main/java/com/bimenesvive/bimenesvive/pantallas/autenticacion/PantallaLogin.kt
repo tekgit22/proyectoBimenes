@@ -35,14 +35,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bimenesvive.bimenesvive.AuthenticationState
-import com.bimenesvive.bimenesvive.AuthenticationViewModel
+import com.bimenesvive.bimenesvive.AutenticacionViewModel
 import com.bimenesvive.bimenesvive.R
 
 @Composable
 fun PantallaLogin(
     modifier: Modifier = Modifier,
     navController: NavController,
-    authenticationViewModel: AuthenticationViewModel
+    autenticacionViewModel: AutenticacionViewModel
 ) {
     val context = LocalContext.current
     // recuerda que con null sin localcontext la app crashea
@@ -63,13 +63,13 @@ fun PantallaLogin(
             onDismiss = { showDialog = false },
             onSendEmail = { email ->
                 // lógica para enviar el email
-                authenticationViewModel.enviarCorreoRecordarPassword(email,context)
+                autenticacionViewModel.enviarCorreoRecordarPassword(email,context)
             }
         )
     }
 
     // Estamos observando el estado de la autenticación para cambiar la UI
-    val authenticationState = authenticationViewModel.authenticationState.observeAsState()
+    val authenticationState = autenticacionViewModel.estadoAutenticacion.observeAsState()
 
     LaunchedEffect(authenticationState.value) {
         when (authenticationState.value) {
@@ -77,11 +77,10 @@ fun PantallaLogin(
             is AuthenticationState.AutentificacionFallida -> {
                 Toast.makeText(context, "Error en la autenticación", Toast.LENGTH_SHORT)
                     .show() // podría usar el mensaje de error que viene en el estado
-                // y en vez de un toast, mejor usar un snackbar ?
-                // Tengo que mirar cómo diferenciar un error al autenticarse o que pass/email son incorrectos
 
-                // Hago un reset del estado para que el Toast no salte sin parar si navegamos por la UI
-                authenticationViewModel.reiniciarEstadoAutenticacion()
+                // Hago un reset del estado a Desautenticado para que el usuario pueda intentar de nuevo
+                // y el Toast no salte constantemente
+                autenticacionViewModel.reiniciarEstadoAutenticacion()
             }
 
             else -> Unit
@@ -142,7 +141,7 @@ fun PantallaLogin(
                     onClick = {
                         // Si el password o el email están vacíos, no permito el login
                         if (email.isNotEmpty() && password.isNotEmpty()) {
-                            authenticationViewModel.login(email, password)
+                            autenticacionViewModel.login(email, password)
                         } else {
                             Toast.makeText(
                                 context,

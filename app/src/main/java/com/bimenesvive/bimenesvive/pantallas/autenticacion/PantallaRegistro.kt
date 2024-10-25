@@ -31,14 +31,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bimenesvive.bimenesvive.AuthenticationState
-import com.bimenesvive.bimenesvive.AuthenticationViewModel
+import com.bimenesvive.bimenesvive.AutenticacionViewModel
 import com.bimenesvive.bimenesvive.R
 
 @Composable
 fun PantallaRegistro(
     modifier: Modifier = Modifier,
     navController: NavController,
-    authenticationViewModel: AuthenticationViewModel
+    autenticacionViewModel: AutenticacionViewModel
 ) {
 
     val context = LocalContext.current
@@ -52,7 +52,7 @@ fun PantallaRegistro(
     }
 
     //Estamos observando el estado de la autenticación para cambiar la UI
-    val authenticationState = authenticationViewModel.authenticationState.observeAsState()
+    val authenticationState = autenticacionViewModel.estadoAutenticacion.observeAsState()
 
     LaunchedEffect(authenticationState.value) {  //estudiar LaunchedEffect
         when (authenticationState.value) {
@@ -123,7 +123,7 @@ fun PantallaRegistro(
                     ).show()
                 // Si el password o el email están vacíos, no permito el registro
                 }else if (email.isNotEmpty() && password.isNotEmpty()) {
-                    authenticationViewModel.registro(email, password)
+                    autenticacionViewModel.registro(email, password)
                 } else {
                     Toast.makeText(
                         context,

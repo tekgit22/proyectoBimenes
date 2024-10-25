@@ -12,7 +12,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.bimenesvive.bimenesvive.AuthenticationViewModel
+import com.bimenesvive.bimenesvive.AutenticacionViewModel
 import com.bimenesvive.bimenesvive.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -39,7 +39,7 @@ import com.google.firebase.auth.FirebaseAuth
 fun PantallaExplorar(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    authenticationViewModel: AuthenticationViewModel
+    autenticacionViewModel: AutenticacionViewModel
 ) {
     var propiedades by remember { mutableStateOf<List<Any>>(emptyList()) } // Lista de propiedades de Card, si quiero que sean distintas es necesario
     var inmuebleSeleccionado by remember { mutableStateOf("viviendas") } // Controla la selección del navbar inferior, viviendas está seleccionado por defecto

@@ -7,13 +7,14 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import android.content.Context
 
-class AuthenticationViewModel : ViewModel() {
+class AutenticacionViewModel : ViewModel() {
 
-    //private val sharedPreferences: SharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+
+    // NO es necesario SharedPreferences, ya que Firebase Auth mantiene el estado de autenticación
+    private val autenticacion: FirebaseAuth = FirebaseAuth.getInstance()
     //el _ privado es necesario para las variables privadas que tienen un LiveData de una variable publica asociada
-    private val _authenticationState = MutableLiveData<AuthenticationState>()
-    val authenticationState: LiveData<AuthenticationState> = _authenticationState
+    private val _estadoAutenticacion = MutableLiveData<AuthenticationState>()
+    val estadoAutenticacion: LiveData<AuthenticationState> = _estadoAutenticacion
 
     /** variable _privada con una pública asociada:
      * Mantiene la encapsulación de la variable privada y permite que la variable pública sea mutable
@@ -22,20 +23,30 @@ class AuthenticationViewModel : ViewModel() {
      */
 
 
+    /**
+     * Inicializa el ViewModel, comprobando si el usuario ya está autenticado
+     */
     init {
         comprobarEstadoAutenticacion()
     }
 
+
+    /**
+     * Comprueba si el usuario ya está autenticado
+     */
     private fun comprobarEstadoAutenticacion() {
-        if (auth.currentUser == null) {
-            _authenticationState.value = AuthenticationState.Desautenticado
+        if (autenticacion.currentUser == null) {
+            _estadoAutenticacion.value = AuthenticationState.Desautenticado
         } else {
-            _authenticationState.value = AuthenticationState.Autenticado
+            _estadoAutenticacion.value = AuthenticationState.Autenticado
         }
     }
 
+    /**
+     * Envía un correo al usuario para recordarle su contraseña
+     */
     fun enviarCorreoRecordarPassword(email: String, context: Context) {
-        auth.sendPasswordResetEmail(email)
+        autenticacion.sendPasswordResetEmail(email)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(context, "Se envió un correo a tu cuenta", Toast.LENGTH_SHORT).show()
@@ -47,53 +58,65 @@ class AuthenticationViewModel : ViewModel() {
 
 
     //asincronía, task, null, elvis operator, etc
+    /**
+     * Inicia sesión con el email y la contraseña proporcionados
+     */
     fun login(email : String , password : String) {
 
         //Para evitar trabajo innecesario, no permito el login si los campos están vacíos
         if (email.isEmpty() || password.isEmpty()) {
-            _authenticationState.value = AuthenticationState.AutentificacionFallida("Por favor, rellena todos los campos")
+            _estadoAutenticacion.value = AuthenticationState.AutentificacionFallida("Por favor, rellena todos los campos")
             return
         }
 
-        _authenticationState.value = AuthenticationState.ProcesandoAutentificacion
-        auth.signInWithEmailAndPassword(email, password)
+        _estadoAutenticacion.value = AuthenticationState.ProcesandoAutentificacion
+        autenticacion.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    _authenticationState.value = AuthenticationState.Autenticado
+                    _estadoAutenticacion.value = AuthenticationState.Autenticado
                 } else {
-                    _authenticationState.value = AuthenticationState.AutentificacionFallida(task.exception?.message ?: "Se ha producido un error")
+                    _estadoAutenticacion.value = AuthenticationState.AutentificacionFallida(task.exception?.message ?: "Se ha producido un error")
                 }
             }
 
     }
 
+    /**
+     * Registra un nuevo usuario con el email y la contraseña proporcionados
+     */
     fun registro(email : String , password : String) {
 
         //Para evitar trabajo innecesario, no permito el login si los campos están vacíos
         if (email.isEmpty() || password.isEmpty()) {
-            _authenticationState.value = AuthenticationState.AutentificacionFallida("Por favor, rellena todos los campos")
+            _estadoAutenticacion.value = AuthenticationState.AutentificacionFallida("Por favor, rellena todos los campos")
             return
         }
 
-        _authenticationState.value = AuthenticationState.ProcesandoAutentificacion
-        auth.createUserWithEmailAndPassword(email, password)
+        _estadoAutenticacion.value = AuthenticationState.ProcesandoAutentificacion
+        autenticacion.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    _authenticationState.value = AuthenticationState.Autenticado
+                    _estadoAutenticacion.value = AuthenticationState.Autenticado
                 } else {
-                    _authenticationState.value = AuthenticationState.AutentificacionFallida(task.exception?.message ?: "Se ha producido un error")
+                    _estadoAutenticacion.value = AuthenticationState.AutentificacionFallida(task.exception?.message ?: "Se ha producido un error")
                 }
             }
 
     }
 
+    /**
+     * Cierra la sesión del usuario actual
+     */
     fun cerrarSesion() {
-        auth.signOut()
-        _authenticationState.value = AuthenticationState.Desautenticado
+        autenticacion.signOut()
+        _estadoAutenticacion.value = AuthenticationState.Desautenticado
     }
 
+    /**
+     * Reinicia el estado de autenticación a Desautenticado
+     */
     fun reiniciarEstadoAutenticacion() {
-        _authenticationState.value = AuthenticationState.Desautenticado
+        _estadoAutenticacion.value = AuthenticationState.Desautenticado
     }
 
 }
@@ -106,4 +129,4 @@ sealed class AuthenticationState {
     data class AutentificacionFallida(val message: String) : AuthenticationState()
 }
 //data class genera automáticamente equals, hashcode, toString, copy
-//lo estoy utilizando para trasladar un mensaje de error, puedo refactorizar y simplificar
+//Lo dejo como placeholder porque sirve para trasladar el mensaje de error que recibimos de Firebase

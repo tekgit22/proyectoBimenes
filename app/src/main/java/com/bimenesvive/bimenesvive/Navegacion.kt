@@ -21,26 +21,26 @@ import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaVivienda
 
 
 @Composable
-fun Navegacion(modifier: Modifier = Modifier, authenticationViewModel: AuthenticationViewModel) {
+fun Navegacion(modifier: Modifier = Modifier, autenticacionViewModel: AutenticacionViewModel) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "splash", builder = {
         composable("splash") {
-            PantallaSplash(navController, authenticationViewModel)
+            PantallaSplash(navController, autenticacionViewModel)
         }
         composable("login") {
-            PantallaLogin(modifier, navController, authenticationViewModel)
+            PantallaLogin(modifier, navController, autenticacionViewModel)
         }
         composable("registro") {
-            PantallaRegistro(modifier, navController, authenticationViewModel)
+            PantallaRegistro(modifier, navController, autenticacionViewModel)
         }
         composable("inicio") {
-            PantallaPrincipal(modifier, navController, authenticationViewModel)
+            PantallaPrincipal(modifier, navController, autenticacionViewModel)
         }
         composable("invitado") {
             PantallaInvitado(modifier, navController)
         }
         composable("explorar") {
-            PantallaExplorar(modifier, navController, authenticationViewModel)
+            PantallaExplorar(modifier, navController, autenticacionViewModel)
         }
         composable("vivienda/{documentID}") { entry ->
             val documentID = entry.arguments?.getString("documentID") ?: ""
