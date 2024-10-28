@@ -106,6 +106,15 @@ dependencies {
     //Iconos
     implementation ("androidx.compose.material:material-icons-extended:<version>")
 
+    //Testing
+    testImplementation ("junit:junit:4.13.2")
+    testImplementation ("org.mockito:mockito-core:3.11.2")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1")
+    testImplementation ("org.robolectric:robolectric:4.13")
+
+    //Testing Android
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
+
 
 
 
