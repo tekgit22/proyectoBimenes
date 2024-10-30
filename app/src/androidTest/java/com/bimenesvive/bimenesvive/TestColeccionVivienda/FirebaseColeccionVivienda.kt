@@ -1,4 +1,4 @@
-package com.bimenesvive.bimenesvive
+package com.bimenesvive.bimenesvive.TestColeccionVivienda
 
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await

@@ -1,4 +1,4 @@
-package com.bimenesvive.bimenesvive
+package com.bimenesvive.bimenesvive.TestColeccionVivienda
 
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
