@@ -6,8 +6,16 @@ import kotlinx.coroutines.tasks.await
 
 class FirebaseLogin {
 
+    // Instancia de FirebaseAuth para poder hacer login
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
+    /**
+     * Función que hace login con un usuario y contraseña
+     * @param email Correo del usuario
+     * @param password Contraseña del usuario
+     * @return true si el login fue correcto, false si hubo algún fallo
+     * @throws Exception si hubo algún fallo en el login
+     */
     suspend fun hacerLogin(email: String, password: String): Boolean {
         return try {
             val resultado = auth.signInWithEmailAndPassword(email, password).await()

@@ -13,20 +13,23 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
+// Este test lo hice con una sola clase, sin necesidad de una auxiliar
+// La pega que tiene es que en cada test obtengo una nueva instancia de Firestore, lo que puede ser ineficiente
+// Comparado con el test de la colección de viviendas, que tiene una clase auxiliar que guarda la instancia de Firestore
+
+@RunWith(AndroidJUnit4::class) // Necesario para poder correr tests en Android, porque se usa runBlocking
 class FirebaseTestCollectionTest {
 
     /**
      * Comprueba que un documento de la colección "test" existe
      */
     @Test
-    fun testExisteDocumento() = runBlocking {
+    fun testExisteDocumento() = runBlocking {  // runBlocking es necesario para poder usar await()
         val firestore = FirebaseFirestore.getInstance()
         // Referencia al documento
         val documento = firestore.collection("test").document("Bsijt3Qp0aHB9bfiES5X")
         // Obtiene el contenido del documento
-        // Es necesario usar await() para esperar a que se complete la operación
-        val instantanea = documento.get().await()
+        val instantanea = documento.get().await() // await() es necesario para esperar a que se resuelva la tarea
         assertTrue("El documento debería existir", instantanea.exists())
     }
 
