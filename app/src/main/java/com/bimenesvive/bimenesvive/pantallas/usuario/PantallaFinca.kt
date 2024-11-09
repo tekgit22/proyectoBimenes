@@ -70,8 +70,6 @@ fun PantallaFinca(
 ) {
     var finca by remember { mutableStateOf<Finca?>(null) }
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
-    //   var showImageDialog by remember { mutableStateOf(false) }
-    // var showMapDialog by remember { mutableStateOf(false) }
     var imagenSeleccionada by remember { mutableStateOf<Uri?>(null) }
     var esImagenGrande by remember { mutableStateOf(false) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
@@ -494,23 +492,6 @@ fun PantallaFinca(
                     }
 
 
-//                    Column {
-//                        if (userID == finca?.userID) {
-//                            Button(
-//                                onClick = {
-//                                    launcher.launch("image/*")
-//                                },
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(horizontal = 16.dp)
-//                            ) {
-//                                Text("Subir Foto")
-//                            }
-//                        }
-//                    }
-//
-
-
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Column {
@@ -549,28 +530,6 @@ fun PantallaFinca(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-//                    Column {
-//                        if (userID == finca?.userID) {
-//                            Button(
-//                                onClick = {
-//                                    if (checkLocationPermission(context as Activity)) {
-//                                        saveFincaLocation(finca!!, context, documentID) {
-//                                            coroutineScope.launch {
-//                                                finca = getFincaById(documentID)
-//                                            }
-//                                        }
-//                                    }
-//                                },
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(horizontal = 16.dp)
-//                            ) {
-//                                Text("Guardar Localización")
-//                            }
-//                        }
-//                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     if (userID == finca?.userID) {
                         Row(
@@ -613,13 +572,15 @@ fun PantallaFinca(
                                 )
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Euro, // Replace with your desired icon
+                                    imageVector = Icons.Default.Euro,
                                     contentDescription = "Símbolo €"
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text("Transado")
                             }
+
                             Spacer(modifier = Modifier.width(8.dp))
+
                             Button(
                                 onClick = {
                                     try {
@@ -656,40 +617,6 @@ fun PantallaFinca(
                             }
                         }
                     }
-
-
-//                    if (userID == finca?.userID) {
-//                        Button(
-//                            onClick = {
-//                                try {
-//                                    borrarAnuncio(
-//                                        userID,
-//                                        documentID,
-//                                        imageUris,
-//                                        context,
-//                                        navController
-//                                    )
-//                                } catch (e: Exception) {
-//                                    Log.e(
-//                                        "PantallaFinca",
-//                                        "Error al borrar el anuncio: ${e.message}"
-//                                    )
-//                                    Toast.makeText(
-//                                        context,
-//                                        "Error al borrar el anuncio",
-//                                        Toast.LENGTH_SHORT
-//                                    ).show()
-//                                }
-//                            },
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(horizontal = 16.dp)
-//                        ) {
-//                            Text("Borrar Anuncio")
-//                        }
-//                    }
-//                }
-
                 }
                 // Gradiente en la parte inferior
                 if (scrollState.value < scrollState.maxValue) {
@@ -715,6 +642,9 @@ fun PantallaFinca(
 }
 
 
+/**
+ * Borra un anuncio de la base de datos de Firestore
+ */
 private fun borrarAnuncio(
     userID: String,
     documentID: String,
@@ -821,6 +751,9 @@ private fun borrarAnuncio(
 }
 
 
+/**
+ * Recibe un objeto Finca
+ */
 suspend fun getFincaById(id: String): Finca? {
     return try {
         FirebaseFirestore.getInstance()
