@@ -7,10 +7,7 @@ import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size

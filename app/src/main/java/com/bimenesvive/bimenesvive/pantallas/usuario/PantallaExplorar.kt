@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
 import com.bimenesvive.bimenesvive.modelo.Finca
 import com.bimenesvive.bimenesvive.modelo.Vivienda
 import com.google.firebase.firestore.FirebaseFirestore
@@ -38,13 +37,12 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun PantallaExplorar(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
-    autenticacionViewModel: AutenticacionViewModel
+    navController: NavHostController
 ) {
     var propiedades by remember { mutableStateOf<List<Any>>(emptyList()) } // Lista de propiedades de Card, si quiero que sean distintas es necesario
     var inmuebleSeleccionado by remember { mutableStateOf("viviendas") } // Controla la selección del navbar inferior, viviendas está seleccionado por defecto
-    val scope = rememberCoroutineScope() // Las corrutinas son hilos de ejecución que se pueden pausar y reanudar
-    val context = LocalContext.current
+    val scope =
+        rememberCoroutineScope() // Las corrutinas son hilos de ejecución que se pueden pausar y reanudar
 
 
     // LaunchedEffect se ejecuta cuando se compone por primera vez y cuando selectedTab cambia
@@ -55,28 +53,34 @@ fun PantallaExplorar(
         }
     }
 
+    /**
+     * Función que maneja el evento de selección de inmueble en la navbar inferior
+     */
     fun onInmuebleSeleccionado(seleccion: String) { // Maneja el evento de selección del inmueble en la navbar inferior
         inmuebleSeleccionado = seleccion // este cambio provoca que se ejecute LaunchedEffect
     }
 
     Scaffold(
+        //BOTTOM BAR
         bottomBar = {
             NavBarInferior(
                 navController,
                 inmuebleSeleccionado,
-                ::onInmuebleSeleccionado
+                ::onInmuebleSeleccionado // Paso una función como parámetro
             )
-        } // Paso una función como parámetro
+        }
     ) {
-        Column(modifier = modifier
-            .fillMaxSize()
-            .padding(it)) {
-            LazyColumn {
-                items(propiedades) { propiedad ->
-                    when (propiedad) {
-                        is Vivienda -> ViviendaItem(propiedad, navController)
-                        is Finca -> FincaItem(propiedad, navController)
-                    }
+
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(it) // El padding obtenido del Scaffold, asegura que el contenido
+                                // no se superponga con la barra inferior
+        ) {
+            items(propiedades) { propiedad ->
+                when (propiedad) {
+                    is Vivienda -> ViviendaItem(propiedad, navController)
+                    is Finca -> FincaItem(propiedad, navController)
                 }
             }
         }
@@ -84,19 +88,18 @@ fun PantallaExplorar(
 }
 
 
-
-
 // Tarjeta vivienda
 @Composable
 fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
-    val fotos = remember { mutableStateOf<List<Uri>>(emptyList()) }
-    val coroutineScope = rememberCoroutineScope()
+    val fotos = remember { mutableStateOf<List<Uri>>(emptyList()) } // Lista de fotos de la vivienda
+    val coroutineScope = rememberCoroutineScope() // Utilizo esta corrutina para navegar a otra pantalla
 
+    // LaunchedEffect se ejecuta cuando se compone por primera vez y cuando cambia el documentID de la vivienda
     LaunchedEffect(vivienda.documentID) {
         fotos.value = getFotosViviendaDesdeFirestore(vivienda.documentID)
     }
 
-    val alturaTarjeta = if (fotos.value.isEmpty()) 200.dp else 210.dp
+    //val alturaTarjeta = if (fotos.value.isEmpty()) 200.dp else 210.dp
 
     val gradiente = Brush.linearGradient(
         colors = listOf(
@@ -109,7 +112,7 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .height(alturaTarjeta)
+            //.height(alturaTarjeta)
             .clickable {
                 coroutineScope.launch {
                     subirVisitaVivienda(vivienda.documentID)
@@ -141,15 +144,22 @@ fun ViviendaItem(vivienda: Vivienda, navController: NavHostController) {
                             .size(150.dp)
                             .padding(end = 16.dp)
                     )
-                    Column(modifier = Modifier
-                        .weight(1f)
-                        .align(Alignment.CenterVertically)) {
-                        Text(text = vivienda.ubicacion,
-                            Modifier.padding(top = 16.dp))
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        Text(
+                            text = vivienda.ubicacion,
+                            Modifier.padding(top = 16.dp)
+                        )
                         Text(text = "${vivienda.habitaciones} ${if (vivienda.habitaciones == 1) "habitación" else "habitaciones"}")
                         Text(text = "${vivienda.metros} m²")
-                        Text(text = if (vivienda.precio == 0) "Precio no disponible" else "Precio: ${vivienda.precio} €",
-                            modifier = Modifier.wrapContentWidth().wrapContentHeight()
+                        Text(
+                            text = if (vivienda.precio == 0) "Precio no disponible" else "Precio: ${vivienda.precio} €",
+                            modifier = Modifier
+                                .wrapContentWidth()
+                                .wrapContentHeight()
                         )
                     }
                 }
@@ -168,7 +178,7 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
         fotos.value = getFotosFincaDesdeFirestore(finca.documentID)
     }
 
-    val alturaTarjeta = if (fotos.value.isEmpty()) 200.dp else 210.dp
+  //  val alturaTarjeta = if (fotos.value.isEmpty()) 200.dp else 210.dp
 
     val gradiente = Brush.linearGradient(
         colors = listOf(
@@ -181,9 +191,9 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .height(alturaTarjeta)
+        //    .height(alturaTarjeta)
             .clickable {
-                coroutineScope.launch {
+                coroutineScope.launch { // SubirVisitaFinca es una corrutina y tenemos que esperar a que termine
                     subirVisitaFinca(finca.documentID)
                     navController.navigate("finca/${finca.documentID}")
                 }
@@ -210,13 +220,18 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
                             .size(150.dp)
                             .padding(end = 16.dp)
                     )
+                    //Columna que muestra los datos de la finca a la derecha de la foto
                     Column {
-                        Text(text = finca.ubicacion
-                        , Modifier.padding(top = 16.dp))
+                        Text(
+                            text = finca.ubicacion, Modifier.padding(top = 16.dp)
+                        )
                         Text(text = "${finca.metros} m²")
                         Text(text = if (finca.edificable) "Edificable" else "No edificable")
-                        Text(text = if (finca.precio == 0) "Precio no disponible" else "Precio: ${finca.precio} €",
-                            modifier = Modifier.wrapContentWidth().wrapContentHeight()
+                        Text(
+                            text = if (finca.precio == 0) "Precio no disponible" else "Precio: ${finca.precio} €",
+                            modifier = Modifier
+                                .wrapContentWidth()
+                                .wrapContentHeight()
                         )
                     }
                 }
@@ -225,35 +240,18 @@ fun FincaItem(finca: Finca, navController: NavHostController) {
     }
 }
 
-
-suspend fun getViviendas(): List<Vivienda> {
-    val db = FirebaseFirestore.getInstance()
-    return try {
-        val resultadoConsulta = db.collection("viviendas").get().await()
-        resultadoConsulta.toObjects(Vivienda::class.java).filter { it.disponible } //Convierte los documentos obtenidos en una lista de objetos de la clase
-    } catch (e: Exception) {
-        emptyList()
-    }
-}
-
-suspend fun getFincas(): List<Finca> {
-    val db = FirebaseFirestore.getInstance()
-    return try {
-        val resultadoConsulta = db.collection("fincas").get().await()
-        resultadoConsulta.toObjects(Finca::class.java)
-            .filter { it.disponible }
-    } catch (e: Exception) {
-        emptyList()
-    }
-}
-
-
 @Composable
 fun NavBarInferior(
     navController: NavHostController,
     seccionSeleccionada: String,
     alSeleccionarSeccion: (String) -> Unit
+
+    // seccionSeleccionada es el estado que controla qué sección está seleccionada
+    // lo utilizo para cambiar el color de fondo (una sombra) que indica si estamos en
+    // la sección de viviendas o de fincas
+
 ) {
+
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
 
     NavigationBar(
@@ -262,6 +260,7 @@ fun NavBarInferior(
             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
     ) {
         NavigationBarItem(
+            // el parámetro icon es una función lambda que devuelve un Icon
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_atras),
@@ -304,6 +303,41 @@ fun NavBarInferior(
     }
 }
 
+
+//Suspend indica que la función es una corrutina
+
+/**
+ * Obtiene las viviendas desde Firestore
+ */
+suspend fun getViviendas(): List<Vivienda> {
+    val db = FirebaseFirestore.getInstance()
+    return try {
+        val resultadoConsulta = db.collection("viviendas").get().await()
+        resultadoConsulta.toObjects(Vivienda::class.java)
+            .filter { it.disponible } //Convierte los documentos obtenidos en una lista de objetos de la clase
+    } catch (e: Exception) {
+        emptyList()
+    }
+}
+
+
+/**
+ * Obtiene las fincas desde Firestore
+ */
+suspend fun getFincas(): List<Finca> {
+    val db = FirebaseFirestore.getInstance()
+    return try {
+        val resultadoConsulta = db.collection("fincas").get().await()
+        resultadoConsulta.toObjects(Finca::class.java)
+            .filter { it.disponible }
+    } catch (e: Exception) {
+        emptyList()
+    }
+}
+
+/**
+ * Sube una visita a la vivienda
+ */
 suspend fun subirVisitaVivienda(documentID: String) {
     val db = FirebaseFirestore.getInstance()
     val viviendaRef = db.collection("viviendas").document(documentID)
@@ -314,6 +348,9 @@ suspend fun subirVisitaVivienda(documentID: String) {
     }.await()
 }
 
+/**
+ * Sube una visita a la finca
+ */
 suspend fun subirVisitaFinca(documentID: String) {
     val db = FirebaseFirestore.getInstance()
     val fincaRef = db.collection("fincas").document(documentID)
@@ -323,6 +360,11 @@ suspend fun subirVisitaFinca(documentID: String) {
         transaction.update(fincaRef, "visitas", nuevasVisitas)
     }.await()
 }
+
+
+
+
+
 
 
 //Flujo del código al seleccionar en la navbar un elemento:

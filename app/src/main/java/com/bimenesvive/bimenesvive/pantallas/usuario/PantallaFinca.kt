@@ -81,6 +81,7 @@ fun PantallaFinca(
     // Solicitar permisos en tiempo de ejecución a usuarios con SO Android 13 +
     requestPhotoPermissions(context)
 
+    // Cargar la finca y las fotos al lanzar la pantalla
     LaunchedEffect(documentID) {
         try {
             finca = getFincaById(documentID)
@@ -93,6 +94,7 @@ fun PantallaFinca(
         }
     }
 
+    // Lanzar el selector de fotos al hacer clic en el botón de subir foto
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
             uris.forEach { uri ->
@@ -117,6 +119,7 @@ fun PantallaFinca(
             }
         }
 
+    // Almacenar el estado del scroll, se utiliza para mostrar un gradiente en la parte inferior
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -125,9 +128,9 @@ fun PantallaFinca(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) // Aplicar paddingValues aquí
+                .padding(paddingValues)
         ) {
-            // IMAGEN GRANDE
+            // IMAGEN GRANDE que ocupa toda la pantalla
             if (esImagenGrande && imagenSeleccionada != null) {
                 Box(
                     modifier = Modifier
@@ -360,9 +363,10 @@ fun PantallaFinca(
                             }
                         )
                     }
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    Column {
+
+                        //LazyRow que hace el display de las imágenes redondas
                         LazyRow(state = listState) {
                             items(imageUris) { uri ->
                                 Image(
@@ -385,6 +389,8 @@ fun PantallaFinca(
                                 )
                             }
                         }
+
+                        //Row encargada de los Iconos de flechas para moverse entre las imágenes
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -432,14 +438,11 @@ fun PantallaFinca(
                                 Spacer(modifier = Modifier.size(24.dp))
                             }
                         }
-                    }
-
                     Spacer(modifier = Modifier.height(16.dp))
 
-
                     //BOTONES
-
                     if (userID == finca?.userID) {
+                        //Subir Foto y Guardar Localización
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -491,9 +494,9 @@ fun PantallaFinca(
                         }
                     }
 
-
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    //Columna que contiene el botón de ver localización o localización no disponible
                     Column {
                         if (finca?.localizacion?.latitude == 0.0 && finca?.localizacion?.longitude == 0.0) {
                             Button(
@@ -530,7 +533,7 @@ fun PantallaFinca(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-
+                    //Transado y Borrar Anuncio
                     if (userID == finca?.userID) {
                         Row(
                             modifier = Modifier
@@ -618,6 +621,7 @@ fun PantallaFinca(
                         }
                     }
                 }
+
                 // Gradiente en la parte inferior
                 if (scrollState.value < scrollState.maxValue) {
                     Box(

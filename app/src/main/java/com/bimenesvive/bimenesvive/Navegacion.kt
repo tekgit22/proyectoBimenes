@@ -40,7 +40,7 @@ fun Navegacion(modifier: Modifier = Modifier, autenticacionViewModel: Autenticac
             PantallaInvitado(modifier, navController)
         }
         composable("explorar") {
-            PantallaExplorar(modifier, navController, autenticacionViewModel)
+            PantallaExplorar(modifier, navController)
         }
         composable("vivienda/{documentID}") { entry ->
             val documentID = entry.arguments?.getString("documentID") ?: ""
