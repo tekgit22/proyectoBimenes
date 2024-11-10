@@ -74,9 +74,9 @@ fun PantallaFinca(
     var esImagenGrande by remember { mutableStateOf(false) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current as Activity
+    val context = LocalContext.current as Activity // Lo utilizo para lanzar intents y mostrar Toasts
     var ownerUserID by remember { mutableStateOf<String?>(null) }
-    val listState = rememberLazyListState() // Para controlar el scroll de las imágenes
+    val listState = rememberLazyListState() // Almacena el estado de scroll de la lista de imágenes
 
     // Solicitar permisos en tiempo de ejecución a usuarios con SO Android 13 +
     requestPhotoPermissions(context)
@@ -105,9 +105,9 @@ fun PantallaFinca(
                         documentID,
                         FirebaseStorage.getInstance(),
                         context
-                    ) { downloadUri ->
+                    ) { downloadUri -> // Callback si se hizo correctamente la subida
                         imageUris = imageUris + downloadUri
-                        // Actualizar la lista de fotos después de subirlas
+                        // Actualizar la lista de fotos después de subirlas para que se muestren en la UI
                         coroutineScope.launch {
                             imageUris = getFotosFincaDesdeFirestore(documentID)
                         }
@@ -337,6 +337,7 @@ fun PantallaFinca(
                             modifier = Modifier.clickable {
                                 val telefonoPrefijoSpain = "+34${finca?.telefono}"
                                 val intent = Intent(Intent.ACTION_DIAL).apply {
+                                    //data es una propiedad de objeto Intent que se utiliza para almacenar una URI
                                     data = Uri.parse("tel:$telefonoPrefijoSpain")
                                 }
                                 context.startActivity(intent)
@@ -396,6 +397,7 @@ fun PantallaFinca(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             if (listState.firstVisibleItemIndex > 0) {
+                                // Si no es la primera imagen, muestra el icon de flecha a la izquierda
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = "Moverse al anterior elemento",
@@ -405,6 +407,8 @@ fun PantallaFinca(
                                             coroutineScope.launch {
                                                 listState.animateScrollToItem(
                                                     maxOf(listState.firstVisibleItemIndex - 1, 0)
+                                                    //maxOf para evitar valores negativos (cálculo, mínimo)
+                                                    //0 es el valor mínimo permitido para ese índice
                                                 )
                                             }
                                         },
@@ -416,7 +420,10 @@ fun PantallaFinca(
 
                             val lastVisibleItemIndex =
                                 listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+                                // lastOrNull() devuelve el último elemento de la lista o null si está vacía
+                                // en caso de ser null, le asigno un -1
                             if (lastVisibleItemIndex < imageUris.size - 1 && imageUris.isNotEmpty()) {
+                                // Si la última foto visible es menor que el tamaño de la lista, muestra el Icon de flecha a la derecha
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                                     contentDescription = "Moverse al elemento posterior",
@@ -426,8 +433,8 @@ fun PantallaFinca(
                                             coroutineScope.launch {
                                                 listState.animateScrollToItem(
                                                     minOf(
-                                                        listState.firstVisibleItemIndex + 1,
-                                                        imageUris.size - 1
+                                                        listState.firstVisibleItemIndex + 1, // Siguiente índice
+                                                        imageUris.size - 1 // Último índice permitido
                                                     )
                                                 )
                                             }
@@ -435,10 +442,10 @@ fun PantallaFinca(
                                     tint = Color.Gray
                                 )
                             } else {
-                                Spacer(modifier = Modifier.size(24.dp))
+                               // Spacer(modifier = Modifier.size(24.dp))
                             }
                         }
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     //BOTONES
                     if (userID == finca?.userID) {
@@ -469,7 +476,7 @@ fun PantallaFinca(
                                             "PantallaFinca",
                                             "Permiso de ubicación concedido, guardando localización"
                                         )
-                                        saveFincaLocation(finca!!, context, documentID) {
+                                        saveFincaLocation(finca!!, context, documentID) { // !! para asegurar que finca no es null
                                             // Refrescar la UI después de guardar la localización
                                             coroutineScope.launch {
                                                 finca = getFincaById(documentID)
@@ -516,8 +523,9 @@ fun PantallaFinca(
                                             Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}?q=${geoPoint.latitude},${geoPoint.longitude}(${finca?.titulo})")
                                         val mapIntent =
                                             Intent(Intent.ACTION_VIEW, googleMapsIntentUri).apply {
-                                                setPackage("com.google.android.apps.maps")
-                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                setPackage("com.google.android.apps.maps") // Especifico que tiene que ser abierto con Google Maps
+                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)  // Añado una flag para abrir en una nueva tarea para la actividad
+                                                // Esta flag no es obligatoria porque la abro desde un composable, pero es buena práctica (obligatoria en services o broadcast receivers)
                                             }
                                         context.startActivity(mapIntent)
                                     }
@@ -551,11 +559,8 @@ fun PantallaFinca(
                                                 "El anuncio se ha archivado",
                                                 Toast.LENGTH_SHORT
                                             ).show()
-                                            navController.navigate("inicio") {
-                                                popUpTo(navController.graph.startDestinationId) {
-                                                    inclusive = true
-                                                }
-                                            }
+                                            navController.popBackStack() // Borro la pantalla actual de la pila de navegación
+                                            navController.navigate("inicio")
                                         } catch (e: Exception) {
                                             Log.e(
                                                 "PantallaFinca",
@@ -690,6 +695,7 @@ private fun borrarAnuncio(
                                             "Anuncio borrado correctamente",
                                             Toast.LENGTH_SHORT
                                         ).show()
+                                        navController.popBackStack() // Borro la pantalla actual de la pila de navegación
                                         navController.navigate("inicio")
                                     }
                                     .addOnFailureListener { e ->
@@ -704,28 +710,6 @@ private fun borrarAnuncio(
                                         ).show()
                                     }
                             }
-                            .addOnFailureListener { e ->
-                                Log.e(
-                                    "PantallaFinca",
-                                    "Error al borrar los documentos de las fotos: ${e.message}"
-                                )
-                                Toast.makeText(
-                                    context,
-                                    "Error al borrar los documentos de las fotos: ${e.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e(
-                            "PantallaFinca",
-                            "Error al obtener los documentos de las fotos: ${e.message}"
-                        )
-                        Toast.makeText(
-                            context,
-                            "Error al obtener los documentos de las fotos: ${e.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
             }
             .addOnFailureListener { e ->
@@ -736,11 +720,13 @@ private fun borrarAnuncio(
                     Toast.LENGTH_SHORT
                 ).show()
             }
-    } else {
+
+    } else { // En caso de que no haya fotos, borra solo el documento de la colección fincas
         db.collection("fincas").document(documentID)
             .delete()
             .addOnSuccessListener {
                 Toast.makeText(context, "Anuncio borrado correctamente", Toast.LENGTH_SHORT).show()
+                navController.popBackStack() // Borro la pantalla actual de la pila de navegación
                 navController.navigate("inicio")
             }
             .addOnFailureListener { e ->
@@ -765,7 +751,7 @@ suspend fun getFincaById(id: String): Finca? {
             .document(id)
             .get()
             .await()
-            .toObject(Finca::class.java)
+            .toObject(Finca::class.java) // Convierte el documento en un objeto de la clase Finca
     } catch (e: Exception) {
         Log.e("PantallaFinca", "Error al obtener la finca: ${e.message}")
         null
