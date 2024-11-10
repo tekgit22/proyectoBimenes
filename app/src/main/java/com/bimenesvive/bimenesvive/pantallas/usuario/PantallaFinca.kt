@@ -398,7 +398,7 @@ fun PantallaFinca(
                             if (listState.firstVisibleItemIndex > 0) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Previous",
+                                    contentDescription = "Moverse al anterior elemento",
                                     modifier = Modifier
                                         .size(24.dp)
                                         .clickable {
@@ -419,7 +419,7 @@ fun PantallaFinca(
                             if (lastVisibleItemIndex < imageUris.size - 1 && imageUris.isNotEmpty()) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = "Next",
+                                    contentDescription = "Moverse al elemento posterior",
                                     modifier = Modifier
                                         .size(24.dp)
                                         .clickable {

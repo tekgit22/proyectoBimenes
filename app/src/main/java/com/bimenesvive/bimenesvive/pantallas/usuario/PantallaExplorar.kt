@@ -303,13 +303,14 @@ fun NavBarInferior(
     }
 }
 
+//Funciones relacionadas con Firestore, que sólo se usan en esta pantalla
 
-//Suspend indica que la función es una corrutina
 
 /**
  * Obtiene las viviendas desde Firestore
  */
 suspend fun getViviendas(): List<Vivienda> {
+//Suspend indica que la función es una corrutina, puede ser pausada y reanudada
     val db = FirebaseFirestore.getInstance()
     return try {
         val resultadoConsulta = db.collection("viviendas").get().await()
@@ -371,10 +372,9 @@ suspend fun subirVisitaFinca(documentID: String) {
 //1 Ejecuta la función onInmuebleSeleccionado
 //2 Cambia el valor de inmuebleSeleccionado
 //3 Ejecuta LaunchedEffect, que a su vez ejecuta la corrutina
-//4 Actualiza la lista de propiedades de la Card
-//5 Hace una consulta a la BBDD
-//6 Se vuelve a pintar la UI con las nuevas propiedades y los resultados de la consulta
+//4 La corrutina dentro de LaunchedEffect realiza una consulta a Firestore para obtener las propiedades inmobiliarias
+//5 Actualiza la lista de propiedades de la Card con los resultados de la consulta
+//6 Se vuelve a pintar la UI con las nuevas propiedades
 
-// ** Puede que termine utilizando las mismas propiedades para las dos tarjetas, no necesitaría el punto 4
-// y podría desligar las propiedades del LaunchedEffect
+
 

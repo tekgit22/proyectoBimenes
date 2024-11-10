@@ -17,7 +17,10 @@ import com.bimenesvive.bimenesvive.utilidades.NavBarVolverInicio
 
 @Composable
 fun PantallaBimenes(modifier: Modifier, navController: NavHostController) {
-    val scrollState = rememberScrollState()
+    val scrollState = rememberScrollState() // Almacena el estado de scroll
+
+    // Column con rememberScrollState() es eficiente para listas pequeñas o contenido fijo (esta pantalla es fija)
+    // Lazycolumn es más eficiente para listas grandes o contenido dinámico que se recicla
 
     Scaffold(
         bottomBar = { NavBarVolverInicio(navController) }
@@ -27,7 +30,7 @@ fun PantallaBimenes(modifier: Modifier, navController: NavHostController) {
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
-                .verticalScroll(scrollState)
+                .verticalScroll(scrollState) // Alternativa a LazyColumn
         ) {
             Text(
                 text = "CONOCE BIMENES",
@@ -52,6 +55,7 @@ fun PantallaBimenes(modifier: Modifier, navController: NavHostController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
+                // """ es un string literal de kotlin que permite escribir texto en varias líneas
                 text = """
                     Los más antiguos vestigios arqueológicos de Bimenes, corresponden a etapas posteriores a la neolitización, probablemente en relación con los primeros ciclos metalúrgicos. De ellos se inventariaron tres túmulos: uno en Piedrafita, en la falda occidental de Peñamayor; otro en Lancosa, próximo a la divisoria de Nava; y un tercero en Campabaxera, cerca del límite con Siero.
 
@@ -74,7 +78,7 @@ fun PantallaBimenes(modifier: Modifier, navController: NavHostController) {
                     En la Guerra Civil, el concejo quedó enclavado en la zona republicana y en esta situación se mantuvo hasta que en octubre de 1937 cayeron los últimos reductos del Frente Norte. Sin embargo, una vez decidido el conflicto bélico en Asturias, algunas partidas de guerrilleros fugados, siguieron actuando en la comarca, ocultos en los montes de Peña Mayor.
 
                     Tras la postguerra, el concejo evolucionó ligado al sector minero asturiano, con la particularidad de que en el municipio hay mineros pero no minas.
-                """.trimIndent(),
+                """.trimIndent(), // trimIndent() elimina los espacios en blanco al inicio de cada línea
                 fontSize = 16.sp,
                 modifier = Modifier.padding(bottom = 16.dp)
             )

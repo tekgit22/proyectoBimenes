@@ -23,9 +23,9 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostController) {
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
-    var anuncios by remember { mutableStateOf(listOf<Anuncio>()) }
-    var showDialog by remember { mutableStateOf(false) }
-    var userAnuncio by remember { mutableStateOf<Anuncio?>(null) }
+    var anuncios by remember { mutableStateOf(listOf<Anuncio>()) } // Lista de anuncios cargados desde Firestore
+    var showDialog by remember { mutableStateOf(false) } // Dialog para añadir anuncio
+    var userAnuncio by remember { mutableStateOf<Anuncio?>(null) } // Anuncio del usuario actual
 
     val backgroundColors = listOf(
         Color(0xFFC8E6C9), // Light Green
@@ -41,15 +41,16 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
     Scaffold(
         bottomBar = { NavBarVolverInicio(navController) },
         floatingActionButton = {
-            if (userID != "invitado") {
+            if (userID != "invitado") { // Los usuarios invitados no pueden añadir anuncios
                 FloatingActionButton(onClick = {
-                    if (userAnuncio != null) {
-                        borrarAnuncio(userAnuncio!!) // !! = // Lanza NullPointerException si userAnuncio es null
+                    userAnuncio?.let { anuncio ->
+                        borrarAnuncio(anuncio)
                         userAnuncio = null
-                        anuncios =
-                            anuncios.filter { it.userID != userID } // Actualizo la lista de anuncios, filtro los del usuario para asegurar
+                        anuncios = anuncios.filter { it.userID != userID }
+                        // Actualizo la lista de anuncios, filtro los del usuario para asegurar
                         // que no aparezca el anuncio que acabo de borrar, en caso de que Firebase tardase en actualizar
-                    } else {
+                        // (al actualizar el valor de anuncios, se lanza el LaunchedEffect)
+                    } ?: run { // Si no hay anuncio del usuario, abro el Dialog para añadirlo
                         showDialog = true
                     }
                 }) {
@@ -60,7 +61,7 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
                 }
             }
         },
-        floatingActionButtonPosition = FabPosition.End
+        floatingActionButtonPosition = FabPosition.End // End es un ENUM que coloca el action button al final
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -81,69 +82,31 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // itemsIndexed es un composable que permite recorrer una lista con índice
+                // y crear un composable por cada elemento
                 itemsIndexed(anuncios) { index, anuncio ->
                     val colorIndex =
                         index % backgroundColors.size // Cambia el color de fondo de cada anuncio
                     CardAnuncio(
                         anuncio,
-                        backgroundColors[colorIndex]
-                    ) // Paso el color de fondo por parámetro
+                        backgroundColors[colorIndex] // Paso el color de fondo por parámetro
+                    )
                 }
             }
         }
     }
 
+    // Dialog con el formulario para añadir un anuncio
     if (showDialog) {
-        AnuncioDialog(onDismiss = { showDialog = false }) { newAnuncio ->
-            val nuevoAnuncio =
-                newAnuncio.copy(userID = userID) //nuevo anuncio con el userID del usuario actual
-            addAnuncio(nuevoAnuncio)
-            anuncios = anuncios + nuevoAnuncio
-            userAnuncio = nuevoAnuncio
-            showDialog = false // Cierro el diálogo
+        AnuncioDialog(onDismiss = { showDialog = false }) { nuevoAnuncio ->
+            val anuncioActualizado = nuevoAnuncio.copy(userID = userID)
+            // Hago una copia de nuevoAnuncio y le añado el userID como nuevo campo
+            addAnuncio(anuncioActualizado)
+            anuncios = anuncios + anuncioActualizado
+            userAnuncio = anuncioActualizado
+            showDialog = false // Cierro el diálogo (dispara el LaunchedEffect)
         }
     }
-}
-
-/**
- * Importa los anuncios de Firebase
- */
-suspend fun importarAnunciosFireBase(): List<Anuncio> {
-    return try {
-        val snapshot = FirebaseFirestore.getInstance()
-            .collection("anuncios")
-            .get()
-            .await()
-        val anuncios =
-            snapshot.documents.mapNotNull { it.toObject(Anuncio::class.java) } // Convierte los documentos en objetos de la clase Anuncio
-        return anuncios    // Devuelve la lista de anuncios (puedo omitir la palabra return)
-    } catch (e: Exception) {
-        emptyList()
-    }
-}
-
-/**
- * Añade un anuncio a Firebase
- */
-fun addAnuncio(anuncio: Anuncio) {
-    FirebaseFirestore.getInstance()
-        .collection("anuncios")
-        .add(anuncio)
-}
-
-/**
- * Borra un anuncio de Firebase
- */
-fun borrarAnuncio(anuncio: Anuncio) {
-    FirebaseFirestore.getInstance()
-        .collection("anuncios")
-        .whereEqualTo("userID", anuncio.userID)
-        .get()
-        .addOnSuccessListener { documents ->
-            for (document in documents) {
-                document.reference.delete()
-            }
-        }
 }
 
 /**
@@ -173,7 +136,7 @@ fun CardAnuncio(anuncio: Anuncio, backgroundColor: Color) {
 }
 
 /**
- * Diálogo para añadir un anuncio
+ * Dialog para añadir un anuncio
  */
 @Composable
 fun AnuncioDialog(onDismiss: () -> Unit, onSubmit: (Anuncio) -> Unit) {
@@ -217,6 +180,7 @@ fun AnuncioDialog(onDismiss: () -> Unit, onSubmit: (Anuncio) -> Unit) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(onClick = {
                         onSubmit(Anuncio(titulo, contacto, mensaje, userID = ""))
+                        // El userID se modifica a posteriori en   if (showDialog) {
                     }) {
                         Text("Anunciar")
                     }
@@ -225,3 +189,63 @@ fun AnuncioDialog(onDismiss: () -> Unit, onSubmit: (Anuncio) -> Unit) {
         }
     }
 }
+
+// Flujo del código cuando se está añadiendo un anuncio:
+// 1 El usuario rellena el formulario del Dialog y pulsa Anunciar
+// 2 Se ejecuta la lambda onSubmit de AnuncioDialog
+// 3 Se añade el anuncio a Firebase con addAnuncio
+// 4 Se añade el anuncio a la lista anuncios local
+// 5 Se actualiza el anuncio del usuario actual (userAnuncio)
+// 6 Se cierra el Dialog con showDialog = false (dispara el LaunchedEffect)
+// 7 Se actualiza la lista de anuncios con el LaunchedEffect
+
+
+
+
+
+
+// Métodos para interactuar con Firebase (exclusivos de esta pantalla)
+
+/**
+ * Importa los anuncios de Firebase
+ */
+suspend fun importarAnunciosFireBase(): List<Anuncio> {
+    return try {
+        val snapshot = FirebaseFirestore.getInstance()
+            .collection("anuncios")
+            .get()
+            .await()
+        val anuncios =
+            snapshot.documents.mapNotNull { it.toObject(Anuncio::class.java) } // Convierte los documentos en objetos de la clase Anuncio
+        return anuncios    // Devuelve la lista de anuncios (puedo omitir la palabra return)
+    } catch (e: Exception) {
+        emptyList()
+    }
+}
+
+/**
+ * Añade un anuncio a Firebase
+ */
+fun addAnuncio(anuncio: Anuncio) {
+    FirebaseFirestore.getInstance()
+        .collection("anuncios")
+        .add(anuncio)
+}
+
+/**
+ * Borra un anuncio de Firebase
+ */
+fun borrarAnuncio(anuncio: Anuncio) {
+    FirebaseFirestore.getInstance()
+        .collection("anuncios")
+        .whereEqualTo("userID", anuncio.userID)
+        .get()
+        .addOnSuccessListener { documents ->
+            for (document in documents) {
+                document.reference.delete()
+            }
+        }
+}
+
+
+
