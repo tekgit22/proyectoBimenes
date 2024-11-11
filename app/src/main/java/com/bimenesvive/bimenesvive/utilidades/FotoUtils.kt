@@ -24,22 +24,63 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import coil.transform.CircleCropTransformation
 
+// COMPOSABLES
+
+/**
+ * Muestra una imagen con un placeholder mientras se carga
+ */
+@Composable
+fun ImagenConPlaceholder(uri: Uri, modifier: Modifier = Modifier) {
+    val painter = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(uri)
+            .size(Size.ORIGINAL)
+            .placeholder(R.drawable.loading_spinner)
+            .crossfade(true)
+            .transformations(CircleCropTransformation())
+            .build()
+    )
+
+    Image(
+        painter = painter,
+        contentDescription = null,
+        modifier = modifier
+    )
+}
+
+
+// METODOS GENERALES
 
 /**
  * Solicita permisos en tiempo de ejecución a usuarios con SO Android 13 +
-  */
+ */
 fun requestPhotoPermissions(context: Activity) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(context, arrayOf(Manifest.permission.READ_MEDIA_IMAGES), 1)
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_MEDIA_IMAGES
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                context,
+                arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                1
+            )
         }
     } else {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(context, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                context,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                1
+            )
         }
     }
 }
-
 
 
 // METODOS VIVIENDA
@@ -47,7 +88,14 @@ fun requestPhotoPermissions(context: Activity) {
 /**
  * Sube una foto de una vivienda a Firebase Storage y guarda la URL en Firestore
  */
-fun subirFotoVivienda(uri: Uri, userID: String, documentID: String, storage: FirebaseStorage, context: Context, onSuccess: (Uri) -> Unit) {
+fun subirFotoVivienda(
+    uri: Uri,
+    userID: String,
+    documentID: String,
+    storage: FirebaseStorage,
+    context: Context,
+    onSuccess: (Uri) -> Unit
+) {
     val storageRef = storage.reference
     val photoRef = storageRef.child("$userID/$documentID/${UUID.randomUUID()}.jpg")
 
@@ -60,7 +108,8 @@ fun subirFotoVivienda(uri: Uri, userID: String, documentID: String, storage: Fir
             }
         }
         .addOnFailureListener { e ->
-            Toast.makeText(context, "Error al subir la foto: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Error al subir la foto: ${e.message}", Toast.LENGTH_SHORT)
+                .show()
         }
 }
 
@@ -94,15 +143,20 @@ suspend fun getFotosViviendaDesdeFirestore(documentID: String): List<Uri> {
 }
 
 
-
-
 //METODOS FINCA
 
 
 /**
  * Sube una foto de una finca a Firebase Storage y guarda la URL en Firestore
  */
-fun subirFotoFinca(uri: Uri, userID: String, documentID: String, storage: FirebaseStorage, context: Context, onSuccess: (Uri) -> Unit) {
+fun subirFotoFinca(
+    uri: Uri,
+    userID: String,
+    documentID: String,
+    storage: FirebaseStorage,
+    context: Context,
+    onSuccess: (Uri) -> Unit
+) {
     val storageRef = storage.reference
     val photoRef = storageRef.child("$userID/$documentID/${UUID.randomUUID()}.jpg")
 
@@ -115,7 +169,8 @@ fun subirFotoFinca(uri: Uri, userID: String, documentID: String, storage: Fireba
             }
         }
         .addOnFailureListener { e ->
-            Toast.makeText(context, "Error al subir la foto: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Error al subir la foto: ${e.message}", Toast.LENGTH_SHORT)
+                .show()
         }
 }
 
@@ -149,26 +204,6 @@ suspend fun getFotosFincaDesdeFirestore(documentID: String): List<Uri> {
 }
 
 
-/**
- * Muestra una imagen con un placeholder mientras se carga
- */
-@Composable
-fun ImagenConPlaceholder(uri: Uri, modifier: Modifier = Modifier) {
-    val painter = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(uri)
-            .size(Size.ORIGINAL)
-            .placeholder(R.drawable.loading_spinner)
-            .crossfade(true)
-            .transformations(CircleCropTransformation())
-            .build()
-    )
 
-    Image(
-        painter = painter,
-        contentDescription = null,
-        modifier = modifier
-    )
-}
 
 

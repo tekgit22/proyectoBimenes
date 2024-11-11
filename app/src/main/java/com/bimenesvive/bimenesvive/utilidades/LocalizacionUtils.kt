@@ -2,7 +2,6 @@ package com.bimenesvive.bimenesvive.utilidades
 
 import android.app.Activity
 import android.location.Location
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -12,19 +11,31 @@ import com.bimenesvive.bimenesvive.modelo.Vivienda
 import com.google.android.gms.location.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
-import kotlinx.coroutines.tasks.await
 
-const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+const val LOCATION_PERMISSION_REQUEST_CODE = 1000  // Código de solicitud de permiso de ubicación
+// Este código se utiliza para identificar la solicitud de permiso de ubicación en el metodo onRequestPermissionsResult
 
+
+/**
+ * Comprueba si la aplicación tiene permiso para acceder a la ubicación del dispositivo.
+ * Si no tiene permiso, solicita permiso al usuario.
+ * @param activity Actividad desde la que se solicita el permiso.
+ * @return True si la aplicación tiene permiso de ubicación, false en caso contrario.
+ */
 fun checkLocationPermission(activity: Activity): Boolean {
     return if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-        ActivityCompat.requestPermissions(activity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+        ActivityCompat.requestPermissions(activity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE) // Solicitar permiso de ubicación
         false
     } else {
         true
     }
 }
 
+/**
+ * Obtiene la ubicación actual del dispositivo.
+ * @param activity Actividad desde la que se solicita la ubicación.
+ * @param onLocationReceived Función que se ejecuta cuando se recibe la ubicación.
+ */
 fun getCurrentLocation(activity: Activity, onLocationReceived: (Location) -> Unit) {
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
     val locationRequest = LocationRequest.Builder(10000)
@@ -40,13 +51,20 @@ fun getCurrentLocation(activity: Activity, onLocationReceived: (Location) -> Uni
     fusedLocationClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             locationResult.lastLocation?.let { location ->
-                onLocationReceived(location)
-                fusedLocationClient.removeLocationUpdates(this)
+                onLocationReceived(location) // Ejecuta la función que se pasa como parámetro para guardar la ubicación
+                fusedLocationClient.removeLocationUpdates(this) // Deja de recibir actualizaciones de ubicación
             }
         }
-    }, android.os.Looper.getMainLooper())
+    }, android.os.Looper.getMainLooper()) // Ejecuta el callback en el hilo principal
 }
 
+/**
+ * Guarda la ubicación de una vivienda en Firestore.
+ * @param vivienda Vivienda a la que se le va a guardar la ubicación.
+ * @param context Actividad desde la que se solicita la ubicación.
+ * @param documentID ID del documento de la vivienda en Firestore.
+ * @param onLocationSaved Función que se ejecuta cuando se guarda la ubicación.
+ */
 fun saveViviendaLocation(vivienda: Vivienda, context: Activity, documentID: String, onLocationSaved: (Location) -> Unit) {
     if (checkLocationPermission(context)) {
         getCurrentLocation(context) { location ->
@@ -73,6 +91,14 @@ fun saveViviendaLocation(vivienda: Vivienda, context: Activity, documentID: Stri
     }
 }
 
+
+/**
+ * Guarda la ubicación de una finca en Firestore.
+ * @param finca Finca a la que se le va a guardar la ubicación.
+ * @param context Actividad desde la que se solicita la ubicación.
+ * @param documentID ID del documento de la finca en Firestore.
+ * @param onLocationSaved Función que se ejecuta cuando se guarda la ubicación.
+ */
 fun saveFincaLocation(finca: Finca, context: Activity, documentID: String, onLocationSaved: (Location) -> Unit) {
     if (checkLocationPermission(context)) {
         getCurrentLocation(context) { location ->

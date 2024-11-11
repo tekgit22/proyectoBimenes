@@ -11,6 +11,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.bimenesvive.bimenesvive.componentes.TarjetaFinca
+import com.bimenesvive.bimenesvive.componentes.TarjetaVivienda
 import com.bimenesvive.bimenesvive.modelo.Finca
 import com.bimenesvive.bimenesvive.modelo.Vivienda
 import com.bimenesvive.bimenesvive.utilidades.NavBarVolverInicio
@@ -48,8 +50,8 @@ fun PantallaTransados(modifier: Modifier = Modifier, navController: NavHostContr
             ) {
                 items(propiedades) { propiedad ->
                     when (propiedad) {
-                        is Vivienda -> ViviendaItem(propiedad, navController)
-                        is Finca -> FincaItem(propiedad, navController)
+                        is Vivienda -> TarjetaVivienda(propiedad, navController)
+                        is Finca -> TarjetaFinca(propiedad, navController)
                     }
                 }
             }

@@ -11,6 +11,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.bimenesvive.bimenesvive.componentes.TarjetaFinca
+import com.bimenesvive.bimenesvive.componentes.TarjetaVivienda
 import com.bimenesvive.bimenesvive.modelo.Finca
 import com.bimenesvive.bimenesvive.modelo.Vivienda
 import com.bimenesvive.bimenesvive.utilidades.NavBarVolverInicio
@@ -23,6 +25,7 @@ fun PantallaMisPropiedades(modifier: Modifier = Modifier, navController: NavHost
     var propiedades by remember { mutableStateOf<List<Any>>(emptyList()) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid
 
+    // Cargar propiedades al iniciar la pantalla
     LaunchedEffect(userID) {
         userID?.let {
             propiedades = cargarPropiedades(it)
@@ -50,8 +53,8 @@ fun PantallaMisPropiedades(modifier: Modifier = Modifier, navController: NavHost
             ) {
                 items(propiedades) { propiedad ->
                     when (propiedad) {
-                        is Vivienda -> ViviendaItem(propiedad, navController)
-                        is Finca -> FincaItem(propiedad, navController)
+                        is Vivienda -> TarjetaVivienda(propiedad, navController)
+                        is Finca -> TarjetaFinca(propiedad, navController)
                     }
                 }
             }
@@ -59,12 +62,22 @@ fun PantallaMisPropiedades(modifier: Modifier = Modifier, navController: NavHost
     }
 }
 
+/**
+ * Carga las propiedades del usuario desde Firestore
+ * @param userID ID del usuario
+ * @return Lista de propiedades del usuario
+ */
 suspend fun cargarPropiedades(userID: String): List<Any> {
     val viviendas = getMisViviendas(userID)
     val fincas = getMisFincas(userID)
     return viviendas + fincas
 }
 
+/**
+ * Carga las viviendas del usuario desde Firestore
+ * @param userID ID del usuario
+ * @return Lista de viviendas del usuario
+ */
 suspend fun getMisViviendas(userID: String): List<Vivienda> {
     val db = FirebaseFirestore.getInstance()
     return try {
@@ -72,12 +85,17 @@ suspend fun getMisViviendas(userID: String): List<Vivienda> {
             .whereEqualTo("userID", userID)
             .get()
             .await()
-        resultadoConsulta.toObjects(Vivienda::class.java).filter { it.disponible }
+        resultadoConsulta.toObjects(Vivienda::class.java).filter { it.disponible } // sólo almaceno las viviendas que están disponibles
     } catch (e: Exception) {
         emptyList()
     }
 }
 
+/**
+ * Carga las fincas del usuario desde Firestore
+ * @param userID ID del usuario
+ * @return Lista de fincas del usuario
+ */
 suspend fun getMisFincas(userID: String): List<Finca> {
     val db = FirebaseFirestore.getInstance()
     return try {
@@ -85,7 +103,7 @@ suspend fun getMisFincas(userID: String): List<Finca> {
             .whereEqualTo("userID", userID)
             .get()
             .await()
-        resultadoConsulta.toObjects(Finca::class.java).filter { it.disponible }
+        resultadoConsulta.toObjects(Finca::class.java).filter { it.disponible } // sólo almaceno las fincas que están disponibles
     } catch (e: Exception) {
         emptyList()
     }
