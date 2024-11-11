@@ -59,12 +59,20 @@ fun PantallaTransados(modifier: Modifier = Modifier, navController: NavHostContr
     }
 }
 
+/**
+ * Carga las propiedades transadas del usuario actual.
+ * @return Lista de propiedades transadas.
+ */
 suspend fun cargarPropiedadesTransados(): List<Any> {
     val viviendas = getViviendasTransadas()
     val fincas = getFincasTransadas()
     return viviendas + fincas
 }
 
+/**
+ * Obtiene las viviendas transadas del usuario actual.
+ * @return Lista de viviendas transadas.
+ */
 suspend fun getViviendasTransadas(): List<Vivienda> {
     val db = FirebaseFirestore.getInstance()
     return try {
@@ -78,6 +86,10 @@ suspend fun getViviendasTransadas(): List<Vivienda> {
     }
 }
 
+/**
+ * Obtiene las fincas transadas del usuario actual.
+ * @return Lista de fincas transadas.
+ */
 suspend fun getFincasTransadas(): List<Finca> {
     val db = FirebaseFirestore.getInstance()
     return try {

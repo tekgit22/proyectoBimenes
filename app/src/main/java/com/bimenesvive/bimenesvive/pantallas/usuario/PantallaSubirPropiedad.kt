@@ -68,105 +68,6 @@ fun PantallaSubirPropiedad(
 }
 
 
-
-//@Composable
-//fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
-//    var titulo by remember { mutableStateOf("") }
-//    var descripcion by remember { mutableStateOf("") }
-//    var habitaciones by remember { mutableIntStateOf(0) }
-//    var metros by remember { mutableIntStateOf(0) }
-//    var parroquia by remember { mutableStateOf("") }
-//    var telefono by remember { mutableStateOf("") }
-//    var email by remember { mutableStateOf("") }
-//    val userID = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-//    val localizacion = GeoPoint(0.0, 0.0) // TO DO
-//    val scrollState = rememberScrollState()
-//    val context = LocalContext.current
-//
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .verticalScroll(scrollState),
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//        TextField(
-//            value = titulo,
-//            onValueChange = { titulo = it },
-//            label = { Text("Título") },
-//            modifier = Modifier.fillMaxWidth(),
-//            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
-//        )
-//        TextField(
-//            value = descripcion,
-//            onValueChange = { descripcion = it },
-//            label = { Text("Descripción") },
-//            modifier = Modifier.fillMaxWidth(),
-//            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
-//        )
-//        TextField(
-//            value = habitaciones.toString(),
-//            onValueChange = { habitaciones = it.toIntOrNull() ?: 0 },
-//            label = { Text("Habitaciones") },
-//            modifier = Modifier.fillMaxWidth(),
-//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
-//        )
-//        TextField(
-//            value = metros.toString(),
-//            onValueChange = { metros = it.toIntOrNull() ?: 0 },
-//            label = { Text("Metros cuadrados") },
-//            modifier = Modifier.fillMaxWidth(),
-//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
-//        )
-//        TextField(
-//            value = parroquia,
-//            onValueChange = { parroquia = it },
-//            label = { Text("Parroquia") },
-//            modifier = Modifier.fillMaxWidth(),
-//            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
-//        )
-//        TextField(
-//            value = telefono,
-//            onValueChange = { telefono = it },
-//            label = { Text("Teléfono") },
-//            modifier = Modifier.fillMaxWidth(),
-//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
-//        )
-//        TextField(
-//            value = email,
-//            onValueChange = { email = it },
-//            label = { Text("Email") },
-//            modifier = Modifier.fillMaxWidth(),
-//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Done)
-//        )
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        Button(onClick = {
-//            val vivienda = hashMapOf(
-//                "titulo" to titulo,
-//                "descripcion" to descripcion,
-//                "habitaciones" to habitaciones,
-//                "metros" to metros,
-//                "parroquia" to parroquia,
-//                "telefono" to telefono,
-//                "email" to email,
-//                "userID" to userID,
-//                "localizacion" to localizacion
-//            )
-//            db.collection("viviendas").add(vivienda).addOnSuccessListener { documentReference ->
-//                val documentID = documentReference.id
-//                db.collection("viviendas").document(documentID).update("documentID", documentID)
-//                Toast.makeText(context, "Vivienda subida correctamente", Toast.LENGTH_SHORT).show()
-//                navController.navigate("vivienda/$documentID")
-//            }.addOnFailureListener { e ->
-//                Toast.makeText(context, "Se produjo un error", Toast.LENGTH_SHORT).show()
-//            }
-//        }) {
-//            Text(text = "Subir Vivienda")
-//        }
-//    }
-//}
-
 @Composable
 fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
     var titulo by remember { mutableStateOf("") }
@@ -531,13 +432,13 @@ fun NavBarInferiorSP(navController: NavHostController, seccionSeleccionada: Stri
         NavigationBarItem(
             icon = { Icon(painter = painterResource(id = R.drawable.ic_casa), contentDescription = "Vivienda") },
             label = { Text("Vivienda") },
-            selected = seccionSeleccionada == "vivienda",
+            selected = seccionSeleccionada == "Vivienda",
             onClick = { alSeleccionarSeccion("Vivienda") }
         )
         NavigationBarItem(
             icon = { Icon(painter = painterResource(id = R.drawable.ic_finca), contentDescription = "Finca") },
             label = { Text("Finca") },
-            selected = seccionSeleccionada == "finca",
+            selected = seccionSeleccionada == "Finca",
             onClick = { alSeleccionarSeccion("Finca") }
         )
     }
