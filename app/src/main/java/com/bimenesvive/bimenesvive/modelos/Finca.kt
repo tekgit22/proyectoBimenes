@@ -1,4 +1,4 @@
-package com.bimenesvive.bimenesvive.modelo
+package com.bimenesvive.bimenesvive.modelos
 
 import com.google.firebase.firestore.GeoPoint
 

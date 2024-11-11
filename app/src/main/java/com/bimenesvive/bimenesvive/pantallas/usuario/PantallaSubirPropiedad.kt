@@ -27,7 +27,7 @@ import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import com.bimenesvive.bimenesvive.componentes.TextLimiteTitulo
-import com.bimenesvive.bimenesvive.modelo.EstadoPropiedad
+import com.bimenesvive.bimenesvive.modelos.EstadoPropiedad
 
 
 @Composable

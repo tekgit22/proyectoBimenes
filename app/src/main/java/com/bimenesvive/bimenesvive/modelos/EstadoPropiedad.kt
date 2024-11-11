@@ -1,4 +1,4 @@
-package com.bimenesvive.bimenesvive.modelo
+package com.bimenesvive.bimenesvive.modelos
 
 enum class EstadoPropiedad {
     VENTA,

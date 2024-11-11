@@ -13,9 +13,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.bimenesvive.bimenesvive.componentes.TarjetaFinca
 import com.bimenesvive.bimenesvive.componentes.TarjetaVivienda
-import com.bimenesvive.bimenesvive.modelo.Finca
-import com.bimenesvive.bimenesvive.modelo.Vivienda
-import com.bimenesvive.bimenesvive.utilidades.NavBarVolverInicio
+import com.bimenesvive.bimenesvive.modelos.Finca
+import com.bimenesvive.bimenesvive.modelos.Vivienda
+import com.bimenesvive.bimenesvive.componentes.NavBarVolverInicio
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await

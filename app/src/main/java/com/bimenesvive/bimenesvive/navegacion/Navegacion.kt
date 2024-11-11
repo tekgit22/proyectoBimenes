@@ -1,23 +1,24 @@
-package com.bimenesvive.bimenesvive
+package com.bimenesvive.bimenesvive.navegacion
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.bimenesvive.bimenesvive.autenticacion.AutenticacionViewModel
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaPrincipal
 import com.bimenesvive.bimenesvive.pantallas.invitado.PantallaInvitado
 import com.bimenesvive.bimenesvive.pantallas.autenticacion.PantallaLogin
 import com.bimenesvive.bimenesvive.pantallas.autenticacion.PantallaRegistro
 import com.bimenesvive.bimenesvive.pantallas.autenticacion.PantallaSplash
-import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaAnuncio
-import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaBimenes
-import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaExplorar
-import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaFinca
+import com.bimenesvive.bimenesvive.pantallas.comunes.PantallaAnuncio
+import com.bimenesvive.bimenesvive.pantallas.comunes.PantallaBimenes
+import com.bimenesvive.bimenesvive.pantallas.comunes.PantallaExplorar
+import com.bimenesvive.bimenesvive.pantallas.comunes.PantallaFinca
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaMisPropiedades
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaSubirPropiedad
 import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaTransados
-import com.bimenesvive.bimenesvive.pantallas.usuario.PantallaVivienda
+import com.bimenesvive.bimenesvive.pantallas.comunes.PantallaVivienda
 
 
 @Composable

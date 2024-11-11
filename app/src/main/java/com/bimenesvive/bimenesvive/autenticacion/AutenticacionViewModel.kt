@@ -1,4 +1,4 @@
-package com.bimenesvive.bimenesvive
+package com.bimenesvive.bimenesvive.autenticacion
 
 import android.widget.Toast
 import androidx.lifecycle.LiveData
@@ -65,7 +65,8 @@ class AutenticacionViewModel : ViewModel() {
 
         //Para evitar trabajo innecesario, no permito el login si los campos están vacíos
         if (email.isEmpty() || password.isEmpty()) {
-            _estadoAutenticacion.value = AuthenticationState.AutentificacionFallida("Por favor, rellena todos los campos")
+            _estadoAutenticacion.value =
+                AuthenticationState.AutentificacionFallida("Por favor, rellena todos los campos")
             return
         }
 
@@ -75,7 +76,9 @@ class AutenticacionViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     _estadoAutenticacion.value = AuthenticationState.Autenticado
                 } else {
-                    _estadoAutenticacion.value = AuthenticationState.AutentificacionFallida(task.exception?.message ?: "Se ha producido un error")
+                    _estadoAutenticacion.value = AuthenticationState.AutentificacionFallida(
+                        task.exception?.message ?: "Se ha producido un error"
+                    )
                 }
             }
 
@@ -88,7 +91,8 @@ class AutenticacionViewModel : ViewModel() {
 
         //Para evitar trabajo innecesario, no permito el login si los campos están vacíos
         if (email.isEmpty() || password.isEmpty()) {
-            _estadoAutenticacion.value = AuthenticationState.AutentificacionFallida("Por favor, rellena todos los campos")
+            _estadoAutenticacion.value =
+                AuthenticationState.AutentificacionFallida("Por favor, rellena todos los campos")
             return
         }
 
@@ -98,7 +102,9 @@ class AutenticacionViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     _estadoAutenticacion.value = AuthenticationState.Autenticado
                 } else {
-                    _estadoAutenticacion.value = AuthenticationState.AutentificacionFallida(task.exception?.message ?: "Se ha producido un error")
+                    _estadoAutenticacion.value = AuthenticationState.AutentificacionFallida(
+                        task.exception?.message ?: "Se ha producido un error"
+                    )
                 }
             }
 

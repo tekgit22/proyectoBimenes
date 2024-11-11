@@ -1,4 +1,4 @@
-package com.bimenesvive.bimenesvive.modelo
+package com.bimenesvive.bimenesvive.modelos
 
 
 //Data class proporciona automáticamente métodos como toString(), equals(), hashCode(), y copy()

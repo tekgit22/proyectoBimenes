@@ -1,6 +1,5 @@
-package com.bimenesvive.bimenesvive.pantallas.usuario
+package com.bimenesvive.bimenesvive.pantallas.comunes
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,24 +11,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.bimenesvive.bimenesvive.AutenticacionViewModel
 import com.bimenesvive.bimenesvive.R
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.*
-import com.bimenesvive.bimenesvive.modelo.Finca
-import com.bimenesvive.bimenesvive.modelo.Vivienda
+import com.bimenesvive.bimenesvive.modelos.Finca
+import com.bimenesvive.bimenesvive.modelos.Vivienda
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import android.net.Uri
-import androidx.compose.foundation.background
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
-import com.bimenesvive.bimenesvive.utilidades.*
-import androidx.compose.ui.graphics.Brush
 import com.bimenesvive.bimenesvive.componentes.TarjetaFinca
 import com.bimenesvive.bimenesvive.componentes.TarjetaVivienda
 import com.google.firebase.auth.FirebaseAuth

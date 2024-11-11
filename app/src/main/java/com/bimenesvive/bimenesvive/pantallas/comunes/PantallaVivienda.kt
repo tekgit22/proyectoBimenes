@@ -1,4 +1,4 @@
-package com.bimenesvive.bimenesvive.pantallas.usuario
+package com.bimenesvive.bimenesvive.pantallas.comunes
 
 import android.app.Activity
 import android.content.Context
@@ -22,7 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import com.bimenesvive.bimenesvive.modelo.Vivienda
+import com.bimenesvive.bimenesvive.modelos.Vivienda
 import com.bimenesvive.bimenesvive.utilidades.*
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
@@ -61,7 +61,8 @@ import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
-import com.bimenesvive.bimenesvive.modelo.EstadoPropiedad
+import com.bimenesvive.bimenesvive.componentes.NavBarViendoPropiedad
+import com.bimenesvive.bimenesvive.modelos.EstadoPropiedad
 
 
 @Composable
@@ -579,7 +580,7 @@ fun PantallaVivienda(
                             Button(
                                 onClick = {
                                     try {
-                                        borrarAnuncio(
+                                        borrarAnuncioVivienda(
                                             userID,
                                             documentID,
                                             imageUris,
@@ -685,7 +686,7 @@ fun rotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
     }
 }
 
-private fun borrarAnuncio(
+private fun borrarAnuncioVivienda(
     userID: String,
     documentID: String,
     imageUris: List<Uri>,

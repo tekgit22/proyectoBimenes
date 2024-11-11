@@ -30,8 +30,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.bimenesvive.bimenesvive.AuthenticationState
-import com.bimenesvive.bimenesvive.AutenticacionViewModel
+import com.bimenesvive.bimenesvive.autenticacion.AuthenticationState
+import com.bimenesvive.bimenesvive.autenticacion.AutenticacionViewModel
 import com.bimenesvive.bimenesvive.R
 
 @Composable

@@ -1,4 +1,4 @@
-package com.bimenesvive.bimenesvive.pantallas.usuario
+package com.bimenesvive.bimenesvive.pantallas.comunes
 
 import android.app.Activity
 import android.content.Context
@@ -50,8 +50,9 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
-import com.bimenesvive.bimenesvive.modelo.EstadoPropiedad
-import com.bimenesvive.bimenesvive.modelo.Finca
+import com.bimenesvive.bimenesvive.componentes.NavBarViendoPropiedad
+import com.bimenesvive.bimenesvive.modelos.EstadoPropiedad
+import com.bimenesvive.bimenesvive.modelos.Finca
 import com.bimenesvive.bimenesvive.utilidades.checkLocationPermission
 import com.bimenesvive.bimenesvive.utilidades.saveFincaLocation
 import com.google.android.gms.tasks.Tasks
@@ -592,7 +593,7 @@ fun PantallaFinca(
                             Button(
                                 onClick = {
                                     try {
-                                        borrarAnuncio(
+                                        borrarAnuncioFinca(
                                             userID,
                                             documentID,
                                             imageUris,
@@ -654,7 +655,7 @@ fun PantallaFinca(
 /**
  * Borra un anuncio de la base de datos de Firestore
  */
-private fun borrarAnuncio(
+private fun borrarAnuncioFinca(
     userID: String,
     documentID: String,
     imageUris: List<Uri>,

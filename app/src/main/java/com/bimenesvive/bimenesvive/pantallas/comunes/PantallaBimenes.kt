@@ -1,4 +1,4 @@
-package com.bimenesvive.bimenesvive.pantallas.usuario
+package com.bimenesvive.bimenesvive.pantallas.comunes
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.bimenesvive.bimenesvive.R
-import com.bimenesvive.bimenesvive.utilidades.NavBarVolverInicio
+import com.bimenesvive.bimenesvive.componentes.NavBarVolverInicio
 
 @Composable
 fun PantallaBimenes(modifier: Modifier, navController: NavHostController) {

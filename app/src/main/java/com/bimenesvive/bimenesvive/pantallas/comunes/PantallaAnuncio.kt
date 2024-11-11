@@ -1,4 +1,4 @@
-package com.bimenesvive.bimenesvive.pantallas.usuario
+package com.bimenesvive.bimenesvive.pantallas.comunes
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,8 +13,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
-import com.bimenesvive.bimenesvive.modelo.Anuncio
-import com.bimenesvive.bimenesvive.utilidades.NavBarVolverInicio
+import com.bimenesvive.bimenesvive.modelos.Anuncio
+import com.bimenesvive.bimenesvive.componentes.NavBarVolverInicio
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -44,7 +44,7 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
             if (userID != "invitado") { // Los usuarios invitados no pueden añadir anuncios
                 FloatingActionButton(onClick = {
                     userAnuncio?.let { anuncio ->
-                        borrarAnuncio(anuncio)
+                        borrarAnuncioFinca(anuncio)
                         userAnuncio = null
                         anuncios = anuncios.filter { it.userID != userID }
                         // Actualizo la lista de anuncios, filtro los del usuario para asegurar
@@ -235,7 +235,7 @@ fun addAnuncio(anuncio: Anuncio) {
 /**
  * Borra un anuncio de Firebase
  */
-fun borrarAnuncio(anuncio: Anuncio) {
+fun borrarAnuncioFinca(anuncio: Anuncio) {
     FirebaseFirestore.getInstance()
         .collection("anuncios")
         .whereEqualTo("userID", anuncio.userID)

@@ -30,10 +30,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.bimenesvive.bimenesvive.modelo.Finca
-import com.bimenesvive.bimenesvive.modelo.Vivienda
-import com.bimenesvive.bimenesvive.pantallas.usuario.subirVisitaFinca
-import com.bimenesvive.bimenesvive.pantallas.usuario.subirVisitaVivienda
+import com.bimenesvive.bimenesvive.modelos.Finca
+import com.bimenesvive.bimenesvive.modelos.Vivienda
+import com.bimenesvive.bimenesvive.pantallas.comunes.subirVisitaFinca
+import com.bimenesvive.bimenesvive.pantallas.comunes.subirVisitaVivienda
 import com.bimenesvive.bimenesvive.utilidades.getFotosFincaDesdeFirestore
 import com.bimenesvive.bimenesvive.utilidades.getFotosViviendaDesdeFirestore
 import kotlinx.coroutines.launch

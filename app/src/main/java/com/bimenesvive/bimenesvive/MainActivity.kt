@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import com.bimenesvive.bimenesvive.autenticacion.AutenticacionViewModel
+import com.bimenesvive.bimenesvive.navegacion.Navegacion
 import com.bimenesvive.bimenesvive.ui.theme.BimenesViveTheme
 
 class MainActivity : ComponentActivity() {
