@@ -40,7 +40,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -359,74 +358,77 @@ fun PantallaVivienda(
                             }
                         )
                     }
-                    Spacer(modifier = Modifier.height(15.dp))
-                    Column {
-                        LazyRow(state = listState) {
-                            items(imageUris) { uri ->
-                                Image(
-                                    painter = rememberAsyncImagePainter(
-                                        ImageRequest.Builder(
-                                            LocalContext.current
-                                        ).data(data = uri)
-                                            .apply(block = fun ImageRequest.Builder.() {
-                                                transformations(CircleCropTransformation())
-                                            }).build()
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(128.dp)
-                                        .padding(4.dp)
-                                        .clickable {
-                                            imagenSeleccionada = uri
-                                            esImagenGrande = true
-                                        }
-                                )
-                            }
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            if (listState.firstVisibleItemIndex > 0) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Previous",
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clickable {
-                                            coroutineScope.launch {
-                                                listState.animateScrollToItem(listState.firstVisibleItemIndex - 1)
-                                            }
-                                        },
-                                    tint = Color.Gray
-                                )
-                            } else {
-                                Spacer(modifier = Modifier.size(24.dp))
-                            }
-                            val lastVisibleItemIndex =
-                                listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
-                            if (lastVisibleItemIndex < imageUris.size - 1) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = "Next",
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clickable {
-                                            coroutineScope.launch {
-                                                listState.animateScrollToItem(listState.firstVisibleItemIndex + 1)
-                                            }
-                                        },
-                                    tint = Color.Gray
-                                )
-                            } else {
-                                Spacer(modifier = Modifier.size(24.dp))
-                            }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // LazyRow para mostrar las imágenes
+                    LazyRow(state = listState) {
+                        items(imageUris) { uri ->
+                            Image(
+                                painter = rememberAsyncImagePainter(
+                                    ImageRequest.Builder(
+                                        LocalContext.current
+                                    ).data(data = uri)
+                                        .apply(block = fun ImageRequest.Builder.() {
+                                            transformations(CircleCropTransformation())
+                                        }).build()
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(128.dp)
+                                    .padding(4.dp)
+                                    .clickable {
+                                        imagenSeleccionada = uri
+                                        esImagenGrande = true
+                                    }
+                            )
                         }
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Row encargada de mostrar los botones de navegación entre las imágenes
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        if (listState.firstVisibleItemIndex > 0) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Previous",
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clickable {
+                                        coroutineScope.launch {
+                                            listState.animateScrollToItem(listState.firstVisibleItemIndex - 1)
+                                        }
+                                    },
+                                tint = Color.Gray
+                            )
+                        } else {
+                            Spacer(modifier = Modifier.size(24.dp))
+                        }
+                        val lastVisibleItemIndex =
+                            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+                        if (lastVisibleItemIndex < imageUris.size - 1) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "Next",
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clickable {
+                                        coroutineScope.launch {
+                                            listState.animateScrollToItem(listState.firstVisibleItemIndex + 1)
+                                        }
+                                    },
+                                tint = Color.Gray
+                            )
+                        } else {
+                            //Spacer(modifier = Modifier.size(24.dp))
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.size(24.dp))
 
                     //Primera row de botones
-
 
                     if (userID == vivienda?.userID) {
                         Row(
@@ -480,6 +482,8 @@ fun PantallaVivienda(
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
+
+                    //Columna que contiene el botón de ver localización o localización no disponible
                     Column {
                         if (vivienda?.localizacion?.latitude == 0.0 && vivienda?.localizacion?.longitude == 0.0) {
                             Button(

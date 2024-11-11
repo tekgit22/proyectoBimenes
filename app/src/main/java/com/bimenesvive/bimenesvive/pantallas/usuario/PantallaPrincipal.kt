@@ -39,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import androidx.compose.ui.platform.LocalContext
 
 
 @Composable
@@ -48,26 +47,31 @@ fun PantallaPrincipal(
     navController: NavController,
     autenticacionViewModel: AutenticacionViewModel
 ) {
+
     val authenticationState = autenticacionViewModel.estadoAutenticacion.observeAsState()
     val userID = FirebaseAuth.getInstance().currentUser?.uid
-//    val adminID = "4wOzuh8c8GhYeP3qbgn6Ja888F02"
     var isAdmin by remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
     /**
-     * Comprueba si el usuario actual es el administrador
+     * Comprueba si el usuario actual es el administrador al iniciar la pantalla
      */
     LaunchedEffect(userID) {
-       // Toast.makeText(context, "userID=($userID)", Toast.LENGTH_SHORT).show()
         comprobarAdmin { result ->
             isAdmin = result
         }
     }
 
-    // REVISAR SU UTILIDAD
+    /**
+     * Navega a la pantalla de login si el usuario no está autenticado
+     */
     LaunchedEffect(authenticationState.value) {
         when (authenticationState.value) {
-            is AuthenticationState.Desautenticado -> navController.navigate("login")
+            is AuthenticationState.Desautenticado -> {
+                while (navController.popBackStack()) {
+                    // Sigue vaciando la pila hasta que devuelve false
+                }
+                navController.navigate("login")
+            }
             else -> Unit
         }
     }
@@ -103,6 +107,7 @@ fun PantallaPrincipal(
         }
 
         Spacer(modifier = Modifier.height(15.dp))
+
         Button(
             onClick = { navController.navigate("subirPropiedad") },
             modifier = Modifier
@@ -117,6 +122,7 @@ fun PantallaPrincipal(
         }
 
         Spacer(modifier = Modifier.height(15.dp))
+
         Button(
             onClick = { navController.navigate("mispropiedades") },
             modifier = Modifier
@@ -131,6 +137,7 @@ fun PantallaPrincipal(
         }
 
         Spacer(modifier = Modifier.height(15.dp))
+
         Button(
             onClick = { navController.navigate("bimenes") },
             modifier = Modifier
@@ -145,6 +152,7 @@ fun PantallaPrincipal(
         }
 
         Spacer(modifier = Modifier.height(15.dp))
+
         Button(
             onClick = { navController.navigate("anuncio") },
             modifier = Modifier
@@ -158,7 +166,7 @@ fun PantallaPrincipal(
             }
         }
 
-//
+// Botón de inmuebles transados solo para el administrador
         if (isAdmin) {
             Spacer(modifier = Modifier.height(15.dp))
             Button(
@@ -177,14 +185,13 @@ fun PantallaPrincipal(
         }
 
         Spacer(modifier = Modifier.weight(1f))
-        //Este spacer se encarga de que los botones anteriores no se peguen al borde inferior de la pantalla
 
-
-        // Botón de logoff en la parte inferior
+        // Textbutton LOGOFF pegado al borde inferior
         TextButton(
             onClick = {
                 autenticacionViewModel.cerrarSesion()
-                navController.navigate("login")
+               // navController.navigate("login")
+                // cedo la responsabilidad de navegar al LauncedEffect que provocará el cierre de sesión
             },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
@@ -193,12 +200,17 @@ fun PantallaPrincipal(
     }
 }
 
+/**
+ * Comprueba si el usuario actual es el administrador
+ * @param onResult Función que se ejecuta cuando se obtiene el resultado
+ * @return Booleano que indica si el usuario actual es el administrador
+ */
 fun comprobarAdmin(onResult: (Boolean) -> Unit) {
     val db = FirebaseFirestore.getInstance()
-    val adminRef = db.collection("config").document("L2OLHKzjbA9wzA5N9D5W")
+    val adminID = db.collection("config").document("L2OLHKzjbA9wzA5N9D5W")
     val userID = FirebaseAuth.getInstance().currentUser?.uid
 
-    adminRef.get()
+    adminID.get()
         .addOnSuccessListener { document ->
             if (document != null) {
                 val adminID = document.getString("adminID")
