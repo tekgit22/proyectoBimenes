@@ -34,7 +34,6 @@ import com.bimenesvive.bimenesvive.modelo.Finca
 import com.bimenesvive.bimenesvive.modelo.Vivienda
 import com.bimenesvive.bimenesvive.pantallas.usuario.subirVisitaFinca
 import com.bimenesvive.bimenesvive.pantallas.usuario.subirVisitaVivienda
-import com.bimenesvive.bimenesvive.utilidades.ImagenConPlaceholder
 import com.bimenesvive.bimenesvive.utilidades.getFotosFincaDesdeFirestore
 import com.bimenesvive.bimenesvive.utilidades.getFotosViviendaDesdeFirestore
 import kotlinx.coroutines.launch

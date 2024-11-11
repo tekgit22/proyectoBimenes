@@ -4,14 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.foundation.Image
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import coil.size.Size
-import com.bimenesvive.bimenesvive.R
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
@@ -22,31 +14,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import coil.transform.CircleCropTransformation
 
-// COMPOSABLES
-
-/**
- * Muestra una imagen con un placeholder mientras se carga
- */
-@Composable
-fun ImagenConPlaceholder(uri: Uri, modifier: Modifier = Modifier) {
-    val painter = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(uri)
-            .size(Size.ORIGINAL)
-            .placeholder(R.drawable.loading_spinner)
-            .crossfade(true)
-            .transformations(CircleCropTransformation())
-            .build()
-    )
-
-    Image(
-        painter = painter,
-        contentDescription = null,
-        modifier = modifier
-    )
-}
 
 
 // METODOS GENERALES
