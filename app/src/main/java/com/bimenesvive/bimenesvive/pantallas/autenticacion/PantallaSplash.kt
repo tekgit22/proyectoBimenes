@@ -18,16 +18,17 @@ import kotlinx.coroutines.delay
 fun PantallaSplash(navController: NavController, autenticacionViewModel: AutenticacionViewModel) {
     LaunchedEffect(Unit) {
         delay(3000) // Espera 3 segundos
-        val pantallaDestino = if (autenticacionViewModel.estadoAutenticacion.value is AuthenticationState.Autenticado) {
-            "inicio"
-        } else {
-            "login"
-        }
+        val pantallaDestino =
+            if (autenticacionViewModel.estadoAutenticacion.value is AuthenticationState.Autenticado) {
+                "inicio"
+            } else {
+                "login"
+            }
         navController.navigate(pantallaDestino) {
             popUpTo("splash") { inclusive = true }
-            //El método popUpTo() elimina todas las pantallas del backstack hasta la pantalla especificada
+            //El metodo popUpTo() elimina todas las pantallas del backstack hasta la pantalla especificada
             //inclusive = true significa que también se elimina la pantalla especificada
-            //Así la pila de navegación no tendrá esta pantalla y el usuario no puede retroceder a ella
+            //Así, la pila de navegación no tendrá esta pantalla y el usuario no puede retroceder a ella
         }
     }
 
@@ -35,6 +36,6 @@ fun PantallaSplash(navController: NavController, autenticacionViewModel: Autenti
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Image(painter = painterResource(id = R.drawable.logotest), contentDescription = "Logo")
+        Image(painter = painterResource(id = R.drawable.logo), contentDescription = "Logo")
     }
 }

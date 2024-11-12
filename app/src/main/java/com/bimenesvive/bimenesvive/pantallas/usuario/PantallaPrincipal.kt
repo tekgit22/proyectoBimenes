@@ -85,7 +85,7 @@ fun PantallaPrincipal(
     ) {
         // Título
         Image(
-            painter = painterResource(id = R.drawable.logotest),
+            painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo",
             modifier = Modifier.padding(8.dp)
         )

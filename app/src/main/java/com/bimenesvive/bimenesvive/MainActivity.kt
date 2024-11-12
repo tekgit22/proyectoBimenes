@@ -28,7 +28,6 @@ class MainActivity : ComponentActivity() {
                     Navegacion(modifier = Modifier.padding(innerPadding), autenticacionViewModel = autenticacionViewModel)
                     //El Scaffold calcula un innerPadding que representa el espacio que necesita el contenido
                     //Para no superponerse con esos elementos de la interfaz de usuario
-                    //Por pasamos ese innerPadding a nuestro composable Navegacion como un Modifier
                 }
             }
         }

@@ -54,24 +54,21 @@ fun PantallaRegistro(
     //Estamos observando el estado de la autenticación para cambiar la UI
     val authenticationState = autenticacionViewModel.estadoAutenticacion.observeAsState()
 
-    LaunchedEffect(authenticationState.value) {  //estudiar LaunchedEffect
+    LaunchedEffect(authenticationState.value) {
         when (authenticationState.value) {
             is AuthenticationState.Autenticado -> navController.navigate("inicio")
             else -> Unit
         }
-        //When the return type of a function is Unit it means the function does not return anything
-
     }
 
     Column(
-        //MODIFICAR UI
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Image(
-            painter = painterResource(id = R.drawable.logotest),
+            painter = painterResource(id = R.drawable.logo),
             contentDescription = "Registro Image",
             modifier = Modifier.height(100.dp)
         )
@@ -114,7 +111,7 @@ fun PantallaRegistro(
 
         Button(
             onClick = {
-                // Validar el formato del email
+                // Valida el formato del email
                 if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     Toast.makeText(
                         context,
@@ -141,9 +138,7 @@ fun PantallaRegistro(
         Spacer(modifier = Modifier.height(10.dp))
 
         TextButton(onClick = { navController.navigate("login") }) {
-            Text(text = "Acceder a mi cuenta") //ARCHIVO DE TEXTO
+            Text(text = "Acceder a mi cuenta")
         }
-
-
     }
 }

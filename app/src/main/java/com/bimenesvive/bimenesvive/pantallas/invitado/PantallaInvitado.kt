@@ -46,7 +46,7 @@ fun PantallaInvitado(
                 .padding(8.dp)
                 .align(Alignment.TopCenter)
         ) {
-            Image(painter = painterResource(id = R.drawable.logotest), contentDescription = "Logo")
+            Image(painter = painterResource(id = R.drawable.logo), contentDescription = "Logo")
         }
 
         // Botones centrados

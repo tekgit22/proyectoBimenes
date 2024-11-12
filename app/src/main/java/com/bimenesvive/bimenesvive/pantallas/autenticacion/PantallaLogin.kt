@@ -45,7 +45,7 @@ fun PantallaLogin(
     autenticacionViewModel: AutenticacionViewModel
 ) {
     val context = LocalContext.current
-    // recuerda que con null sin localcontext la app crashea
+    // El LocalContext no puede ser null, paso este parámetro cuando necesite el contexto, como en los Toast
 
     var email by remember {
         mutableStateOf("")
@@ -76,26 +76,23 @@ fun PantallaLogin(
             is AuthenticationState.Autenticado -> navController.navigate("inicio")
             is AuthenticationState.AutentificacionFallida -> {
                 Toast.makeText(context, "Error en la autenticación", Toast.LENGTH_SHORT)
-                    .show() // podría usar el mensaje de error que viene en el estado
-
+                    .show()
                 // Hago un reset del estado a Desautenticado para que el usuario pueda intentar de nuevo
                 // y el Toast no salte constantemente
                 autenticacionViewModel.reiniciarEstadoAutenticacion()
             }
-
             else -> Unit
         }
     }
 
     Box(modifier = modifier.fillMaxSize()) { // Utilizo el box para centrar el contenido
         Column(
-            // MODIFICAR UI
             modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logotest),
+                painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Registro Image",
                 modifier = Modifier.height(100.dp)
             )
@@ -139,7 +136,6 @@ fun PantallaLogin(
             ) {
                 Button(
                     onClick = {
-                        // Si el password o el email están vacíos, no permito el login
                         if (email.isNotEmpty() && password.isNotEmpty()) {
                             autenticacionViewModel.login(email, password)
                         } else {
@@ -150,7 +146,8 @@ fun PantallaLogin(
                             ).show()
                         }
                     },
-                    // El botón estará enabled siempre que no esté autenticando, así el usuario no puede hacer click varias veces mientras firebase responde
+                    // El botón estará enabled siempre que no esté autenticando,
+                    // así el usuario no puede hacer click varias veces mientras firebase responde
                     enabled = authenticationState.value != AuthenticationState.ProcesandoAutentificacion
                 ) {
                     Text(text = "Acceder")
@@ -164,11 +161,12 @@ fun PantallaLogin(
             Spacer(modifier = Modifier.height(16.dp))
 
             TextButton(onClick = { navController.navigate("registro") }) {
-                Text(text = "Todavía no tengo cuenta, quiero registrarme") // ARCHIVO DE TEXTO
+                Text(text = "Todavía no tengo cuenta, quiero registrarme")
             }
         }
 
-        Box( // Este box está para alojar el TextButton en el fondo de la pantalla
+        // Box está para alojar el TextButton en el fondo de la pantalla
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = 8.dp),
@@ -214,6 +212,8 @@ fun RecordarPasswordDialog(onDismiss: () -> Unit, onSendEmail: (String) -> Unit)
                 onDismiss()
             }) {
                 Text("Enviar")
+                // El usuario recibirá un email de noreply@bimenes-vive.firebaseapp.com
+                // Con un link para cambiar la contraseña
             }
         }
     )
