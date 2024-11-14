@@ -83,6 +83,7 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
     val localizacion = GeoPoint(0.0, 0.0)
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val limiteCaracteresTitulo = 30
 
     Column(
         modifier = Modifier
@@ -130,11 +131,12 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
 //            modifier = Modifier.align(Alignment.End).padding(end = 16.dp)
 //        )
 
-        TextLimiteTitulo(currentLength = titulo.length, maxLength = 30)
+        //Composable custom, muestra el num de caracteres escritos / límite de caracteres del título
+        TextLimiteTitulo(currentLength = titulo.length, maxLength = limiteCaracteresTitulo)
 
         TextField(
             value = titulo,
-            onValueChange = { if (it.length <= 30) titulo = it },
+            onValueChange = { if (it.length <= limiteCaracteresTitulo) titulo = it },
             label = { Text("Título") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
@@ -224,41 +226,41 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
         }) {
             Text(text = "Subir Vivienda")
         }
-        FloatingActionButton(
-            onClick = {
-                val vivienda = hashMapOf(
-                    "titulo" to titulo,
-                    "descripcion" to descripcion,
-                    "habitaciones" to habitaciones,
-                    "metros" to metros,
-                    "ubicacion" to ubicacion,
-                    "telefono" to telefono,
-                    "email" to email,
-                    "userID" to userID,
-                    "localizacion" to localizacion,
-                    "estado" to estado.name,
-                    "precio" to precio,
-                    "visitas" to 0,
-                    "disponible" to true
-                )
-                db.collection("viviendas").add(vivienda).addOnSuccessListener { documentReference ->
-                    val documentID = documentReference.id
-                    db.collection("viviendas").document(documentID).update("documentID", documentID)
-                    Toast.makeText(context, "Vivienda subida correctamente", Toast.LENGTH_SHORT).show()
-                    navController.navigate("vivienda/$documentID")
-                }.addOnFailureListener { e ->
-                    Toast.makeText(context, "Se produjo un error", Toast.LENGTH_SHORT).show()
-                }
-            },
-            shape = RoundedCornerShape(50), // Forma redondeada
-            containerColor = MaterialTheme.colorScheme.primary // Color de fondo
-        ) {
-            Icon(
-                imageVector = Icons.Default.CloudUpload, // Ícono de nube subir
-                contentDescription = "Subir Vivienda",
-                tint = Color.White // Color del ícono
-            )
-        }
+//        FloatingActionButton(
+//            onClick = {
+//                val vivienda = hashMapOf(
+//                    "titulo" to titulo,
+//                    "descripcion" to descripcion,
+//                    "habitaciones" to habitaciones,
+//                    "metros" to metros,
+//                    "ubicacion" to ubicacion,
+//                    "telefono" to telefono,
+//                    "email" to email,
+//                    "userID" to userID,
+//                    "localizacion" to localizacion,
+//                    "estado" to estado.name,
+//                    "precio" to precio,
+//                    "visitas" to 0,
+//                    "disponible" to true
+//                )
+//                db.collection("viviendas").add(vivienda).addOnSuccessListener { documentReference ->
+//                    val documentID = documentReference.id
+//                    db.collection("viviendas").document(documentID).update("documentID", documentID)
+//                    Toast.makeText(context, "Vivienda subida correctamente", Toast.LENGTH_SHORT).show()
+//                    navController.navigate("vivienda/$documentID")
+//                }.addOnFailureListener { e ->
+//                    Toast.makeText(context, "Se produjo un error", Toast.LENGTH_SHORT).show()
+//                }
+//            },
+//            shape = RoundedCornerShape(50), // Forma redondeada
+//            containerColor = MaterialTheme.colorScheme.primary // Color de fondo
+//        ) {
+//            Icon(
+//                imageVector = Icons.Default.CloudUpload, // Ícono de nube subir
+//                contentDescription = "Subir Vivienda",
+//                tint = Color.White // Color del ícono
+//            )
+//        }
     }
 }
 
