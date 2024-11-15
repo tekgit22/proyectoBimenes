@@ -20,12 +20,15 @@ class MainActivity : ComponentActivity() {
 
         // by viewModels() es una extensión de la clase ComponentActivity permite
         // obtener una instancia de un ViewModel asociado a la actividad.
-        val autenticacionViewModel : AutenticacionViewModel by viewModels()
+        val autenticacionViewModel: AutenticacionViewModel by viewModels()
 
         setContent {
             BimenesViveTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Navegacion(modifier = Modifier.padding(innerPadding), autenticacionViewModel = autenticacionViewModel)
+                    Navegacion(
+                        modifier = Modifier.padding(innerPadding),
+                        autenticacionViewModel = autenticacionViewModel
+                    )
                     //El Scaffold calcula un innerPadding que representa el espacio que necesita el contenido
                     //Para no superponerse con esos elementos de la interfaz de usuario
                 }

@@ -29,7 +29,8 @@ class FirebaseTestCollectionTest {
         // Referencia al documento
         val documento = firestore.collection("test").document("Bsijt3Qp0aHB9bfiES5X")
         // Obtiene el contenido del documento
-        val instantanea = documento.get().await() // await() es necesario para esperar a que se resuelva la tarea
+        val instantanea =
+            documento.get().await() // await() es necesario para esperar a que se resuelva la tarea
         assertTrue("El documento debería existir", instantanea.exists())
     }
 
@@ -92,6 +93,10 @@ class FirebaseTestCollectionTest {
         val documento = firestore.collection("test").document("Bsijt3Qp0aHB9bfiES5X")
         val instantanea = documento.get().await()
         val valor = instantanea.getString("clave")
-        assertNotEquals("El valor de la clave no debería ser 'valor incorrecto'", "valor incorrecto", valor)
+        assertNotEquals(
+            "El valor de la clave no debería ser 'valor incorrecto'",
+            "valor incorrecto",
+            valor
+        )
     }
 }

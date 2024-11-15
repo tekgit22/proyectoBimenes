@@ -20,9 +20,13 @@ class FirebaseColeccionVivendaTest {
     fun testViviendasCollectionIsNotEmpty() = runBlocking {
         val firebase = FirebaseFirestore.getInstance() // Instancia de Firestore
         val collection = firebase.collection("viviendas") // Colección de viviendas
-        val documentos = collection.get().await() // Obtengo los ocumentos de la colección (espera hasta que se resuelva)
+        val documentos = collection.get()
+            .await() // Obtengo los ocumentos de la colección (espera hasta que se resuelva)
         val isNotEmpty = documentos.isEmpty.not() // Compruebo si la colección no está vacía
-        Log.d("FirebaseTest", "testViviendasCollectionIsNotEmpty: $isNotEmpty") // Log para ver el resultado
+        Log.d(
+            "FirebaseTest",
+            "testViviendasCollectionIsNotEmpty: $isNotEmpty"
+        ) // Log para ver el resultado
         assertTrue(isNotEmpty) // Devuelvo el resultado
     }
 }
