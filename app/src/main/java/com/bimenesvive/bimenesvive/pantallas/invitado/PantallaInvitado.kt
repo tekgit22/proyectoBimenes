@@ -72,7 +72,7 @@ fun PantallaInvitado(
 
             Spacer(modifier = Modifier.height(15.dp))
             Button(
-                onClick = {  },
+                onClick = { },
                 enabled = false,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                 modifier = Modifier
@@ -88,7 +88,7 @@ fun PantallaInvitado(
 
             Spacer(modifier = Modifier.height(15.dp))
             Button(
-                onClick = {  },
+                onClick = { },
                 enabled = false,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                 modifier = Modifier
@@ -96,7 +96,10 @@ fun PantallaInvitado(
                     .padding(horizontal = 16.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.Assignment, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Assignment,
+                        contentDescription = null
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "Mis Propiedades")
                 }
@@ -104,7 +107,7 @@ fun PantallaInvitado(
 
             Spacer(modifier = Modifier.height(15.dp))
             Button(
-                onClick = { navController.navigate("bimenes")},
+                onClick = { navController.navigate("bimenes") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -131,7 +134,6 @@ fun PantallaInvitado(
             }
         }
     }
-
 
 
     // Botón para volver al registro en la parte inferior

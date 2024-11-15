@@ -72,6 +72,7 @@ fun PantallaPrincipal(
                 }
                 navController.navigate("login")
             }
+
             else -> Unit
         }
     }
@@ -190,7 +191,7 @@ fun PantallaPrincipal(
         TextButton(
             onClick = {
                 autenticacionViewModel.cerrarSesion()
-               // navController.navigate("login")
+                // navController.navigate("login")
                 // cedo la responsabilidad de navegar al LauncedEffect que provocará el cierre de sesión
             },
             modifier = Modifier.align(Alignment.CenterHorizontally)

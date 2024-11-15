@@ -28,7 +28,7 @@ fun PantallaSplash(navController: NavController, autenticacionViewModel: Autenti
             popUpTo("splash") { inclusive = true }
             //El metodo popUpTo() elimina todas las pantallas del backstack hasta la pantalla especificada
             //inclusive = true significa que también se elimina la pantalla especificada
-            //Así, la pila de navegación no tendrá esta pantalla y el usuario no puede retroceder a ella
+            //La pila de navegación no tendrá esta pantalla y el usuario no puede retroceder a ella
         }
     }
 

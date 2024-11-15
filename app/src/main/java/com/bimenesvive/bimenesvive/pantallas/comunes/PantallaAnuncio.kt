@@ -200,10 +200,6 @@ fun AnuncioDialog(onDismiss: () -> Unit, onSubmit: (Anuncio) -> Unit) {
 // 7 Se actualiza la lista de anuncios con el LaunchedEffect
 
 
-
-
-
-
 // Métodos para interactuar con Firebase (exclusivos de esta pantalla)
 
 /**

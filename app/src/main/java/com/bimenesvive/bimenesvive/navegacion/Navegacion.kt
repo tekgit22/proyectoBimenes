@@ -45,6 +45,7 @@ fun Navegacion(modifier: Modifier = Modifier, autenticacionViewModel: Autenticac
         }
         composable("vivienda/{documentID}") { entry ->
             val documentID = entry.arguments?.getString("documentID") ?: ""
+            // Si entry.arguments es nulo, asigno un string vacío
             PantallaVivienda(modifier, navController, documentID)
         }
         composable("finca/{documentID}") { entry ->

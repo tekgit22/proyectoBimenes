@@ -39,9 +39,16 @@ fun PantallaSubirPropiedad(
     val db = FirebaseFirestore.getInstance()
 
     Scaffold(
-        bottomBar = { NavBarInferiorSP(navController as NavHostController, selectedTab) { newTab -> selectedTab = newTab } }
+        bottomBar = {
+            NavBarInferiorSP(
+                navController as NavHostController,
+                selectedTab
+            ) { newTab -> selectedTab = newTab }
+        }
     ) {
-        Box(modifier = modifier.fillMaxSize().padding(it), contentAlignment = Alignment.Center) {
+        Box(modifier = modifier
+            .fillMaxSize()
+            .padding(it), contentAlignment = Alignment.Center) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -49,8 +56,10 @@ fun PantallaSubirPropiedad(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Título
-                Text(text = "Anuncia tu propiedad",
-                    style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = "Anuncia tu propiedad",
+                    style = MaterialTheme.typography.titleLarge
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -154,14 +163,20 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
             onValueChange = { habitaciones = it.toIntOrNull() ?: 0 },
             label = { Text("Habitaciones") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            )
         )
         TextField(
             value = if (metros == 0) "" else metros.toString(),
             onValueChange = { metros = it.toIntOrNull() ?: 0 },
             label = { Text("Metros cuadrados") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            )
         )
         TextField(
             value = ubicacion,
@@ -175,14 +190,20 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
             onValueChange = { telefono = it },
             label = { Text("Teléfono") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            )
         )
         TextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Done)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Done
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -193,7 +214,10 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
             onValueChange = { precio = it.toIntOrNull() ?: 0 },
             label = { Text("Precio (opcional)") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -263,9 +287,6 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
 //        }
     }
 }
-
-
-
 
 
 @Composable
@@ -342,7 +363,10 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
             onValueChange = { metros = it.toIntOrNull() ?: 0 },
             label = { Text("Metros cuadrados") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            )
         )
         TextField(
             value = ubicacion,
@@ -356,14 +380,20 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
             onValueChange = { telefono = it },
             label = { Text("Teléfono") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            )
         )
         TextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Done)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Done
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -374,7 +404,10 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
             onValueChange = { precio = it.toIntOrNull() ?: 0 },
             label = { Text("Precio (opcional)") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            )
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -419,26 +452,45 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
 
 
 @Composable
-fun NavBarInferiorSP(navController: NavHostController, seccionSeleccionada: String, alSeleccionarSeccion: (String) -> Unit) {
+fun NavBarInferiorSP(
+    navController: NavHostController,
+    seccionSeleccionada: String,
+    alSeleccionarSeccion: (String) -> Unit
+) {
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
     ) {
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_atras), contentDescription = "Volver") },
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_atras),
+                    contentDescription = "Volver"
+                )
+            },
             label = { Text("Volver") },
             selected = seccionSeleccionada == "volver",
             onClick = { navController.navigate("inicio") }
         )
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_casa), contentDescription = "Vivienda") },
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_casa),
+                    contentDescription = "Vivienda"
+                )
+            },
             label = { Text("Vivienda") },
             selected = seccionSeleccionada == "Vivienda",
             onClick = { alSeleccionarSeccion("Vivienda") }
         )
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_finca), contentDescription = "Finca") },
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_finca),
+                    contentDescription = "Finca"
+                )
+            },
             label = { Text("Finca") },
             selected = seccionSeleccionada == "Finca",
             onClick = { alSeleccionarSeccion("Finca") }

@@ -85,7 +85,8 @@ suspend fun getMisViviendas(userID: String): List<Vivienda> {
             .whereEqualTo("userID", userID)
             .get()
             .await()
-        resultadoConsulta.toObjects(Vivienda::class.java).filter { it.disponible } // sólo almaceno las viviendas que están disponibles
+        resultadoConsulta.toObjects(Vivienda::class.java)
+            .filter { it.disponible } // sólo almaceno las viviendas que están disponibles
     } catch (e: Exception) {
         emptyList()
     }
@@ -103,7 +104,8 @@ suspend fun getMisFincas(userID: String): List<Finca> {
             .whereEqualTo("userID", userID)
             .get()
             .await()
-        resultadoConsulta.toObjects(Finca::class.java).filter { it.disponible } // sólo almaceno las fincas que están disponibles
+        resultadoConsulta.toObjects(Finca::class.java)
+            .filter { it.disponible } // sólo almaceno las fincas que están disponibles
     } catch (e: Exception) {
         emptyList()
     }

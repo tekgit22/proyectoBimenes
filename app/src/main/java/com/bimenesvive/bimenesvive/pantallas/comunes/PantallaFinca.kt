@@ -75,7 +75,8 @@ fun PantallaFinca(
     var esImagenGrande by remember { mutableStateOf(false) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current as Activity // Lo utilizo para lanzar intents y mostrar Toasts
+    val context =
+        LocalContext.current as Activity // Lo utilizo para lanzar intents y mostrar Toasts
     var ownerUserID by remember { mutableStateOf<String?>(null) }
     val listState = rememberLazyListState() // Almacena el estado de scroll de la lista de imágenes
 
@@ -368,84 +369,84 @@ fun PantallaFinca(
                     Spacer(modifier = Modifier.height(16.dp))
 
 
-                        //LazyRow que hace el display de las imágenes redondas
-                        LazyRow(state = listState) {
-                            items(imageUris) { uri ->
-                                Image(
-                                    painter = rememberAsyncImagePainter(
-                                        ImageRequest.Builder(
-                                            LocalContext.current
-                                        ).data(data = uri)
-                                            .apply(block = fun ImageRequest.Builder.() {
-                                                transformations(CircleCropTransformation())
-                                            }).build()
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(128.dp)
-                                        .padding(4.dp)
-                                        .clickable {
-                                            imagenSeleccionada = uri
-                                            esImagenGrande = true
+                    //LazyRow que hace el display de las imágenes redondas
+                    LazyRow(state = listState) {
+                        items(imageUris) { uri ->
+                            Image(
+                                painter = rememberAsyncImagePainter(
+                                    ImageRequest.Builder(
+                                        LocalContext.current
+                                    ).data(data = uri)
+                                        .apply(block = fun ImageRequest.Builder.() {
+                                            transformations(CircleCropTransformation())
+                                        }).build()
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(128.dp)
+                                    .padding(4.dp)
+                                    .clickable {
+                                        imagenSeleccionada = uri
+                                        esImagenGrande = true
+                                    }
+                            )
+                        }
+                    }
+
+                    //Row encargada de los Iconos de flechas para moverse entre las imágenes
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        if (listState.firstVisibleItemIndex > 0) {
+                            // Si no es la primera imagen, muestra el icon de flecha a la izquierda
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Moverse al anterior elemento",
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clickable {
+                                        coroutineScope.launch {
+                                            listState.animateScrollToItem(
+                                                maxOf(listState.firstVisibleItemIndex - 1, 0)
+                                                //maxOf para evitar valores negativos (cálculo, mínimo)
+                                                //0 es el valor mínimo permitido para ese índice
+                                            )
                                         }
-                                )
-                            }
+                                    },
+                                tint = Color.Gray
+                            )
+                        } else {
+                            Spacer(modifier = Modifier.size(24.dp))
                         }
 
-                        //Row encargada de los Iconos de flechas para moverse entre las imágenes
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            if (listState.firstVisibleItemIndex > 0) {
-                                // Si no es la primera imagen, muestra el icon de flecha a la izquierda
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Moverse al anterior elemento",
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clickable {
-                                            coroutineScope.launch {
-                                                listState.animateScrollToItem(
-                                                    maxOf(listState.firstVisibleItemIndex - 1, 0)
-                                                    //maxOf para evitar valores negativos (cálculo, mínimo)
-                                                    //0 es el valor mínimo permitido para ese índice
+                        val lastVisibleItemIndex =
+                            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+                        // lastOrNull() devuelve el último elemento de la lista o null si está vacía
+                        // en caso de ser null, le asigno un -1
+                        if (lastVisibleItemIndex < imageUris.size - 1 && imageUris.isNotEmpty()) {
+                            // Si la última foto visible es menor que el tamaño de la lista, muestra el Icon de flecha a la derecha
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "Moverse al elemento posterior",
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clickable {
+                                        coroutineScope.launch {
+                                            listState.animateScrollToItem(
+                                                minOf(
+                                                    listState.firstVisibleItemIndex + 1, // Siguiente índice
+                                                    imageUris.size - 1 // Último índice permitido
                                                 )
-                                            }
-                                        },
-                                    tint = Color.Gray
-                                )
-                            } else {
-                                Spacer(modifier = Modifier.size(24.dp))
-                            }
-
-                            val lastVisibleItemIndex =
-                                listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
-                                // lastOrNull() devuelve el último elemento de la lista o null si está vacía
-                                // en caso de ser null, le asigno un -1
-                            if (lastVisibleItemIndex < imageUris.size - 1 && imageUris.isNotEmpty()) {
-                                // Si la última foto visible es menor que el tamaño de la lista, muestra el Icon de flecha a la derecha
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = "Moverse al elemento posterior",
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clickable {
-                                            coroutineScope.launch {
-                                                listState.animateScrollToItem(
-                                                    minOf(
-                                                        listState.firstVisibleItemIndex + 1, // Siguiente índice
-                                                        imageUris.size - 1 // Último índice permitido
-                                                    )
-                                                )
-                                            }
-                                        },
-                                    tint = Color.Gray
-                                )
-                            } else {
-                               // Spacer(modifier = Modifier.size(24.dp))
-                            }
+                                            )
+                                        }
+                                    },
+                                tint = Color.Gray
+                            )
+                        } else {
+                            // Spacer(modifier = Modifier.size(24.dp))
                         }
+                    }
                     Spacer(modifier = Modifier.height(24.dp))
 
                     //BOTONES
@@ -477,7 +478,11 @@ fun PantallaFinca(
                                             "PantallaFinca",
                                             "Permiso de ubicación concedido, guardando localización"
                                         )
-                                        saveFincaLocation(finca!!, context, documentID) { // !! para asegurar que finca no es null
+                                        saveFincaLocation(
+                                            finca!!,
+                                            context,
+                                            documentID
+                                        ) { // !! para asegurar que finca no es null
                                             // Refrescar la UI después de guardar la localización
                                             coroutineScope.launch {
                                                 finca = getFincaById(documentID)

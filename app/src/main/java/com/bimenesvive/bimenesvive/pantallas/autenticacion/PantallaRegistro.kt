@@ -118,8 +118,8 @@ fun PantallaRegistro(
                         "Introduce un email válido",
                         Toast.LENGTH_SHORT
                     ).show()
-                // Si el password o el email están vacíos, no permito el registro
-                }else if (email.isNotEmpty() && password.isNotEmpty()) {
+                    // Si el password o el email están vacíos, no permito el registro
+                } else if (email.isNotEmpty() && password.isNotEmpty()) {
                     autenticacionViewModel.registro(email, password)
                 } else {
                     Toast.makeText(

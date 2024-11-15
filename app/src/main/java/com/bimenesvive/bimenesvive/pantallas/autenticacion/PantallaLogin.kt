@@ -45,7 +45,6 @@ fun PantallaLogin(
     autenticacionViewModel: AutenticacionViewModel
 ) {
     val context = LocalContext.current
-    // El LocalContext no puede ser null, paso este parámetro cuando necesite el contexto, como en los Toast
 
     var email by remember {
         mutableStateOf("")
@@ -63,7 +62,7 @@ fun PantallaLogin(
             onDismiss = { showDialog = false },
             onSendEmail = { email ->
                 // lógica para enviar el email
-                autenticacionViewModel.enviarCorreoRecordarPassword(email,context)
+                autenticacionViewModel.enviarCorreoRecordarPassword(email, context)
             }
         )
     }
@@ -81,6 +80,7 @@ fun PantallaLogin(
                 // y el Toast no salte constantemente
                 autenticacionViewModel.reiniciarEstadoAutenticacion()
             }
+
             else -> Unit
         }
     }

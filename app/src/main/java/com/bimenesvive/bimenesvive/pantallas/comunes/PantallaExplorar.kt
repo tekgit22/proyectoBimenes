@@ -67,7 +67,7 @@ fun PantallaExplorar(
             modifier = modifier
                 .fillMaxSize()
                 .padding(it) // El padding obtenido del Scaffold, asegura que el contenido
-                                // no se superponga con la barra inferior
+            // no se superponga con la barra inferior
         ) {
             items(propiedades) { propiedad ->
                 when (propiedad) {
@@ -78,8 +78,6 @@ fun PantallaExplorar(
         }
     }
 }
-
-
 
 
 @Composable
@@ -203,11 +201,6 @@ suspend fun subirVisitaFinca(documentID: String) {
         transaction.update(fincaRef, "visitas", nuevasVisitas)
     }.await()
 }
-
-
-
-
-
 
 
 //Flujo del código al seleccionar en la navbar un elemento:
