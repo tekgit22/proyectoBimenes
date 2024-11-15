@@ -2,8 +2,6 @@ package com.bimenesvive.bimenesvive.modelos
 
 import com.google.firebase.firestore.GeoPoint
 
-
-
 data class Vivienda(
     val descripcion: String = "",
     val habitaciones: Int = 0,

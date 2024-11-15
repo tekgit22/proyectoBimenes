@@ -641,6 +641,11 @@ fun PantallaVivienda(
 }
 
 
+/**
+ * Muestra la imagen rotada si es horizontal (horizontal = ancho > alto)
+ * @param imageUri URI de la imagen
+ * @param modifier Modificador de la imagen
+ */
 @Composable
 fun rotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
     val painter = rememberAsyncImagePainter(model = imageUri)
@@ -686,6 +691,15 @@ fun rotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
     }
 }
 
+
+/**
+ * Borra un anuncio de vivienda de Firestore y sus fotos del almacenamiento
+ * @param userID ID del usuario
+ * @param documentID ID del anuncio
+ * @param imageUris Lista de URIs de las fotos
+ * @param context Contexto de la aplicación
+ * @param navController Controlador de navegación
+ */
 private fun borrarAnuncioVivienda(
     userID: String,
     documentID: String,
@@ -792,6 +806,12 @@ private fun borrarAnuncioVivienda(
     }
 }
 
+
+/**
+ * Carga una vivienda desde Firestore
+ * @param id ID de la vivienda
+ * @return Vivienda
+ */
 suspend fun getViviendaById(id: String): Vivienda? {
     return try {
         FirebaseFirestore.getInstance()
@@ -807,7 +827,8 @@ suspend fun getViviendaById(id: String): Vivienda? {
 }
 
 /**
- * Cambia el estado de una vivienda a no disponible
+ * Cambia disponible a false en una vivienda
+ * @param documentID ID de la vivienda
  */
 suspend fun viviendaTransada(documentID: String) {
     val db = FirebaseFirestore.getInstance()
