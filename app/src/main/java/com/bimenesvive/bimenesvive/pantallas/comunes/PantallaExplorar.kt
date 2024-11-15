@@ -145,9 +145,9 @@ fun NavBarInferior(
 
 //Funciones relacionadas con Firestore, que sólo se usan en esta pantalla
 
-
 /**
  * Obtiene las viviendas desde Firestore
+ * @return Lista de viviendas
  */
 suspend fun getViviendas(): List<Vivienda> {
 //Suspend indica que la función es una corrutina, puede ser pausada y reanudada
@@ -164,6 +164,7 @@ suspend fun getViviendas(): List<Vivienda> {
 
 /**
  * Obtiene las fincas desde Firestore
+ * @return Lista de fincas
  */
 suspend fun getFincas(): List<Finca> {
     val db = FirebaseFirestore.getInstance()
@@ -178,6 +179,7 @@ suspend fun getFincas(): List<Finca> {
 
 /**
  * Sube una visita a la vivienda
+ * @param documentID ID del documento de la vivienda
  */
 suspend fun subirVisitaVivienda(documentID: String) {
     val db = FirebaseFirestore.getInstance()
@@ -191,6 +193,7 @@ suspend fun subirVisitaVivienda(documentID: String) {
 
 /**
  * Sube una visita a la finca
+ * @param documentID ID del documento de la finca
  */
 suspend fun subirVisitaFinca(documentID: String) {
     val db = FirebaseFirestore.getInstance()

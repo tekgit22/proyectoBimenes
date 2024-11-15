@@ -190,20 +190,11 @@ fun AnuncioDialog(onDismiss: () -> Unit, onSubmit: (Anuncio) -> Unit) {
     }
 }
 
-// Flujo del código cuando se está añadiendo un anuncio:
-// 1 El usuario rellena el formulario del Dialog y pulsa Anunciar
-// 2 Se ejecuta la lambda onSubmit de AnuncioDialog
-// 3 Se añade el anuncio a Firebase con addAnuncio
-// 4 Se añade el anuncio a la lista anuncios local
-// 5 Se actualiza el anuncio del usuario actual (userAnuncio)
-// 6 Se cierra el Dialog con showDialog = false (dispara el LaunchedEffect)
-// 7 Se actualiza la lista de anuncios con el LaunchedEffect
-
-
 // Métodos para interactuar con Firebase (exclusivos de esta pantalla)
 
 /**
  * Importa los anuncios de Firebase
+ * @return Lista de anuncios
  */
 suspend fun importarAnunciosFireBase(): List<Anuncio> {
     return try {
@@ -221,6 +212,7 @@ suspend fun importarAnunciosFireBase(): List<Anuncio> {
 
 /**
  * Añade un anuncio a Firebase
+ * @param anuncio: Anuncio a añadir
  */
 fun addAnuncio(anuncio: Anuncio) {
     FirebaseFirestore.getInstance()
@@ -230,6 +222,7 @@ fun addAnuncio(anuncio: Anuncio) {
 
 /**
  * Borra un anuncio de Firebase
+ * @param anuncio: Anuncio a borrar
  */
 fun borrarAnuncioFinca(anuncio: Anuncio) {
     FirebaseFirestore.getInstance()
@@ -242,6 +235,16 @@ fun borrarAnuncioFinca(anuncio: Anuncio) {
             }
         }
 }
+
+
+// Flujo del código cuando se está añadiendo un anuncio:
+// 1 El usuario rellena el formulario del Dialog y pulsa Anunciar
+// 2 Se ejecuta la lambda onSubmit de AnuncioDialog
+// 3 Se añade el anuncio a Firebase con addAnuncio
+// 4 Se añade el anuncio a la lista anuncios local
+// 5 Se actualiza el anuncio del usuario actual (userAnuncio)
+// 6 Se cierra el Dialog con showDialog = false (dispara el LaunchedEffect)
+// 7 Se actualiza la lista de anuncios con el LaunchedEffect
 
 
 
