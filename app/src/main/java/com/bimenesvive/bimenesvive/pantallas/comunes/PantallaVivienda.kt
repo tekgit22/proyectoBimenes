@@ -710,9 +710,11 @@ private fun borrarAnuncioVivienda(
     val db = FirebaseFirestore.getInstance()
 
     if (imageUris.isNotEmpty()) {
+        // Borrado de todas las fotos en Firebase Storage
         val tareasBorradoFotosStorage = imageUris.map { uri ->
             val nombreFoto = uri.lastPathSegment?.substringAfterLast('/')
-            val refFoto: StorageReference = refAlmacenamiento.child("$userID/$documentID/$nombreFoto")
+            val refFoto: StorageReference =
+                refAlmacenamiento.child("$userID/$documentID/$nombreFoto")
 //            Log.d("borrarAnuncioVivienda", "uri: $uri")
 //            Log.d("borrarAnuncioVivienda", "nombreFoto: $nombreFoto")
 //            Log.d("borrarAnuncioVivienda", "referenciaFoto: ${referenciaFoto.path}")
@@ -745,6 +747,7 @@ private fun borrarAnuncioVivienda(
             }
         }
 
+        // Las fotos ya están borradas, pasa a borrar los documentos asociados a las fotos en Firestore
         Tasks.whenAll(tareasBorradoFotosStorage)
             .addOnSuccessListener {
                 db.collection("viviendas").document(documentID).collection("fotos")
@@ -754,6 +757,7 @@ private fun borrarAnuncioVivienda(
                             resultadoConsulta.documents.map { it.reference.delete() }
                         Tasks.whenAll(tareasBorradoDocumentosFirebase)
                             .addOnSuccessListener {
+                                // Borrado del documento principal del anuncio
                                 db.collection("viviendas").document(documentID)
                                     .delete()
                                     .addOnSuccessListener {
@@ -810,6 +814,7 @@ private fun borrarAnuncioVivienda(
                 ).show()
             }
     } else {
+        //Como la lista de fotos está vacía, se borra directamente el documento principal del anuncio
         db.collection("viviendas").document(documentID)
             .delete()
             .addOnSuccessListener {

@@ -671,6 +671,7 @@ private fun borrarAnuncioFinca(
     val db = FirebaseFirestore.getInstance()
 
     if (imageUris.isNotEmpty()) {
+        // Borrar las fotos del almacenamiento de Firebase Storage
         val tareasBorradoFotosStorage = imageUris.map { uri ->
             val nombreFoto = uri.lastPathSegment?.substringAfterLast('/')
             val refFoto = refAlmacenamiento.child("$userID/$documentID/$nombreFoto")
@@ -686,14 +687,17 @@ private fun borrarAnuncioFinca(
             }
         }
 
+        // Las fotos ya están borradas, pasa a borrar los documentos asociados a las fotos en Firestore
         Tasks.whenAll(tareasBorradoFotosStorage)
             .addOnSuccessListener {
                 db.collection("fincas").document(documentID).collection("fotos")
                     .get()
                     .addOnSuccessListener { resultadoConsulta ->
-                        val tareasBorradoDocumentosFirebase = resultadoConsulta.documents.map { it.reference.delete() }
+                        val tareasBorradoDocumentosFirebase =
+                            resultadoConsulta.documents.map { it.reference.delete() }
                         Tasks.whenAll(tareasBorradoDocumentosFirebase)
                             .addOnSuccessListener {
+                                // Borrado del documento principal del anuncio
                                 db.collection("fincas").document(documentID)
                                     .delete()
                                     .addOnSuccessListener {
@@ -727,8 +731,8 @@ private fun borrarAnuncioFinca(
                     Toast.LENGTH_SHORT
                 ).show()
             }
-
-    } else { // En caso de que no haya fotos, borra solo el documento de la colección fincas
+    } else {
+        //Como la lista de fotos está vacía, se borra directamente el documento principal del anuncio
         db.collection("fincas").document(documentID)
             .delete()
             .addOnSuccessListener {
