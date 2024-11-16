@@ -139,7 +139,7 @@ fun PantallaFinca(
                         .fillMaxSize()
                         .background(Color.White)
                 ) {
-                    rotarImagen(
+                    ImagenRotable(
                         imageUri = imagenSeleccionada!!,
                         modifier = Modifier.fillMaxSize()
                     )

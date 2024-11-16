@@ -138,7 +138,7 @@ fun PantallaVivienda(
                         .fillMaxSize()
                         .background(Color.White)
                 ) {
-                    rotarImagen(
+                    ImagenRotable(
                         imageUri = imagenSeleccionada!!,
                         modifier = Modifier.fillMaxSize()
 
@@ -646,22 +646,26 @@ fun PantallaVivienda(
  * @param modifier Modificador de la imagen
  */
 @Composable
-fun rotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
+fun ImagenRotable(imageUri: Uri, modifier: Modifier = Modifier) {
     val painter = rememberAsyncImagePainter(model = imageUri)
 
     var rotacion by remember { mutableStateOf(0f) }
     var contentScale by remember { mutableStateOf(ContentScale.Fit) }
+    // ContentScale.Fit se ajusta a la imagen sin deformarla
 
     LaunchedEffect(painter.state) {
         when (painter.state) {
             is AsyncImagePainter.State.Success -> {
                 val imageSize =
                     (painter.state as AsyncImagePainter.State.Success).painter.intrinsicSize
+                    // Determina el tamaño original de la imagen
                 if (imageSize.width > imageSize.height) {
                     rotacion = 90f
                     contentScale = ContentScale.FillWidth
+                    // Llena el ancho del contenedor, ajustando la altura en consecuencia sin deformar la imagen (mantiene el aspect ratio)
                 } else {
                     contentScale = ContentScale.FillHeight
+                    // Llena la altura del contenedor, ajustando el ancho en consecuencia sin deformar la imagen (mantiene el aspect ratio)
                 }
             }
 
@@ -685,10 +689,20 @@ fun rotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
                     rotationZ = rotacion,
                     scaleX = if (rotacion != 0f) 1.5f else 1f,
                     scaleY = if (rotacion != 0f) 1.5f else 1f
+                    // El escalado 1f es el tamaño original, 1.5f es un tamaño más grande
                 )
         )
     }
 }
+
+// Flujo del componente ImagenRotable:
+// Las variables de estado manejarán la rotación y la escala de la imagen
+// LaunchedEffect reaccionará a los cambios en el estado del `painter` (estará esperando a que la imagen se cargue)
+// Obtiene el tamaño de la imagen
+// Si la imagen es más ancha que alta, se rota 90 grados y ajusta la escala para llenar el ancho del contenedor
+// Si la imagen es más alta que ancha, ajusta la escala para llenar la altura del contenedor
+// La UI del componente es un `Box` que centra su contenido
+// Dentro de ese Box se muestra la imagen, que estará rotada y escalada según las variables de estado
 
 
 /**
