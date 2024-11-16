@@ -84,8 +84,6 @@ fun PantallaFinca(
     val scrollState =
         rememberScrollState() // Almacena el estado del scroll, se utiliza para mostrar un gradiente en la parte inferior
 
-    // Solicitar permisos en tiempo de ejecución a usuarios con SO Android 13 +
-    requestPhotoPermissions(context)
 
     // Cargar la finca y las fotos al lanzar la pantalla
     LaunchedEffect(documentID) {
@@ -461,7 +459,10 @@ fun PantallaFinca(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Button(
-                                onClick = { launcher.launch("image/*") },
+                                onClick = {
+                                    requestPhotoPermissions(context)
+                                    launcher.launch("image/*") // Abre una instancia de ActivityResultLauncher con un selector de imágenes
+                                },
                                 modifier = Modifier.weight(1f),
                             ) {
                                 Icon(
@@ -518,7 +519,8 @@ fun PantallaFinca(
                                                     "PantallaFinca",
                                                     "GPS no activado, solicitando activación"
                                                 )
-                                                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                                                val intent =
+                                                    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                                                 context.startActivity(intent)
                                             }
                                         } else {
@@ -532,7 +534,11 @@ fun PantallaFinca(
                                             "PantallaFinca",
                                             "El dispositivo no tiene funcionalidad GPS"
                                         )
-                                        Toast.makeText(context, "El dispositivo no tiene funcionalidad GPS", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            "El dispositivo no tiene funcionalidad GPS",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 },
                                 modifier = Modifier.weight(1f),

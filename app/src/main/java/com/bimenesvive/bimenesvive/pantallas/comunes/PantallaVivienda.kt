@@ -82,8 +82,7 @@ fun PantallaVivienda(
     val listState = rememberLazyListState() // Para controlar el scroll de las imágenes
     val scrollState = rememberScrollState()
 
-    // Solicitar permisos en tiempo de ejecución a usuarios con SO Android 13 +
-    requestPhotoPermissions(context)
+
 
     LaunchedEffect(documentID) {
         vivienda = getViviendaById(documentID)
@@ -437,7 +436,10 @@ fun PantallaVivienda(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Button(
-                                onClick = { launcher.launch("image/*") },
+                                onClick = {
+                                    requestPhotoPermissions(context)
+                                    launcher.launch("image/*") // Abre una instancia de ActivityResultLauncher con un selector de imágenes
+                                },
                                 modifier = Modifier.weight(1f),
                             ) {
                                 Icon(
