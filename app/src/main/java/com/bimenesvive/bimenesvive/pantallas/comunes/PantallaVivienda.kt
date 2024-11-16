@@ -762,6 +762,9 @@ private fun borrarAnuncioVivienda(
                                             "Anuncio borrado correctamente",
                                             Toast.LENGTH_SHORT
                                         ).show()
+                                        while (navController.popBackStack()) {
+                                            // Borra todas las pantallas del backstack, vaciando la pila
+                                        }
                                         navController.navigate("inicio")
                                     }
                                     .addOnFailureListener { e ->
