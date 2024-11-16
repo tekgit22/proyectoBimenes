@@ -1,7 +1,10 @@
 package com.bimenesvive.bimenesvive.utilidades
 
 import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -124,4 +127,23 @@ fun saveFincaLocation(finca: Finca, context: Activity, documentID: String, onLoc
     } else {
         Log.d("PantallaFinca", "Permiso de ubicación no concedido")
     }
+}
+
+/**
+ * Comprueba si el GPS está habilitado en el dispositivo.
+ * @param context Contexto de la aplicación.
+ * @return True si el GPS está habilitado, false en caso contrario.
+ */
+fun isGPSEnabled(context: Context): Boolean {
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+}
+
+/**
+ * Comprueba si el dispositivo tiene GPS.
+ * @param context Contexto de la aplicación.
+ * @return True si el dispositivo tiene GPS, false en caso contrario.
+ */
+fun tieneGPS(context: Context): Boolean {
+    return context.packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS)
 }

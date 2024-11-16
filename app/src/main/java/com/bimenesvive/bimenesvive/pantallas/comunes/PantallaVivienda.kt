@@ -17,7 +17,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -34,7 +33,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -58,13 +56,13 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
-import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.bimenesvive.bimenesvive.componentes.ImagenRotable
 import com.bimenesvive.bimenesvive.componentes.NavBarViendoPropiedad
 import com.bimenesvive.bimenesvive.modelos.EstadoPropiedad
 import com.google.firebase.storage.StorageReference
+import android.provider.Settings
 
 
 @Composable
@@ -451,24 +449,63 @@ fun PantallaVivienda(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Button(
+                                // SIN PERMISOS DE GPS
+//                                onClick = {
+//                                    // Verificar permisos de ubicación antes de guardar la localización
+//                                    if (checkLocationPermission(context as Activity)) {
+//                                        Log.d(
+//                                            "PantallaVivienda",
+//                                            "Permiso de ubicación concedido, guardando localización"
+//                                        )
+//                                        saveViviendaLocation(vivienda!!, context, documentID) {
+//                                            // Refrescar la UI después de guardar la localización
+//                                            coroutineScope.launch {
+//                                                vivienda = getViviendaById(documentID)
+//                                            }
+//                                        }
+//                                    } else {
+//                                        Log.d(
+//                                            "PantallaVivienda",
+//                                            "Permiso de ubicación no concedido"
+//                                        )
+//                                    }
+//                                },
                                 onClick = {
-                                    // Verificar permisos de ubicación antes de guardar la localización
-                                    if (checkLocationPermission(context as Activity)) {
-                                        Log.d(
-                                            "PantallaVivienda",
-                                            "Permiso de ubicación concedido, guardando localización"
-                                        )
-                                        saveViviendaLocation(vivienda!!, context, documentID) {
-                                            // Refrescar la UI después de guardar la localización
-                                            coroutineScope.launch {
-                                                vivienda = getViviendaById(documentID)
+                                    // Verificar si el dispositivo tiene GPS
+                                    if (tieneGPS(context)) {
+                                        // Verificar permisos de ubicación antes de guardar la localización
+                                        if (checkLocationPermission(context)) {
+                                            if (isGPSEnabled(context)) {
+                                                Log.d(
+                                                    "PantallaVivienda",
+                                                    "Permiso de ubicación concedido y GPS activado, guardando localización"
+                                                )
+                                                saveViviendaLocation(vivienda!!, context, documentID) {
+                                                    // Refrescar la UI después de guardar la localización
+                                                    coroutineScope.launch {
+                                                        vivienda = getViviendaById(documentID)
+                                                    }
+                                                }
+                                            } else {
+                                                Log.d(
+                                                    "PantallaVivienda",
+                                                    "GPS no activado, solicitando activación"
+                                                )
+                                                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                                                context.startActivity(intent)
                                             }
+                                        } else {
+                                            Log.d(
+                                                "PantallaVivienda",
+                                                "Permiso de ubicación no concedido"
+                                            )
                                         }
                                     } else {
                                         Log.d(
                                             "PantallaVivienda",
-                                            "Permiso de ubicación no concedido"
+                                            "El dispositivo no tiene funcionalidad GPS"
                                         )
+                                        Toast.makeText(context, "El dispositivo no tiene funcionalidad GPS", Toast.LENGTH_SHORT).show()
                                     }
                                 },
                                 modifier = Modifier.weight(1f),
@@ -482,6 +519,7 @@ fun PantallaVivienda(
                             }
                         }
                     }
+
                     Spacer(modifier = Modifier.height(8.dp))
 
                     //Columna que contiene el botón de ver localización o localización no disponible
