@@ -63,6 +63,7 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import com.bimenesvive.bimenesvive.utilidades.*
+import android.provider.Settings
 
 @Composable
 fun PantallaFinca(
@@ -472,28 +473,66 @@ fun PantallaFinca(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Button(
+//                                onClick = {
+//                                    // Verificar permisos de ubicación antes de guardar la localización
+//                                    if (checkLocationPermission(context as Activity)) {
+//                                        Log.d(
+//                                            "PantallaFinca",
+//                                            "Permiso de ubicación concedido, guardando localización"
+//                                        )
+//                                        saveFincaLocation(
+//                                            finca!!,
+//                                            context,
+//                                            documentID
+//                                        ) { // !! para asegurar que finca no es null
+//                                            // Refrescar la UI después de guardar la localización
+//                                            coroutineScope.launch {
+//                                                finca = getFincaById(documentID)
+//                                            }
+//                                        }
+//                                    } else {
+//                                        Log.d(
+//                                            "PantallaFinca",
+//                                            "Permiso de ubicación no concedido"
+//                                        )
+//                                    }
+//                                },
                                 onClick = {
-                                    // Verificar permisos de ubicación antes de guardar la localización
-                                    if (checkLocationPermission(context as Activity)) {
-                                        Log.d(
-                                            "PantallaFinca",
-                                            "Permiso de ubicación concedido, guardando localización"
-                                        )
-                                        saveFincaLocation(
-                                            finca!!,
-                                            context,
-                                            documentID
-                                        ) { // !! para asegurar que finca no es null
-                                            // Refrescar la UI después de guardar la localización
-                                            coroutineScope.launch {
-                                                finca = getFincaById(documentID)
+                                    // Verificar si el dispositivo tiene GPS
+                                    if (tieneGPS(context)) {
+                                        // Verificar permisos de ubicación antes de guardar la localización
+                                        if (checkLocationPermission(context)) {
+                                            if (isGPSEnabled(context)) {
+                                                Log.d(
+                                                    "PantallaFinca",
+                                                    "Permiso de ubicación concedido y GPS activado, guardando localización"
+                                                )
+                                                saveFincaLocation(finca!!, context, documentID) {
+                                                    // Refrescar la UI después de guardar la localización
+                                                    coroutineScope.launch {
+                                                        finca = getFincaById(documentID)
+                                                    }
+                                                }
+                                            } else {
+                                                Log.d(
+                                                    "PantallaFinca",
+                                                    "GPS no activado, solicitando activación"
+                                                )
+                                                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                                                context.startActivity(intent)
                                             }
+                                        } else {
+                                            Log.d(
+                                                "PantallaFinca",
+                                                "Permiso de ubicación no concedido"
+                                            )
                                         }
                                     } else {
                                         Log.d(
                                             "PantallaFinca",
-                                            "Permiso de ubicación no concedido"
+                                            "El dispositivo no tiene funcionalidad GPS"
                                         )
+                                        Toast.makeText(context, "El dispositivo no tiene funcionalidad GPS", Toast.LENGTH_SHORT).show()
                                     }
                                 },
                                 modifier = Modifier.weight(1f),
