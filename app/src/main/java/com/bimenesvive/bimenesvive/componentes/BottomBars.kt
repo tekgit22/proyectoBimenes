@@ -23,58 +23,58 @@ fun NavBarViendoPropiedad(navController: NavHostController) {
             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
     ) {
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_atras), contentDescription = "Explorar") },
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_atras),
+                    contentDescription = "Explorar"
+                )
+            },
             label = { Text("Explorar") },
-            selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
-            //onClick = { navController.navigate("explorar") }
-            onClick = {
-                navController.navigate("explorar") {
-                    popUpTo(navController.graph.startDestinationId) {
-                        inclusive = true
-                    }
-                }
-            }
+            selected = false, //No necesito seleccionar, va a navegar a otra pantalla
+            onClick = { navController.navigate("explorar") }
+
         )
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_casa), contentDescription = "Menú") },
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_casa),
+                    contentDescription = "Menú"
+                )
+            },
             label = { Text("Menú") },
             selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
-            //onClick = { navController.navigate("inicio") }
             onClick = {
                 val userID = FirebaseAuth.getInstance().currentUser?.uid
                 if (userID == null) {
-                    navController.navigate("invitado") {
-                        popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
-                        }
-                    }
+                    navController.navigate("invitado")
                 } else {
-                    navController.navigate("inicio") {
-                        popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
-                        }
-                    }
+                    navController.navigate("inicio")
                 }
             }
         )
     }
 }
 
-@Composable
-fun NavBarVolverInicio(navController: NavHostController) {
-    NavigationBar(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
-    ) {
-        NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_casa), contentDescription = "Menú") },
-            label = { Text("Menú") },
-            selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
+    @Composable
+    fun NavBarVolverInicio(navController: NavHostController) {
+        NavigationBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
+        ) {
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_casa),
+                        contentDescription = "Menú"
+                    )
+                },
+                label = { Text("Menú") },
+                selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
 //            onClick = { navController.navigate("inicio") }
-            onClick = {
-                navController.popBackStack() //Vuelve a la pantalla anterior y elimina la actual
-            }
-        )
+                onClick = {
+                    navController.popBackStack() //Vuelve a la pantalla anterior y elimina la actual
+                }
+            )
+        }
     }
-}

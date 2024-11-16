@@ -63,6 +63,7 @@ import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.bimenesvive.bimenesvive.componentes.NavBarViendoPropiedad
 import com.bimenesvive.bimenesvive.modelos.EstadoPropiedad
+import com.google.firebase.storage.StorageReference
 
 
 @Composable
@@ -648,7 +649,7 @@ fun PantallaVivienda(
 fun rotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
     val painter = rememberAsyncImagePainter(model = imageUri)
 
-    var rotation by remember { mutableStateOf(0f) }
+    var rotacion by remember { mutableStateOf(0f) }
     var contentScale by remember { mutableStateOf(ContentScale.Fit) }
 
     LaunchedEffect(painter.state) {
@@ -657,7 +658,7 @@ fun rotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
                 val imageSize =
                     (painter.state as AsyncImagePainter.State.Success).painter.intrinsicSize
                 if (imageSize.width > imageSize.height) {
-                    rotation = 90f
+                    rotacion = 90f
                     contentScale = ContentScale.FillWidth
                 } else {
                     contentScale = ContentScale.FillHeight
@@ -681,9 +682,9 @@ fun rotarImagen(imageUri: Uri, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxSize()
                 .graphicsLayer(
-                    rotationZ = rotation,
-                    scaleX = if (rotation != 0f) 1.5f else 1f,
-                    scaleY = if (rotation != 0f) 1.5f else 1f
+                    rotationZ = rotacion,
+                    scaleX = if (rotacion != 0f) 1.5f else 1f,
+                    scaleY = if (rotacion != 0f) 1.5f else 1f
                 )
         )
     }
@@ -705,32 +706,53 @@ private fun borrarAnuncioVivienda(
     context: Context,
     navController: NavHostController
 ) {
-    val storageRef = FirebaseStorage.getInstance().reference
+    val refAlmacenamiento = FirebaseStorage.getInstance().reference
     val db = FirebaseFirestore.getInstance()
 
     if (imageUris.isNotEmpty()) {
-        val deleteTasks = imageUris.map { uri ->
-            val fileName = uri.lastPathSegment?.substringAfterLast('/')
-            val photoRef = storageRef.child("$userID/$documentID/$fileName")
-            photoRef.delete().addOnFailureListener { e ->
-                val errorMessage = if (e.message?.contains("Object does not exist") == true) {
+        val tareasBorrado = imageUris.map { uri ->
+            val nombreFoto = uri.lastPathSegment?.substringAfterLast('/')
+            val refFoto: StorageReference = refAlmacenamiento.child("$userID/$documentID/$nombreFoto")
+//            Log.d("borrarAnuncioVivienda", "uri: $uri")
+//            Log.d("borrarAnuncioVivienda", "nombreFoto: $nombreFoto")
+//            Log.d("borrarAnuncioVivienda", "referenciaFoto: ${referenciaFoto.path}")
+
+            /* Ejemplo:
+            LOG:
+                uri: https://firebasestorage.googleapis.com/v0/b/bimenes-vive.appspot.com/o/4wOzuh8c8GhYeP3qbgn6Ja888F02%2FRvwMSNZVnf4bmmR3TNMa%2F05cdb4a0-53c7-4af0-a10a-a478ee7cef25.jpg?alt=media&token=e7ab36ab-b999-4d54-a0ae-bca40b8355c0
+                nombreFoto: 05cdb4a0-53c7-4af0-a10a-a478ee7cef25.jpg
+                referenciaFoto: /4wOzuh8c8GhYeP3qbgn6Ja888F02/RvwMSNZVnf4bmmR3TNMa/05cdb4a0-53c7-4af0-a10a-a478ee7cef25.jpg
+
+            EXPLICACIÓN:
+                lastPathSegment selecciona: 4wOzuh8c8GhYeP3qbgn6Ja888F02/RvwMSNZVnf4bmmR3TNMa/05cdb4a0-53c7-4af0-a10a-a478ee7cef25.jpg
+                lastPath Segment sólo procesa la ruta del archivo y omite los parámetros de la query (?alt=media&token=e7ab36ab-b999-4d54-a0ae-bca40b8355c0)
+                substringAfterLast('/') selecciona: 05cdb4a0-53c7-4af0-a10a-a478ee7cef25.jpg
+
+                Pese a que lo que devuelve lastPathSegment parece ser lo mismo que referenciaFoto con un / delante,
+                referenciaFoto es del tipo StorageReference y lastPathSegment es un String, por eso
+                en lugar de usar inferencia de tipos, declaro específicamente como StorageReference para que quede claro
+            */
+
+
+            refFoto.delete().addOnFailureListener { e ->
+                val mensajeError = if (e.message?.contains("Object does not exist") == true) {
                     "La foto no existe en el almacenamiento"
                 } else {
                     "Error al borrar la foto: ${e.message}"
                 }
-                Log.e("PantallaVivienda", errorMessage)
-                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                Log.e("PantallaVivienda", mensajeError)
+                Toast.makeText(context, mensajeError, Toast.LENGTH_SHORT).show()
             }
         }
 
-        Tasks.whenAll(deleteTasks)
+        Tasks.whenAll(tareasBorrado)
             .addOnSuccessListener {
                 db.collection("viviendas").document(documentID).collection("fotos")
                     .get()
-                    .addOnSuccessListener { querySnapshot ->
-                        val deletePhotoDocsTasks =
-                            querySnapshot.documents.map { it.reference.delete() }
-                        Tasks.whenAll(deletePhotoDocsTasks)
+                    .addOnSuccessListener { resultadoConsulta ->
+                        val tareasBorradoDocumentosDeFotos =
+                            resultadoConsulta.documents.map { it.reference.delete() }
+                        Tasks.whenAll(tareasBorradoDocumentosDeFotos)
                             .addOnSuccessListener {
                                 db.collection("viviendas").document(documentID)
                                     .delete()
@@ -791,6 +813,9 @@ private fun borrarAnuncioVivienda(
             .delete()
             .addOnSuccessListener {
                 Toast.makeText(context, "Anuncio borrado correctamente", Toast.LENGTH_SHORT).show()
+                while (navController.popBackStack()) {
+                    // Borra todas las pantallas del backstack, vaciando la pila
+                }
                 navController.navigate("inicio")
             }
             .addOnFailureListener { e ->
