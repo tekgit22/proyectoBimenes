@@ -134,10 +134,6 @@ class AutenticacionViewModel : ViewModel() {
 
 }
 
-//Sealed class para representar los estados de autenticación, son singlenton y deben declararse en el mismo archivo
-sealed class EstadoAutenticacion {
-    object Desautenticado : EstadoAutenticacion()
-    object Autenticado : EstadoAutenticacion()
-    object ProcesandoAutentificacion : EstadoAutenticacion()
-    data class AutentificacionFallida(val mensajeError: String) : EstadoAutenticacion()
-}
+
+
+
