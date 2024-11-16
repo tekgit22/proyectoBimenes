@@ -61,6 +61,7 @@ import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import com.bimenesvive.bimenesvive.componentes.ImagenRotable
 import com.bimenesvive.bimenesvive.componentes.NavBarViendoPropiedad
 import com.bimenesvive.bimenesvive.modelos.EstadoPropiedad
 import com.google.firebase.storage.StorageReference

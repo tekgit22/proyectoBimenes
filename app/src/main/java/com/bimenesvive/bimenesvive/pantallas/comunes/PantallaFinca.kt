@@ -50,6 +50,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import com.bimenesvive.bimenesvive.componentes.ImagenRotable
 import com.bimenesvive.bimenesvive.componentes.NavBarViendoPropiedad
 import com.bimenesvive.bimenesvive.modelos.EstadoPropiedad
 import com.bimenesvive.bimenesvive.modelos.Finca
