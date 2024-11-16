@@ -29,11 +29,23 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
                         autenticacionViewModel = autenticacionViewModel
                     )
-                    //El Scaffold calcula un innerPadding que representa el espacio que necesita el contenido
-                    //Para no superponerse con esos elementos de la interfaz de usuario
+                // El Scaffold calcula un innerPadding que representa el espacio necesario
+                // para que el contenido no se superponga con otros elementos de la interfaz de usuario
+                // (como la barra de navegación o la barra de estado).
                 }
             }
         }
     }
 }
+
+
+// Alternativa sin pasar innerPadding ni el modifier a Navegacion:
+
+//setContent {
+//    BimenesViveTheme {
+//        Scaffold(modifier = Modifier.fillMaxSize()) {
+//            Navegacion(autenticacionViewModel = autenticacionViewModel)
+//        }
+//    }
+//}
 

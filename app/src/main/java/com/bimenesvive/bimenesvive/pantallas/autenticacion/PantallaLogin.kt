@@ -34,7 +34,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.bimenesvive.bimenesvive.autenticacion.AuthenticationState
+import com.bimenesvive.bimenesvive.autenticacion.EstadoAutenticacion
 import com.bimenesvive.bimenesvive.autenticacion.AutenticacionViewModel
 import com.bimenesvive.bimenesvive.R
 
@@ -72,8 +72,8 @@ fun PantallaLogin(
 
     LaunchedEffect(authenticationState.value) {
         when (authenticationState.value) {
-            is AuthenticationState.Autenticado -> navController.navigate("inicio")
-            is AuthenticationState.AutentificacionFallida -> {
+            is EstadoAutenticacion.Autenticado -> navController.navigate("inicio")
+            is EstadoAutenticacion.AutentificacionFallida -> {
                 Toast.makeText(context, "Error en la autenticación", Toast.LENGTH_SHORT)
                     .show()
                 // Hago un reset del estado a Desautenticado para que el usuario pueda intentar de nuevo
@@ -148,7 +148,7 @@ fun PantallaLogin(
                     },
                     // El botón estará enabled siempre que no esté autenticando,
                     // así el usuario no puede hacer click varias veces mientras firebase responde
-                    enabled = authenticationState.value != AuthenticationState.ProcesandoAutentificacion
+                    enabled = authenticationState.value != EstadoAutenticacion.ProcesandoAutentificacion
                 ) {
                     Text(text = "Acceder")
                 }

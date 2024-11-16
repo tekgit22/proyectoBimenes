@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.bimenesvive.bimenesvive.autenticacion.AuthenticationState
+import com.bimenesvive.bimenesvive.autenticacion.EstadoAutenticacion
 import com.bimenesvive.bimenesvive.autenticacion.AutenticacionViewModel
 import com.bimenesvive.bimenesvive.R
 import androidx.compose.material.icons.Icons
@@ -66,7 +66,7 @@ fun PantallaPrincipal(
      */
     LaunchedEffect(authenticationState.value) {
         when (authenticationState.value) {
-            is AuthenticationState.Desautenticado -> {
+            is EstadoAutenticacion.Desautenticado -> {
                 while (navController.popBackStack()) {
                     // Sigue vaciando la pila hasta que devuelve false
                 }

@@ -79,6 +79,8 @@ fun PantallaFinca(
         LocalContext.current as Activity // Lo utilizo para lanzar intents y mostrar Toasts
     var ownerUserID by remember { mutableStateOf<String?>(null) }
     val listState = rememberLazyListState() // Almacena el estado de scroll de la lista de imágenes
+    val scrollState =
+        rememberScrollState() // Almacena el estado del scroll, se utiliza para mostrar un gradiente en la parte inferior
 
     // Solicitar permisos en tiempo de ejecución a usuarios con SO Android 13 +
     requestPhotoPermissions(context)
@@ -121,8 +123,6 @@ fun PantallaFinca(
             }
         }
 
-    // Almacenar el estado del scroll, se utiliza para mostrar un gradiente en la parte inferior
-    val scrollState = rememberScrollState()
 
     Scaffold(
         bottomBar = { NavBarViendoPropiedad(navController) }
@@ -763,4 +763,3 @@ suspend fun getFincaById(id: String): Finca? {
         null
     }
 }
-

@@ -75,13 +75,12 @@ fun PantallaVivienda(
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     var esImagenGrande by remember { mutableStateOf(false) }
     var imagenSeleccionada by remember { mutableStateOf<Uri?>(null) }
-    var showMapDialog by remember { mutableStateOf(false) }
-    //val userID = FirebaseAuth.getInstance().currentUser?.uid ?: return
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current as Activity
     var ownerUserID by remember { mutableStateOf<String?>(null) }
     val listState = rememberLazyListState() // Para controlar el scroll de las imágenes
+    val scrollState = rememberScrollState()
 
     // Solicitar permisos en tiempo de ejecución a usuarios con SO Android 13 +
     requestPhotoPermissions(context)
@@ -123,7 +122,6 @@ fun PantallaVivienda(
             }
         }
 
-    val scrollState = rememberScrollState()
 
     Scaffold(
         bottomBar = { NavBarViendoPropiedad(navController) }
@@ -848,13 +846,4 @@ suspend fun fincaTransada(documentID: String) {
         transaction.update(fincaRef, "disponible", false)
     }.await()
 }
-
-
-
-
-
-
-
-
-
 
