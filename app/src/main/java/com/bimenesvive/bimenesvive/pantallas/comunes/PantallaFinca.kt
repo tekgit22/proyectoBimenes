@@ -667,31 +667,32 @@ private fun borrarAnuncioFinca(
     context: Context,
     navController: NavController
 ) {
-    val storageRef = FirebaseStorage.getInstance().reference
+    val refAlmacenamiento = FirebaseStorage.getInstance().reference
     val db = FirebaseFirestore.getInstance()
 
     if (imageUris.isNotEmpty()) {
-        val deleteTasks = imageUris.map { uri ->
-            val fileName = uri.lastPathSegment?.substringAfterLast('/')
-            val photoRef = storageRef.child("$userID/$documentID/$fileName")
-            photoRef.delete().addOnFailureListener { e ->
-                val errorMessage = if (e.message?.contains("Object does not exist") == true) {
+        val tareasBorradoFotosStorage = imageUris.map { uri ->
+            val nombreFoto = uri.lastPathSegment?.substringAfterLast('/')
+            val refFoto = refAlmacenamiento.child("$userID/$documentID/$nombreFoto")
+            // Estos pasos de extracción de la referencia están detallados con ejemplos en PantallaVivienda.kt
+            refFoto.delete().addOnFailureListener { e ->
+                val mensajeError = if (e.message?.contains("Object does not exist") == true) {
                     "La foto no existe en la ubicación especificada"
                 } else {
                     "Error al borrar la foto: ${e.message}"
                 }
-                Log.e("PantallaFinca", errorMessage)
-                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                Log.e("PantallaFinca", mensajeError)
+                Toast.makeText(context, mensajeError, Toast.LENGTH_SHORT).show()
             }
         }
 
-        Tasks.whenAll(deleteTasks)
+        Tasks.whenAll(tareasBorradoFotosStorage)
             .addOnSuccessListener {
                 db.collection("fincas").document(documentID).collection("fotos")
                     .get()
-                    .addOnSuccessListener { snapshot ->
-                        val deletePhotoDocsTasks = snapshot.documents.map { it.reference.delete() }
-                        Tasks.whenAll(deletePhotoDocsTasks)
+                    .addOnSuccessListener { resultadoConsulta ->
+                        val tareasBorradoDocumentosFirebase = resultadoConsulta.documents.map { it.reference.delete() }
+                        Tasks.whenAll(tareasBorradoDocumentosFirebase)
                             .addOnSuccessListener {
                                 db.collection("fincas").document(documentID)
                                     .delete()

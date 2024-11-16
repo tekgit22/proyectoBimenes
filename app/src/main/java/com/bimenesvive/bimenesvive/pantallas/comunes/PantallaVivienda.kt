@@ -710,7 +710,7 @@ private fun borrarAnuncioVivienda(
     val db = FirebaseFirestore.getInstance()
 
     if (imageUris.isNotEmpty()) {
-        val tareasBorrado = imageUris.map { uri ->
+        val tareasBorradoFotosStorage = imageUris.map { uri ->
             val nombreFoto = uri.lastPathSegment?.substringAfterLast('/')
             val refFoto: StorageReference = refAlmacenamiento.child("$userID/$documentID/$nombreFoto")
 //            Log.d("borrarAnuncioVivienda", "uri: $uri")
@@ -745,14 +745,14 @@ private fun borrarAnuncioVivienda(
             }
         }
 
-        Tasks.whenAll(tareasBorrado)
+        Tasks.whenAll(tareasBorradoFotosStorage)
             .addOnSuccessListener {
                 db.collection("viviendas").document(documentID).collection("fotos")
                     .get()
                     .addOnSuccessListener { resultadoConsulta ->
-                        val tareasBorradoDocumentosDeFotos =
+                        val tareasBorradoDocumentosFirebase =
                             resultadoConsulta.documents.map { it.reference.delete() }
-                        Tasks.whenAll(tareasBorradoDocumentosDeFotos)
+                        Tasks.whenAll(tareasBorradoDocumentosFirebase)
                             .addOnSuccessListener {
                                 db.collection("viviendas").document(documentID)
                                     .delete()
@@ -762,9 +762,7 @@ private fun borrarAnuncioVivienda(
                                             "Anuncio borrado correctamente",
                                             Toast.LENGTH_SHORT
                                         ).show()
-                                        while (navController.popBackStack()) {
-                                            // Borra todas las pantallas del backstack, vaciando la pila
-                                        }
+                                        navController.popBackStack()
                                         navController.navigate("inicio")
                                     }
                                     .addOnFailureListener { e ->
@@ -816,9 +814,7 @@ private fun borrarAnuncioVivienda(
             .delete()
             .addOnSuccessListener {
                 Toast.makeText(context, "Anuncio borrado correctamente", Toast.LENGTH_SHORT).show()
-                while (navController.popBackStack()) {
-                    // Borra todas las pantallas del backstack, vaciando la pila
-                }
+                navController.popBackStack()
                 navController.navigate("inicio")
             }
             .addOnFailureListener { e ->
