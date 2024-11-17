@@ -295,35 +295,32 @@ fun PantallaFinca(
                             },
                         )
                     }
-
-                    Column {
-                        if (finca?.precio == 0) {
-                            AssistChip(
-                                onClick = {},
-                                label = { Text("Precio no disponible") },
-                                leadingIcon = {
+                    if (finca?.precio == 0) {
+                        AssistChip(
+                            onClick = {},
+                            label = { Text("Precio no disponible") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Euro,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            },
+                        )
+                    } else {
+                        AssistChip(
+                            onClick = {},
+                            label = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = "Precio: ${finca?.precio} ")
                                     Icon(
                                         imageVector = Icons.Default.Euro,
                                         contentDescription = null,
                                         modifier = Modifier.size(AssistChipDefaults.IconSize)
                                     )
-                                },
-                            )
-                        } else {
-                            AssistChip(
-                                onClick = {},
-                                label = {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(text = "Precio: ${finca?.precio} ")
-                                        Icon(
-                                            imageVector = Icons.Default.Euro,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
-                                        )
-                                    }
-                                },
-                            )
-                        }
+                                }
+                            },
+                        )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {

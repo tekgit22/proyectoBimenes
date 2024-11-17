@@ -283,34 +283,32 @@ fun PantallaVivienda(
                             },
                         )
                     }
-                    Column {
-                        if (vivienda?.precio == 0) {
-                            AssistChip(
-                                onClick = {},
-                                label = { Text("Precio no disponible") },
-                                leadingIcon = {
+                    if (vivienda?.precio == 0) {
+                        AssistChip(
+                            onClick = {},
+                            label = { Text("Precio no disponible") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Euro,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            },
+                        )
+                    } else {
+                        AssistChip(
+                            onClick = {},
+                            label = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = "Precio: ${vivienda?.precio} ")
                                     Icon(
                                         imageVector = Icons.Default.Euro,
                                         contentDescription = null,
                                         modifier = Modifier.size(AssistChipDefaults.IconSize)
                                     )
-                                },
-                            )
-                        } else {
-                            AssistChip(
-                                onClick = {},
-                                label = {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(text = "Precio: ${vivienda?.precio} ")
-                                        Icon(
-                                            imageVector = Icons.Default.Euro,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(AssistChipDefaults.IconSize)
-                                        )
-                                    }
-                                },
-                            )
-                        }
+                                }
+                            },
+                        )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -478,7 +476,11 @@ fun PantallaVivienda(
                                                     "PantallaVivienda",
                                                     "Permiso de ubicación concedido y GPS activado, guardando localización"
                                                 )
-                                                saveViviendaLocation(vivienda!!, context, documentID) {
+                                                saveViviendaLocation(
+                                                    vivienda!!,
+                                                    context,
+                                                    documentID
+                                                ) {
                                                     // Refrescar la UI después de guardar la localización
                                                     coroutineScope.launch {
                                                         vivienda = getViviendaById(documentID)
@@ -489,7 +491,8 @@ fun PantallaVivienda(
                                                     "PantallaVivienda",
                                                     "GPS no activado, solicitando activación"
                                                 )
-                                                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                                                val intent =
+                                                    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                                                 context.startActivity(intent)
                                             }
                                         } else {
@@ -503,7 +506,11 @@ fun PantallaVivienda(
                                             "PantallaVivienda",
                                             "El dispositivo no tiene funcionalidad GPS"
                                         )
-                                        Toast.makeText(context, "El dispositivo no tiene funcionalidad GPS", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            "El dispositivo no tiene funcionalidad GPS",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 },
                                 modifier = Modifier.weight(1f),
