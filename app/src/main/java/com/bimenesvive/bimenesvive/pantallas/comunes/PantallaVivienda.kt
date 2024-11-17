@@ -535,7 +535,7 @@ fun PantallaVivienda(
                                 .padding(horizontal = 16.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Place, // Use the map icon
+                                imageVector = Icons.Default.Place,
                                 contentDescription = "Icono de mapa"
                             )
                             Spacer(modifier = Modifier.width(8.dp))
@@ -588,7 +588,7 @@ fun PantallaVivienda(
                                 )
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Euro, // Replace with your desired icon
+                                    imageVector = Icons.Default.Euro,
                                     contentDescription = "Símbolo €"
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))

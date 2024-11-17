@@ -793,6 +793,7 @@ suspend fun getFincaById(id: String): Finca? {
 
 /**
  * Cambia el estado de una finca a no disponible
+ * @param documentID ID de la finca
  */
 suspend fun fincaTransada(documentID: String) {
     val db = FirebaseFirestore.getInstance()
