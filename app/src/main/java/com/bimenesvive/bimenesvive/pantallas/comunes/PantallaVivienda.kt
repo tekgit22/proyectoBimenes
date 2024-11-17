@@ -350,7 +350,6 @@ fun PantallaVivienda(
                             }
                         )
                     }
-
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // LazyRow para mostrar las imágenes
@@ -420,8 +419,7 @@ fun PantallaVivienda(
 
                     Spacer(modifier = Modifier.size(24.dp))
 
-                    //Primera row de botones
-
+                    // Botones
                     if (userID == vivienda?.userID) {
                         Row(
                             modifier = Modifier
@@ -445,27 +443,6 @@ fun PantallaVivienda(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Button(
-                                // SIN PERMISOS DE GPS
-//                                onClick = {
-//                                    // Verificar permisos de ubicación antes de guardar la localización
-//                                    if (checkLocationPermission(context as Activity)) {
-//                                        Log.d(
-//                                            "PantallaVivienda",
-//                                            "Permiso de ubicación concedido, guardando localización"
-//                                        )
-//                                        saveViviendaLocation(vivienda!!, context, documentID) {
-//                                            // Refrescar la UI después de guardar la localización
-//                                            coroutineScope.launch {
-//                                                vivienda = getViviendaById(documentID)
-//                                            }
-//                                        }
-//                                    } else {
-//                                        Log.d(
-//                                            "PantallaVivienda",
-//                                            "Permiso de ubicación no concedido"
-//                                        )
-//                                    }
-//                                },
                                 onClick = {
                                     // Verificar si el dispositivo tiene GPS
                                     if (tieneGPS(context)) {
@@ -527,44 +504,42 @@ fun PantallaVivienda(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    //Columna que contiene el botón de ver localización o localización no disponible
-                    Column {
-                        if (vivienda?.localizacion?.latitude == 0.0 && vivienda?.localizacion?.longitude == 0.0) {
-                            Button(
-                                onClick = {},
-                                enabled = false,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
+                    // Botón de ver localización o localización no disponible
+                    if (vivienda?.localizacion?.latitude == 0.0 && vivienda?.localizacion?.longitude == 0.0) {
+                        Button(
+                            onClick = {},
+                            enabled = false,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        )
+                        {
+                            Text("Localización no disponible")
+                        }
+                    } else {
+                        Button(
+                            onClick = {
+                                vivienda?.localizacion?.let { geoPoint ->
+                                    val googleMapsIntentUri =
+                                        Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}?q=${geoPoint.latitude},${geoPoint.longitude}(${vivienda?.titulo})")
+                                    val mapIntent =
+                                        Intent(Intent.ACTION_VIEW, googleMapsIntentUri).apply {
+                                            setPackage("com.google.android.apps.maps")
+                                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        }
+                                    context.startActivity(mapIntent)
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Place, // Use the map icon
+                                contentDescription = "Icono de mapa"
                             )
-                            {
-                                Text("Localización no disponible")
-                            }
-                        } else {
-                            Button(
-                                onClick = {
-                                    vivienda?.localizacion?.let { geoPoint ->
-                                        val googleMapsIntentUri =
-                                            Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}?q=${geoPoint.latitude},${geoPoint.longitude}(${vivienda?.titulo})")
-                                        val mapIntent =
-                                            Intent(Intent.ACTION_VIEW, googleMapsIntentUri).apply {
-                                                setPackage("com.google.android.apps.maps")
-                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                            }
-                                        context.startActivity(mapIntent)
-                                    }
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Place, // Use the map icon
-                                    contentDescription = "Icono de mapa"
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Ver Localización")
-                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Ver Localización")
                         }
                     }
 

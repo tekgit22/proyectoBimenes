@@ -365,7 +365,6 @@ fun PantallaFinca(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
 
-
                     //LazyRow que hace el display de las imágenes redondas
                     LazyRow(state = listState) {
                         items(imageUris) { uri ->
@@ -446,7 +445,7 @@ fun PantallaFinca(
                     }
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    //BOTONES
+                    // Botones
                     if (userID == finca?.userID) {
                         //Subir Foto y Guardar Localización
                         Row(
@@ -471,30 +470,6 @@ fun PantallaFinca(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Button(
-//                                onClick = {
-//                                    // Verificar permisos de ubicación antes de guardar la localización
-//                                    if (checkLocationPermission(context as Activity)) {
-//                                        Log.d(
-//                                            "PantallaFinca",
-//                                            "Permiso de ubicación concedido, guardando localización"
-//                                        )
-//                                        saveFincaLocation(
-//                                            finca!!,
-//                                            context,
-//                                            documentID
-//                                        ) { // !! para asegurar que finca no es null
-//                                            // Refrescar la UI después de guardar la localización
-//                                            coroutineScope.launch {
-//                                                finca = getFincaById(documentID)
-//                                            }
-//                                        }
-//                                    } else {
-//                                        Log.d(
-//                                            "PantallaFinca",
-//                                            "Permiso de ubicación no concedido"
-//                                        )
-//                                    }
-//                                },
                                 onClick = {
                                     // Verificar si el dispositivo tiene GPS
                                     if (tieneGPS(context)) {
@@ -552,39 +527,37 @@ fun PantallaFinca(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    //Columna que contiene el botón de ver localización o localización no disponible
-                    Column {
-                        if (finca?.localizacion?.latitude == 0.0 && finca?.localizacion?.longitude == 0.0) {
-                            Button(
-                                onClick = {},
-                                enabled = false,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
-                            ) {
-                                Text("Localización no disponible")
-                            }
-                        } else {
-                            Button(
-                                onClick = {
-                                    finca?.localizacion?.let { geoPoint ->
-                                        val googleMapsIntentUri =
-                                            Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}?q=${geoPoint.latitude},${geoPoint.longitude}(${finca?.titulo})")
-                                        val mapIntent =
-                                            Intent(Intent.ACTION_VIEW, googleMapsIntentUri).apply {
-                                                setPackage("com.google.android.apps.maps") // Especifico que tiene que ser abierto con Google Maps
-                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)  // Añado una flag para abrir en una nueva tarea para la actividad
-                                                // Esta flag no es obligatoria porque la abro desde un composable, pero es buena práctica (obligatoria en services o broadcast receivers)
-                                            }
-                                        context.startActivity(mapIntent)
-                                    }
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
-                            ) {
-                                Text("Ver Localización")
-                            }
+                    // Botón de ver localización o localización no disponible
+                    if (finca?.localizacion?.latitude == 0.0 && finca?.localizacion?.longitude == 0.0) {
+                        Button(
+                            onClick = {},
+                            enabled = false,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text("Localización no disponible")
+                        }
+                    } else {
+                        Button(
+                            onClick = {
+                                finca?.localizacion?.let { geoPoint ->
+                                    val googleMapsIntentUri =
+                                        Uri.parse("geo:${geoPoint.latitude},${geoPoint.longitude}?q=${geoPoint.latitude},${geoPoint.longitude}(${finca?.titulo})")
+                                    val mapIntent =
+                                        Intent(Intent.ACTION_VIEW, googleMapsIntentUri).apply {
+                                            setPackage("com.google.android.apps.maps") // Especifico que tiene que ser abierto con Google Maps
+                                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)  // Añado una flag para abrir en una nueva tarea para la actividad
+                                            // Esta flag no es obligatoria porque la abro desde un composable, pero es buena práctica (obligatoria en services o broadcast receivers)
+                                        }
+                                    context.startActivity(mapIntent)
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text("Ver Localización")
                         }
                     }
 
