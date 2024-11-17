@@ -633,7 +633,7 @@ fun PantallaVivienda(
                             }
                         }
                     }
-                } //final de la columna scrollable
+                } // Final de la LazyColumn
 
                 // Gradiente en la parte inferior
                 if (scrollState.value < scrollState.maxValue) {
@@ -833,14 +833,5 @@ suspend fun viviendaTransada(documentID: String) {
     }.await()
 }
 
-/**
- * Cambia el estado de una finca a no disponible
- */
-suspend fun fincaTransada(documentID: String) {
-    val db = FirebaseFirestore.getInstance()
-    val fincaRef = db.collection("fincas").document(documentID)
-    db.runTransaction { transaction ->
-        transaction.update(fincaRef, "disponible", false)
-    }.await()
-}
+
 

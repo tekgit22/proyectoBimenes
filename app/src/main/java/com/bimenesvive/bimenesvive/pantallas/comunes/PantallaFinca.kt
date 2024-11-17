@@ -647,7 +647,7 @@ fun PantallaFinca(
                             }
                         }
                     }
-                }
+                } // Final de la LazyColumn
 
                 // Gradiente en la parte inferior
                 if (scrollState.value < scrollState.maxValue) {
@@ -675,6 +675,11 @@ fun PantallaFinca(
 
 /**
  * Borra un anuncio de la base de datos de Firestore
+ * @param userID ID del usuario actual
+ * @param documentID ID del documento de la finca en Firestore
+ * @param imageUris Lista de URIs de las imágenes del anuncio
+ * @param context Contexto de la aplicación
+ * @param navController Controlador de navegación
  */
 private fun borrarAnuncioFinca(
     userID: String,
@@ -767,9 +772,10 @@ private fun borrarAnuncioFinca(
     }
 }
 
-
 /**
- * Recibe un objeto Finca
+ * Carga una  finca desde Firestore
+ * @param id ID de la finca
+ * @return Finca
  */
 suspend fun getFincaById(id: String): Finca? {
     return try {
@@ -783,4 +789,15 @@ suspend fun getFincaById(id: String): Finca? {
         Log.e("PantallaFinca", "Error al obtener la finca: ${e.message}")
         null
     }
+}
+
+/**
+ * Cambia el estado de una finca a no disponible
+ */
+suspend fun fincaTransada(documentID: String) {
+    val db = FirebaseFirestore.getInstance()
+    val fincaRef = db.collection("fincas").document(documentID)
+    db.runTransaction { transaction ->
+        transaction.update(fincaRef, "disponible", false)
+    }.await()
 }
