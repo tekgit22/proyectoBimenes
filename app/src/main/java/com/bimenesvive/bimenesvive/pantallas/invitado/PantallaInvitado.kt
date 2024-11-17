@@ -71,6 +71,7 @@ fun PantallaInvitado(
             }
 
             Spacer(modifier = Modifier.height(15.dp))
+
             Button(
                 onClick = { },
                 enabled = false,
@@ -87,6 +88,7 @@ fun PantallaInvitado(
             }
 
             Spacer(modifier = Modifier.height(15.dp))
+
             Button(
                 onClick = { },
                 enabled = false,
@@ -106,6 +108,7 @@ fun PantallaInvitado(
             }
 
             Spacer(modifier = Modifier.height(15.dp))
+
             Button(
                 onClick = { navController.navigate("bimenes") },
                 modifier = Modifier
@@ -120,6 +123,7 @@ fun PantallaInvitado(
             }
 
             Spacer(modifier = Modifier.height(15.dp))
+
             Button(
                 onClick = { navController.navigate("anuncio") },
                 modifier = Modifier

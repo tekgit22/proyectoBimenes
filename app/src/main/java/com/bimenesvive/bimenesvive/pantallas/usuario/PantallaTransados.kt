@@ -70,8 +70,8 @@ suspend fun cargarPropiedadesTransados(): List<Any> {
 }
 
 /**
- * Obtiene las viviendas transadas del usuario actual.
- * @return Lista de viviendas transadas.
+ * Obtiene las viviendas transadas de Firebase (las marcadas como no disponible).
+ * @return List de viviendas transadas.
  */
 suspend fun getViviendasTransadas(): List<Vivienda> {
     val db = FirebaseFirestore.getInstance()
@@ -87,8 +87,8 @@ suspend fun getViviendasTransadas(): List<Vivienda> {
 }
 
 /**
- * Obtiene las fincas transadas del usuario actual.
- * @return Lista de fincas transadas.
+ * Obtiene las fincas transadas de Firebase (las marcadas como no disponible).
+ * @return List de fincas transadas.
  */
 suspend fun getFincasTransadas(): List<Finca> {
     val db = FirebaseFirestore.getInstance()

@@ -204,7 +204,7 @@ fun PantallaPrincipal(
 /**
  * Comprueba si el usuario actual es el administrador
  * @param onResult Función que se ejecuta cuando se obtiene el resultado
- * @return Booleano que indica si el usuario actual es el administrador
+ * @return Boolean indica si el usuario actual es el administrador
  */
 fun comprobarAdmin(onResult: (Boolean) -> Unit) {
     val db = FirebaseFirestore.getInstance()
