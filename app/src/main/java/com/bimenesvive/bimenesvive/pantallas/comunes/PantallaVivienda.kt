@@ -82,13 +82,10 @@ fun PantallaVivienda(
     val listState = rememberLazyListState() // Para controlar el scroll de las imágenes
     val scrollState = rememberScrollState()
 
-
-
-    LaunchedEffect(documentID) {
-        vivienda = getViviendaById(documentID)
-        imageUris = getFotosViviendaDesdeFirestore(documentID)
-    }
-
+    /**
+     * Carga un objeto Vivienda desde Firestore, las fotos de la vivienda y el ID del propietario
+     * @param documentID ID de la vivienda
+     */
     LaunchedEffect(documentID) {
         try {
             vivienda = getViviendaById(documentID)
@@ -101,6 +98,7 @@ fun PantallaVivienda(
         }
     }
 
+    // ActivityResultLauncher para lanzar un selector de imágenes de la galería
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
             uris.forEach { uri ->
@@ -121,7 +119,6 @@ fun PantallaVivienda(
             }
         }
 
-
     Scaffold(
         bottomBar = { NavBarViendoPropiedad(navController) }
     ) { paddingValues ->
@@ -131,6 +128,7 @@ fun PantallaVivienda(
                 .padding(paddingValues)
         ) {
             if (esImagenGrande && imagenSeleccionada != null) {
+                // La UI mostrará la imagen seleccionada a pantalla completa
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -139,8 +137,6 @@ fun PantallaVivienda(
                     ImagenRotable(
                         imageUri = imagenSeleccionada!!,
                         modifier = Modifier.fillMaxSize()
-
-
                     )
                     IconButton(
                         onClick = { esImagenGrande = false },

@@ -77,15 +77,16 @@ fun PantallaFinca(
     var esImagenGrande by remember { mutableStateOf(false) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
     val coroutineScope = rememberCoroutineScope()
-    val context =
-        LocalContext.current as Activity // Lo utilizo para lanzar intents y mostrar Toasts
+    val context = LocalContext.current as Activity
     var ownerUserID by remember { mutableStateOf<String?>(null) }
     val listState = rememberLazyListState() // Almacena el estado de scroll de la lista de imágenes
-    val scrollState =
-        rememberScrollState() // Almacena el estado del scroll, se utiliza para mostrar un gradiente en la parte inferior
+    val scrollState = rememberScrollState() // Almacena el estado del scroll,
+    // se utiliza para mostrar un gradiente en la parte inferior
 
-
-    // Cargar la finca y las fotos al lanzar la pantalla
+    /**
+     * Cargar la finca, las fotos y el ID del propietario
+     * @param documentID ID del documento de la finca en Firestore
+     */
     LaunchedEffect(documentID) {
         try {
             finca = getFincaById(documentID)
@@ -98,7 +99,7 @@ fun PantallaFinca(
         }
     }
 
-    // Lanzar el selector de fotos al hacer clic en el botón de subir foto
+    // ActivityResultLauncher para lanzar un selector de imágenes de la galería
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
             uris.forEach { uri ->
@@ -123,7 +124,6 @@ fun PantallaFinca(
             }
         }
 
-
     Scaffold(
         bottomBar = { NavBarViendoPropiedad(navController) }
     ) { paddingValues ->
@@ -132,7 +132,7 @@ fun PantallaFinca(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // IMAGEN GRANDE que ocupa toda la pantalla
+            // La UI mostrará la imagen seleccionada a pantalla completa
             if (esImagenGrande && imagenSeleccionada != null) {
                 Box(
                     modifier = Modifier
