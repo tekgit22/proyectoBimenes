@@ -25,7 +25,7 @@ import com.bimenesvive.bimenesvive.componentes.TarjetaVivienda
 import com.google.firebase.auth.FirebaseAuth
 
 
-// UI de la pantalla de explorar
+
 @Composable
 fun PantallaExplorar(
     modifier: Modifier = Modifier,
@@ -47,6 +47,7 @@ fun PantallaExplorar(
 
     /**
      * Función que maneja el evento de selección de inmueble en la navbar inferior
+     * @param seleccion String con el inmueble seleccionado
      */
     fun onInmuebleSeleccionado(seleccion: String) { // Maneja el evento de selección del inmueble en la navbar inferior
         inmuebleSeleccionado = seleccion // este cambio provoca que se ejecute LaunchedEffect
@@ -66,8 +67,7 @@ fun PantallaExplorar(
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
-                .padding(it) // El padding obtenido del Scaffold, asegura que el contenido
-            // no se superponga con la barra inferior
+                .padding(it)
         ) {
             items(propiedades) { propiedad ->
                 when (propiedad) {
@@ -100,7 +100,6 @@ fun NavBarInferior(
             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
     ) {
         NavigationBarItem(
-            // el parámetro icon es una función lambda que devuelve un Icon
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_atras),
