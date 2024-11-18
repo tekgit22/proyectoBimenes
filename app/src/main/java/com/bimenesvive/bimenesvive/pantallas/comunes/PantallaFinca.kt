@@ -54,8 +54,8 @@ import com.bimenesvive.bimenesvive.componentes.ImagenRotable
 import com.bimenesvive.bimenesvive.componentes.NavBarViendoPropiedad
 import com.bimenesvive.bimenesvive.modelos.EstadoPropiedad
 import com.bimenesvive.bimenesvive.modelos.Finca
-import com.bimenesvive.bimenesvive.utilidades.checkLocationPermission
-import com.bimenesvive.bimenesvive.utilidades.saveFincaLocation
+import com.bimenesvive.bimenesvive.utilidades.comprobarPermisosLocalizacion
+import com.bimenesvive.bimenesvive.utilidades.guardarLocalizacionFinca
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -474,13 +474,13 @@ fun PantallaFinca(
                                     // Verificar si el dispositivo tiene GPS
                                     if (tieneGPS(context)) {
                                         // Verificar permisos de ubicación antes de guardar la localización
-                                        if (checkLocationPermission(context)) {
+                                        if (comprobarPermisosLocalizacion(context)) {
                                             if (isGPSEnabled(context)) {
                                                 Log.d(
                                                     "PantallaFinca",
                                                     "Permiso de ubicación concedido y GPS activado, guardando localización"
                                                 )
-                                                saveFincaLocation(finca!!, context, documentID) {
+                                                guardarLocalizacionFinca(finca!!, context, documentID) {
                                                     // Refrescar la UI después de guardar la localización
                                                     coroutineScope.launch {
                                                         finca = cargarFincaPorID(documentID)

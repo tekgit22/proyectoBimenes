@@ -447,13 +447,13 @@ fun PantallaVivienda(
                                     // Verificar si el dispositivo tiene GPS
                                     if (tieneGPS(context)) {
                                         // Verificar permisos de ubicación antes de guardar la localización
-                                        if (checkLocationPermission(context)) {
+                                        if (comprobarPermisosLocalizacion(context)) {
                                             if (isGPSEnabled(context)) {
                                                 Log.d(
                                                     "PantallaVivienda",
                                                     "Permiso de ubicación concedido y GPS activado, guardando localización"
                                                 )
-                                                saveViviendaLocation(
+                                                guardarLocalizacionVivienda(
                                                     vivienda!!,
                                                     context,
                                                     documentID

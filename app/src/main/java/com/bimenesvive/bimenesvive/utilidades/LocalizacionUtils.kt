@@ -25,7 +25,7 @@ const val LOCATION_PERMISSION_REQUEST_CODE = 1000  // Código de solicitud de pe
  * @param activity Actividad desde la que se solicita el permiso.
  * @return True si la aplicación tiene permiso de ubicación, false en caso contrario.
  */
-fun checkLocationPermission(activity: Activity): Boolean {
+fun comprobarPermisosLocalizacion(activity: Activity): Boolean {
     return if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
         ActivityCompat.requestPermissions(activity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE) // Solicitar permiso de ubicación
         false
@@ -39,7 +39,7 @@ fun checkLocationPermission(activity: Activity): Boolean {
  * @param activity Actividad desde la que se solicita la ubicación.
  * @param onLocationReceived Función que se ejecuta cuando se recibe la ubicación.
  */
-fun getCurrentLocation(activity: Activity, onLocationReceived: (Location) -> Unit) {
+fun obtenerUbicacionActual(activity: Activity, onLocationReceived: (Location) -> Unit) {
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
     val locationRequest = LocationRequest.Builder(10000)
         .setMinUpdateIntervalMillis(5000)
@@ -68,9 +68,9 @@ fun getCurrentLocation(activity: Activity, onLocationReceived: (Location) -> Uni
  * @param documentID ID del documento de la vivienda en Firestore.
  * @param onLocationSaved Función que se ejecuta cuando se guarda la ubicación.
  */
-fun saveViviendaLocation(vivienda: Vivienda, context: Activity, documentID: String, onLocationSaved: (Location) -> Unit) {
-    if (checkLocationPermission(context)) {
-        getCurrentLocation(context) { location ->
+fun guardarLocalizacionVivienda(vivienda: Vivienda, context: Activity, documentID: String, onLocationSaved: (Location) -> Unit) {
+    if (comprobarPermisosLocalizacion(context)) {
+        obtenerUbicacionActual(context) { location ->
             val db = FirebaseFirestore.getInstance()
             val viviendaRef = db.collection("viviendas").document(documentID)
             val geoPoint = GeoPoint(location.latitude, location.longitude)
@@ -102,9 +102,9 @@ fun saveViviendaLocation(vivienda: Vivienda, context: Activity, documentID: Stri
  * @param documentID ID del documento de la finca en Firestore.
  * @param onLocationSaved Función que se ejecuta cuando se guarda la ubicación.
  */
-fun saveFincaLocation(finca: Finca, context: Activity, documentID: String, onLocationSaved: (Location) -> Unit) {
-    if (checkLocationPermission(context)) {
-        getCurrentLocation(context) { location ->
+fun guardarLocalizacionFinca(finca: Finca, context: Activity, documentID: String, onLocationSaved: (Location) -> Unit) {
+    if (comprobarPermisosLocalizacion(context)) {
+        obtenerUbicacionActual(context) { location ->
             val db = FirebaseFirestore.getInstance()
             val fincaRef = db.collection("fincas").document(documentID)
             val geoPoint = GeoPoint(location.latitude, location.longitude)
