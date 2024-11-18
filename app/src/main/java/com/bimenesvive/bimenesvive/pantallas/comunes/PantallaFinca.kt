@@ -89,8 +89,8 @@ fun PantallaFinca(
      */
     LaunchedEffect(documentID) {
         try {
-            finca = getFincaById(documentID)
-            imageUris = getFotosFincaDesdeFirestore(documentID)
+            finca = cargarFincaPorID(documentID)
+            imageUris = obtenerUrisFotosFinca(documentID)
             ownerUserID = finca?.userID
             Log.d("PantallaFinca", "Finca: $finca")
         } catch (e: Exception) {
@@ -114,7 +114,7 @@ fun PantallaFinca(
                         imageUris = imageUris + downloadUri
                         // Actualizar la lista de fotos después de subirlas para que se muestren en la UI
                         coroutineScope.launch {
-                            imageUris = getFotosFincaDesdeFirestore(documentID)
+                            imageUris = obtenerUrisFotosFinca(documentID)
                         }
                     }
                 } catch (e: Exception) {
@@ -483,7 +483,7 @@ fun PantallaFinca(
                                                 saveFincaLocation(finca!!, context, documentID) {
                                                     // Refrescar la UI después de guardar la localización
                                                     coroutineScope.launch {
-                                                        finca = getFincaById(documentID)
+                                                        finca = cargarFincaPorID(documentID)
                                                     }
                                                 }
                                             } else {
@@ -777,7 +777,7 @@ private fun borrarAnuncioFinca(
  * @param id ID de la finca
  * @return Finca
  */
-suspend fun getFincaById(id: String): Finca? {
+suspend fun cargarFincaPorID(id: String): Finca? {
     return try {
         FirebaseFirestore.getInstance()
             .collection("fincas")

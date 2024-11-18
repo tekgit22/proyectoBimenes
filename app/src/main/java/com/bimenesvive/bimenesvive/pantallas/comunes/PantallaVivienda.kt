@@ -88,8 +88,8 @@ fun PantallaVivienda(
      */
     LaunchedEffect(documentID) {
         try {
-            vivienda = getViviendaById(documentID)
-            imageUris = getFotosViviendaDesdeFirestore(documentID)
+            vivienda = cargarViviendaPorID(documentID)
+            imageUris = obtenerUrisFotosVivienda(documentID)
             ownerUserID = vivienda?.userID
             Log.d("PantallaVivienda", "Vivienda: $vivienda")
         } catch (e: Exception) {
@@ -460,7 +460,7 @@ fun PantallaVivienda(
                                                 ) {
                                                     // Refrescar la UI después de guardar la localización
                                                     coroutineScope.launch {
-                                                        vivienda = getViviendaById(documentID)
+                                                        vivienda = cargarViviendaPorID(documentID)
                                                     }
                                                 }
                                             } else {
@@ -807,7 +807,7 @@ private fun borrarAnuncioVivienda(
  * @param id ID de la vivienda
  * @return Vivienda
  */
-suspend fun getViviendaById(id: String): Vivienda? {
+suspend fun cargarViviendaPorID(id: String): Vivienda? {
     return try {
         FirebaseFirestore.getInstance()
             .collection("viviendas")

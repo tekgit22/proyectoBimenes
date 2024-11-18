@@ -55,7 +55,7 @@ fun requestPhotoPermissions(context: Activity) {
 // METODOS VIVIENDA
 
 /**
- * Sube una foto de una vivienda a Firebase Storage y guarda la URL en Firestore
+ * Sube una foto de una vivienda a Firebase Storage y guarda la URL en Firestore Database
  * @param uri URI de la foto
  * @param userID ID del usuario
  * @param documentID ID del documento de la vivienda
@@ -91,34 +91,38 @@ fun subirFotoVivienda(
 }
 
 /**
- * Guarda la URL de la foto en Firestore
+ * Guarda la URL de la foto en Firestore Database
  * @param url URL de la foto
  * @param userID ID del usuario
  * @param documentID ID del documento de la vivienda
  */
 private fun guardarFotoVivienda(url: String, userID: String, documentID: String) {
     val db = FirebaseFirestore.getInstance()
-    val photoData = hashMapOf(
+    val urlFoto = hashMapOf(
         "url" to url
     )
-    db.collection("viviendas").document(documentID).collection("fotos").add(photoData)
+    db.collection("viviendas").document(documentID).collection("fotos").add(urlFoto)
 }
 
 /**
  * Obtiene las URLs de las fotos de una vivienda desde Firestore
+ * @param documentID ID del documento de la vivienda
+ * @return List de URIs de las fotos de la vivienda
  */
-suspend fun getFotosViviendaDesdeFirestore(documentID: String): List<Uri> {
+suspend fun obtenerUrisFotosVivienda(documentID: String): List<Uri> {
     return try {
-        val snapshot = FirebaseFirestore.getInstance()
+        val resultadoConsulta = FirebaseFirestore.getInstance()
             .collection("viviendas")
             .document(documentID)
             .collection("fotos")
             .get()
             .await()
-        snapshot.documents.mapNotNull { it.getString("url")?.let { Uri.parse(it) } }
+        resultadoConsulta.documents.mapNotNull { it.getString("url")?.let { Uri.parse(it) } }
+        // it refiere al documento actual de cada iteración
+        // Uri.parse convierte la URL de la foto en un objeto Uri
     } catch (e: Exception) {
         Log.e("PantallaVivienda", "Error al obtener las fotos: ${e.message}")
-        emptyList()
+        emptyList() // Fallback en caso de error. Esto asegura que la función devuelva una lista.
     }
 }
 
@@ -127,7 +131,14 @@ suspend fun getFotosViviendaDesdeFirestore(documentID: String): List<Uri> {
 
 
 /**
- * Sube una foto de una finca a Firebase Storage y guarda la URL en Firestore
+ * Sube una foto de una finca a Firebase Storage y guarda la URL en Firestore Database
+ * @param uri URI de la foto
+ * @param userID ID del usuario
+ * @param documentID ID del documento de la finca
+ * @param storage Instancia de FirebaseStorage
+ * @param context Contexto de la actividad
+ * @param onSuccess Función que se ejecuta al subir la foto correctamente
+ * @return URI de la foto subida
  */
 fun subirFotoFinca(
     uri: Uri,
@@ -138,11 +149,11 @@ fun subirFotoFinca(
     onSuccess: (Uri) -> Unit
 ) {
     val storageRef = storage.reference
-    val photoRef = storageRef.child("$userID/$documentID/${UUID.randomUUID()}.jpg")
+    val fotoRef = storageRef.child("$userID/$documentID/${UUID.randomUUID()}.jpg")
 
-    photoRef.putFile(uri)
+    fotoRef.putFile(uri)
         .addOnSuccessListener {
-            photoRef.downloadUrl.addOnSuccessListener { downloadUri ->
+            fotoRef.downloadUrl.addOnSuccessListener { downloadUri ->
                 guardarFotoFinca(downloadUri.toString(), userID, documentID)
                 Toast.makeText(context, "Foto subida correctamente", Toast.LENGTH_SHORT).show()
                 onSuccess(downloadUri)
@@ -156,27 +167,33 @@ fun subirFotoFinca(
 
 /**
  * Guarda la URL de la foto en Firestore
+ * @param url URL de la foto
+ * @param userID ID del usuario
+ * @param documentID ID del documento de la finca
  */
 fun guardarFotoFinca(url: String, userID: String, documentID: String) {
     val db = FirebaseFirestore.getInstance()
-    val photoData = hashMapOf(
+    val urlFoto = hashMapOf(
         "url" to url
     )
-    db.collection("fincas").document(documentID).collection("fotos").add(photoData)
+    db.collection("fincas").document(documentID).collection("fotos").add(urlFoto)
 }
 
 /**
  * Obtiene las URLs de las fotos de una finca desde Firestore
+ * @param documentID ID del documento de la finca
+ * @return List de URIs de las fotos de la finca
  */
-suspend fun getFotosFincaDesdeFirestore(documentID: String): List<Uri> {
+suspend fun obtenerUrisFotosFinca(documentID: String): List<Uri> {
     return try {
-        val snapshot = FirebaseFirestore.getInstance()
+        val resultadoConsulta = FirebaseFirestore.getInstance()
             .collection("fincas")
             .document(documentID)
             .collection("fotos")
             .get()
             .await()
-        snapshot.documents.mapNotNull { it.getString("url")?.let { Uri.parse(it) } }
+        resultadoConsulta.documents.mapNotNull { it.getString("url")?.let { Uri.parse(it) } }
+
     } catch (e: Exception) {
         Log.e("PantallaFinca", "Error al obtener las fotos: ${e.message}")
         emptyList()

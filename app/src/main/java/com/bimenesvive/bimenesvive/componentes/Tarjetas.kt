@@ -34,8 +34,8 @@ import com.bimenesvive.bimenesvive.modelos.Finca
 import com.bimenesvive.bimenesvive.modelos.Vivienda
 import com.bimenesvive.bimenesvive.pantallas.comunes.subirVisitaFinca
 import com.bimenesvive.bimenesvive.pantallas.comunes.subirVisitaVivienda
-import com.bimenesvive.bimenesvive.utilidades.getFotosFincaDesdeFirestore
-import com.bimenesvive.bimenesvive.utilidades.getFotosViviendaDesdeFirestore
+import com.bimenesvive.bimenesvive.utilidades.obtenerUrisFotosFinca
+import com.bimenesvive.bimenesvive.utilidades.obtenerUrisFotosVivienda
 import kotlinx.coroutines.launch
 
 
@@ -48,7 +48,7 @@ fun TarjetaVivienda(vivienda: Vivienda, navController: NavHostController) {
 
     // LaunchedEffect se ejecuta cuando se compone por primera vez y cuando cambia el documentID de la vivienda
     LaunchedEffect(vivienda.documentID) {
-        fotos.value = getFotosViviendaDesdeFirestore(vivienda.documentID)
+        fotos.value = obtenerUrisFotosVivienda(vivienda.documentID)
     }
 
     //val alturaTarjeta = if (fotos.value.isEmpty()) 200.dp else 210.dp
@@ -127,7 +127,7 @@ fun TarjetaFinca(finca: Finca, navController: NavHostController) {
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(finca.documentID) {
-        fotos.value = getFotosFincaDesdeFirestore(finca.documentID)
+        fotos.value = obtenerUrisFotosFinca(finca.documentID)
     }
 
     //  val alturaTarjeta = if (fotos.value.isEmpty()) 200.dp else 210.dp
