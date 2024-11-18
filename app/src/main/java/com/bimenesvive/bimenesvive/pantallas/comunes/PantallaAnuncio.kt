@@ -27,7 +27,7 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
     var showDialog by remember { mutableStateOf(false) } // Dialog para añadir anuncio
     var userAnuncio by remember { mutableStateOf<Anuncio?>(null) } // Anuncio del usuario actual
 
-    val backgroundColors = listOf(
+    val coloresFondoTarjetas = listOf(
         Color(0xFFC8E6C9), // Light Green
         Color(0xFFBBDEFB), // Light Blue
         Color(0xFFFFE0B2)  // Light Orange
@@ -86,10 +86,10 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
                 // y crear un composable por cada elemento
                 itemsIndexed(anuncios) { index, anuncio ->
                     val colorIndex =
-                        index % backgroundColors.size // Cambia el color de fondo de cada anuncio
+                        index % coloresFondoTarjetas.size // Cambia el color de fondo de cada anuncio, de forma ordenada y cíclica (0, 1, 2, 0, 1, 2...)
                     CardAnuncio(
                         anuncio,
-                        backgroundColors[colorIndex] // Paso el color de fondo por parámetro
+                        coloresFondoTarjetas[colorIndex] // Paso el color de fondo por parámetro
                     )
                 }
             }
@@ -198,12 +198,12 @@ fun AnuncioDialog(onDismiss: () -> Unit, onSubmit: (Anuncio) -> Unit) {
  */
 suspend fun importarAnunciosFireBase(): List<Anuncio> {
     return try {
-        val snapshot = FirebaseFirestore.getInstance()
+        val resultadoConsulta = FirebaseFirestore.getInstance()
             .collection("anuncios")
             .get()
             .await()
         val anuncios =
-            snapshot.documents.mapNotNull { it.toObject(Anuncio::class.java) } // Convierte los documentos en objetos de la clase Anuncio
+            resultadoConsulta.documents.mapNotNull { it.toObject(Anuncio::class.java) } // Convierte los documentos en objetos de la clase Anuncio
         return anuncios    // Devuelve la lista de anuncios (puedo omitir la palabra return)
     } catch (e: Exception) {
         emptyList()
