@@ -83,6 +83,50 @@ fun PantallaFinca(
     val scrollState = rememberScrollState() // Almacena el estado del scroll,
     // se utiliza para mostrar un gradiente en la parte inferior
 
+    var borrarDialog by remember { mutableStateOf(false) }
+    if (borrarDialog) {
+            AlertDialog(
+                onDismissRequest = { borrarDialog = false },
+                title = { Text(text = "Confirmación") },
+                text = { Text("¿Quieres borrar este anuncio?") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            borrarDialog = false
+                            try {
+                                borrarAnuncioFinca(
+                                    userID,
+                                    documentID,
+                                    imageUris,
+                                    context,
+                                    navController
+                                )
+                            } catch (e: Exception) {
+                                Log.e(
+                                    "PantallaFinca",
+                                    "Error al borrar el anuncio: ${e.message}"
+                                )
+                                Toast.makeText(
+                                    context,
+                                    "Error al borrar el anuncio: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    ) {
+                        Text("Aceptar")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { borrarDialog = false }
+                    ) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
+
     /**
      * Cargar la finca, las fotos y el ID del propietario
      * @param documentID ID del documento de la finca en Firestore
@@ -612,27 +656,27 @@ fun PantallaFinca(
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Button(
-                                onClick = {
-                                    try {
-                                        borrarAnuncioFinca(
-                                            userID,
-                                            documentID,
-                                            imageUris,
-                                            context,
-                                            navController
-                                        )
-                                    } catch (e: Exception) {
-                                        Log.e(
-                                            "PantallaFinca",
-                                            "Error al borrar el anuncio: ${e.message}"
-                                        )
-                                        Toast.makeText(
-                                            context,
-                                            "Error al borrar el anuncio: ${e.message}",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                },
+                                onClick = { borrarDialog = true },
+//                                    try {
+//                                        borrarAnuncioFinca(
+//                                            userID,
+//                                            documentID,
+//                                            imageUris,
+//                                            context,
+//                                            navController
+//                                        )
+//                                    } catch (e: Exception) {
+//                                        Log.e(
+//                                            "PantallaFinca",
+//                                            "Error al borrar el anuncio: ${e.message}"
+//                                        )
+//                                        Toast.makeText(
+//                                            context,
+//                                            "Error al borrar el anuncio: ${e.message}",
+//                                            Toast.LENGTH_SHORT
+//                                        ).show()
+//                                    }
+//                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color(0xFFF44336)

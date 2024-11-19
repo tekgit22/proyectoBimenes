@@ -81,6 +81,50 @@ fun PantallaVivienda(
     var ownerUserID by remember { mutableStateOf<String?>(null) }
     val listState = rememberLazyListState() // Para controlar el scroll de las imágenes
     val scrollState = rememberScrollState()
+    var borrarDialog by remember { mutableStateOf(false) }
+
+    if (borrarDialog) {
+        AlertDialog(
+            onDismissRequest = { borrarDialog = false },
+            title = { Text(text = "Confirmación") },
+            text = { Text("¿Quieres borrar este anuncio?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        borrarDialog = false
+                        try {
+                            borrarAnuncioVivienda(
+                                userID,
+                                documentID,
+                                imageUris,
+                                context,
+                                navController
+                            )
+                        } catch (e: Exception) {
+                            Log.e(
+                                "PantallaVivienda",
+                                "Error al borrar el anuncio: ${e.message}"
+                            )
+                            Toast.makeText(
+                                context,
+                                "Error al borrar el anuncio: ${e.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                ) {
+                    Text("Aceptar")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { borrarDialog = false }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 
     /**
      * Carga un objeto Vivienda desde Firestore, las fotos de la vivienda y el ID del propietario
@@ -596,27 +640,27 @@ fun PantallaVivienda(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Button(
-                                onClick = {
-                                    try {
-                                        borrarAnuncioVivienda(
-                                            userID,
-                                            documentID,
-                                            imageUris,
-                                            context,
-                                            navController
-                                        )
-                                    } catch (e: Exception) {
-                                        Log.e(
-                                            "PantallaVivienda",
-                                            "Error al borrar el anuncio: ${e.message}"
-                                        )
-                                        Toast.makeText(
-                                            context,
-                                            "Error al borrar el anuncio: ${e.message}",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                },
+                                onClick = {borrarDialog = true },
+//                                    try {
+//                                        borrarAnuncioVivienda(
+//                                            userID,
+//                                            documentID,
+//                                            imageUris,
+//                                            context,
+//                                            navController
+//                                        )
+//                                    } catch (e: Exception) {
+//                                        Log.e(
+//                                            "PantallaVivienda",
+//                                            "Error al borrar el anuncio: ${e.message}"
+//                                        )
+//                                        Toast.makeText(
+//                                            context,
+//                                            "Error al borrar el anuncio: ${e.message}",
+//                                            Toast.LENGTH_SHORT
+//                                        ).show()
+//                                    }
+//                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color(
