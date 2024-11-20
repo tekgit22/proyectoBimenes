@@ -84,6 +84,8 @@ fun PantallaFinca(
     // se utiliza para mostrar un gradiente en la parte inferior
 
     var borrarDialog by remember { mutableStateOf(false) }
+    var transarDialog by remember { mutableStateOf(false) }
+
     if (borrarDialog) {
             AlertDialog(
                 onDismissRequest = { borrarDialog = false },
@@ -126,6 +128,55 @@ fun PantallaFinca(
                 }
             )
         }
+
+    if (transarDialog) {
+        AlertDialog(
+            onDismissRequest = { transarDialog = false },
+            title = { Text(text = "Confirmación") },
+            text = { Text("¿Has vendido o alquilado esta finca? Se archivará el anuncio?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        transarDialog = false
+                        coroutineScope.launch {
+                            try {
+                                transarFinca(documentID)
+                                Toast.makeText(
+                                    context,
+                                    "Anuncio marcado como transado",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                navController.navigate("inicio") {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        inclusive = true
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                Log.e(
+                                    "PantallaFinca",
+                                    "Error al marcar el anuncio como transado: ${e.message}"
+                                )
+                                Toast.makeText(
+                                    context,
+                                    "Error al marcar el anuncio como transado: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                ) {
+                    Text("Aceptar")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { transarDialog = false }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 
     /**
      * Cargar la finca, las fotos y el ID del propietario
@@ -607,7 +658,7 @@ fun PantallaFinca(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    //Transado y Borrar Anuncio
+                    //Transar y Borrar Anuncio
                     if (userID == finca?.userID) {
                         Row(
                             modifier = Modifier
@@ -616,30 +667,30 @@ fun PantallaFinca(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Button(
-                                onClick = {
-                                    coroutineScope.launch {
-                                        try {
-                                            fincaTransada(documentID)
-                                            Toast.makeText(
-                                                context,
-                                                "El anuncio se ha archivado",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                            navController.popBackStack() // Borro la pantalla actual de la pila de navegación
-                                            navController.navigate("inicio")
-                                        } catch (e: Exception) {
-                                            Log.e(
-                                                "PantallaFinca",
-                                                "Error al cambiar disponibilidad: ${e.message}"
-                                            )
-                                            Toast.makeText(
-                                                context,
-                                                "Error al marcar como transada",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    }
-                                },
+                                onClick = { transarDialog = true },
+//                                    coroutineScope.launch {
+//                                        try {
+//                                            transarFinca(documentID)
+//                                            Toast.makeText(
+//                                                context,
+//                                                "El anuncio se ha archivado",
+//                                                Toast.LENGTH_SHORT
+//                                            ).show()
+//                                            navController.popBackStack() // Borro la pantalla actual de la pila de navegación
+//                                            navController.navigate("inicio")
+//                                        } catch (e: Exception) {
+//                                            Log.e(
+//                                                "PantallaFinca",
+//                                                "Error al cambiar disponibilidad: ${e.message}"
+//                                            )
+//                                            Toast.makeText(
+//                                                context,
+//                                                "Error al marcar como transada",
+//                                                Toast.LENGTH_SHORT
+//                                            ).show()
+//                                        }
+//                                    }
+//                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color(0xFF4CAF50)
@@ -650,7 +701,7 @@ fun PantallaFinca(
                                     contentDescription = "Símbolo €"
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Transado")
+                                Text("Transar")
                             }
 
                             Spacer(modifier = Modifier.width(8.dp))
@@ -839,7 +890,7 @@ suspend fun cargarFincaPorID(id: String): Finca? {
  * Cambia el estado de una finca a no disponible
  * @param documentID ID de la finca
  */
-suspend fun fincaTransada(documentID: String) {
+suspend fun transarFinca(documentID: String) {
     val db = FirebaseFirestore.getInstance()
     val fincaRef = db.collection("fincas").document(documentID)
     db.runTransaction { transaction ->

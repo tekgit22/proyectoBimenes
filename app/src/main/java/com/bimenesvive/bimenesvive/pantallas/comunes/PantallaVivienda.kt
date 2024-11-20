@@ -76,12 +76,14 @@ fun PantallaVivienda(
     var esImagenGrande by remember { mutableStateOf(false) }
     var imagenSeleccionada by remember { mutableStateOf<Uri?>(null) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
-    val coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope() // Usado para transarVivienda, es una suspend function
+    // Borrar anuncio utiliza callbacks en lugar de await, por lo que no necesita coroutineScope
     val context = LocalContext.current as Activity
     var ownerUserID by remember { mutableStateOf<String?>(null) }
     val listState = rememberLazyListState() // Para controlar el scroll de las imágenes
     val scrollState = rememberScrollState()
     var borrarDialog by remember { mutableStateOf(false) }
+    var transarDialog by remember { mutableStateOf(false) }
 
     if (borrarDialog) {
         AlertDialog(
@@ -119,6 +121,55 @@ fun PantallaVivienda(
             dismissButton = {
                 TextButton(
                     onClick = { borrarDialog = false }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
+    if (transarDialog) {
+        AlertDialog(
+            onDismissRequest = { transarDialog = false },
+            title = { Text(text = "Confirmación") },
+            text = { Text("¿Has vendido o alquilado esta vivienda? Se archivará el anuncio") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        transarDialog = false
+                        coroutineScope.launch {
+                            try {
+                                transarVivienda(documentID)
+                                Toast.makeText(
+                                    context,
+                                    "El anuncio se ha marcado como transado",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                navController.navigate("inicio") {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        inclusive = true
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                Log.e(
+                                    "PantallaVivienda",
+                                    "Error al marcar como transado: ${e.message}"
+                                )
+                                Toast.makeText(
+                                    context,
+                                    "Error al marcar como transado",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                ) {
+                    Text("Aceptar")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { transarDialog = false }
                 ) {
                     Text("Cancelar")
                 }
@@ -597,33 +648,33 @@ fun PantallaVivienda(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Button(
-                                onClick = {
-                                    coroutineScope.launch {
-                                        try {
-                                            viviendaTransada(documentID)
-                                            Toast.makeText(
-                                                context,
-                                                "El anuncio se ha archivado",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                            navController.navigate("inicio") {
-                                                popUpTo(navController.graph.startDestinationId) {
-                                                    inclusive = true
-                                                }
-                                            }
-                                        } catch (e: Exception) {
-                                            Log.e(
-                                                "PantallaVivienda",
-                                                "Error al cambiar disponibilidad: ${e.message}"
-                                            )
-                                            Toast.makeText(
-                                                context,
-                                                "Error al marcar como transada",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    }
-                                },
+                                onClick = { transarDialog = true },
+//                                    coroutineScope.launch {
+//                                        try {
+//                                            transarVivienda(documentID)
+//                                            Toast.makeText(
+//                                                context,
+//                                                "El anuncio se ha archivado",
+//                                                Toast.LENGTH_SHORT
+//                                            ).show()
+//                                            navController.navigate("inicio") {
+//                                                popUpTo(navController.graph.startDestinationId) {
+//                                                    inclusive = true
+//                                                }
+//                                            }
+//                                        } catch (e: Exception) {
+//                                            Log.e(
+//                                                "PantallaVivienda",
+//                                                "Error al cambiar disponibilidad: ${e.message}"
+//                                            )
+//                                            Toast.makeText(
+//                                                context,
+//                                                "Error al marcar como transada",
+//                                                Toast.LENGTH_SHORT
+//                                            ).show()
+//                                        }
+//                                    }
+//                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color(
@@ -636,7 +687,7 @@ fun PantallaVivienda(
                                     contentDescription = "Símbolo €"
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Transado")
+                                Text("Transar")
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Button(
@@ -869,7 +920,7 @@ suspend fun cargarViviendaPorID(id: String): Vivienda? {
  * Cambia disponible a false en una vivienda
  * @param documentID ID de la vivienda
  */
-suspend fun viviendaTransada(documentID: String) {
+suspend fun transarVivienda(documentID: String) {
     val db = FirebaseFirestore.getInstance()
     val viviendaRef = db.collection("viviendas").document(documentID)
     db.runTransaction { transaction ->
