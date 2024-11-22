@@ -18,11 +18,18 @@ val RojoBorrar = Color(0xFFF44336)
 val GrisVisitas = Color(0xFF808080)
 val AzulHipervinculo = Color(0xFF0000FF)
 
+// Tarjetas, PantallaAnuncio
+val AzulClaro = Color(0xFFBBDEFB)
+val VerdeClaro = Color(0xFFC8E6C9)
+    // PantallaAnuncio
+val NaranjaClaro = Color(0xFFFFE0B2)
 
-val AzulInfo = Color(0xFF2196F3)
-val AmarilloAdvertencia = Color(0xFFFFEB3B)
-val NaranjaAlerta = Color(0xFFFF9800)
-val GrisNeutral = Color(0xFF9E9E9E)
-val Negro = Color(0xFF000000)
-val Blanco = Color(0xFFFFFFFF)
+// PantallaLogin
+val MarronInvitado = Color(0xFF8B4513)
+
+// Pantalla Principal
+val AzulOscuro = Color(0xFF1565C0)
+
+
+
 

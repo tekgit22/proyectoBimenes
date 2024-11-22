@@ -18,7 +18,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -37,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.bimenesvive.bimenesvive.ui.theme.AzulOscuro
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -172,7 +172,7 @@ fun PantallaPrincipal(
             Spacer(modifier = Modifier.height(15.dp))
             Button(
                 onClick = { navController.navigate("transados") },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0)),
+                colors = ButtonDefaults.buttonColors(containerColor = AzulOscuro),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)

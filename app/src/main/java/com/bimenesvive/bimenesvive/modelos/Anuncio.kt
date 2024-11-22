@@ -1,7 +1,6 @@
 package com.bimenesvive.bimenesvive.modelos
 
 
-//Data class proporciona automáticamente métodos como toString(), equals(), hashCode(), y copy()
 data class Anuncio(
     val titulo: String = "",
     val contacto: String = "",

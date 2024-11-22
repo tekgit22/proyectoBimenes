@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -37,6 +36,7 @@ import androidx.navigation.NavController
 import com.bimenesvive.bimenesvive.autenticacion.EstadoAutenticacion
 import com.bimenesvive.bimenesvive.autenticacion.AutenticacionViewModel
 import com.bimenesvive.bimenesvive.R
+import com.bimenesvive.bimenesvive.ui.theme.MarronInvitado
 
 @Composable
 fun PantallaLogin(
@@ -175,7 +175,7 @@ fun PantallaLogin(
             TextButton(onClick = { navController.navigate("invitado") }) {
                 Text(
                     text = "\uD83D\uDC64 Entrar como invitado",
-                    color = Color(0xFF8B4513)
+                    color = MarronInvitado
                 )
             }
         }

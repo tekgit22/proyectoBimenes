@@ -34,6 +34,8 @@ import com.bimenesvive.bimenesvive.modelos.Finca
 import com.bimenesvive.bimenesvive.modelos.Vivienda
 import com.bimenesvive.bimenesvive.pantallas.comunes.subirVisitaFinca
 import com.bimenesvive.bimenesvive.pantallas.comunes.subirVisitaVivienda
+import com.bimenesvive.bimenesvive.ui.theme.AzulClaro
+import com.bimenesvive.bimenesvive.ui.theme.VerdeClaro
 import com.bimenesvive.bimenesvive.utilidades.obtenerUrisFotosFinca
 import com.bimenesvive.bimenesvive.utilidades.obtenerUrisFotosVivienda
 import kotlinx.coroutines.launch
@@ -56,7 +58,7 @@ fun TarjetaVivienda(vivienda: Vivienda, navController: NavHostController) {
     val gradiente = Brush.linearGradient(
         colors = listOf(
             Color.White,
-            Color(0xFFBBDEFB)  // Azul claro
+            AzulClaro
         )
     )
 
@@ -134,8 +136,8 @@ fun TarjetaFinca(finca: Finca, navController: NavHostController) {
 
     val gradiente = Brush.linearGradient(
         colors = listOf(
-            Color.White, // Blanco
-            Color(0xFFC8E6C9)  // Verde actual
+            Color.White,
+            VerdeClaro
         )
     )
 

@@ -19,6 +19,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import androidx.compose.ui.graphics.Color
+import com.bimenesvive.bimenesvive.ui.theme.AzulClaro
+import com.bimenesvive.bimenesvive.ui.theme.NaranjaClaro
+import com.bimenesvive.bimenesvive.ui.theme.VerdeClaro
 
 @Composable
 fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostController) {
@@ -28,9 +31,9 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
     var userAnuncio by remember { mutableStateOf<Anuncio?>(null) } // Anuncio del usuario actual
 
     val coloresFondoTarjetas = listOf(
-        Color(0xFFC8E6C9), // Light Green
-        Color(0xFFBBDEFB), // Light Blue
-        Color(0xFFFFE0B2)  // Light Orange
+        VerdeClaro,
+        AzulClaro,
+        NaranjaClaro  // Light Orange
     )
 
     LaunchedEffect(Unit) {

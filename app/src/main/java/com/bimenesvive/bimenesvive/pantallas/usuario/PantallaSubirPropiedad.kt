@@ -22,10 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import android.widget.Toast
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.graphics.Color
 import com.bimenesvive.bimenesvive.componentes.TextLimiteTitulo
 import com.bimenesvive.bimenesvive.modelos.EstadoPropiedad
 
