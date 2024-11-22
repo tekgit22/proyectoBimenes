@@ -53,7 +53,7 @@ onSurface = Color(0xFF1C1B1F),
 @Composable
 fun BimenesViveTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
+    // Color dinámico a partir de Android 12+
     dynamicColor: Boolean = false, // Importante dejarlo en false para que no readapte los colores de la app a la config del user
     content: @Composable () -> Unit
 ) {

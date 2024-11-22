@@ -64,6 +64,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import com.bimenesvive.bimenesvive.utilidades.*
 import android.provider.Settings
+import com.bimenesvive.bimenesvive.ui.theme.AzulHipervinculo
+import com.bimenesvive.bimenesvive.ui.theme.GrisVisitas
+import com.bimenesvive.bimenesvive.ui.theme.RojoBorrar
+import com.bimenesvive.bimenesvive.ui.theme.VerdeVenta
+
 
 @Composable
 fun PantallaFinca(
@@ -273,12 +278,12 @@ fun PantallaFinca(
                         Icon(
                             imageVector = Icons.Default.Visibility,
                             contentDescription = "Visitas",
-                            tint = Color.Gray
+                            tint = GrisVisitas
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = finca?.visitas?.toString() ?: "0",
-                            color = Color.Gray
+                            color = GrisVisitas
                         )
                     }
                     Text(
@@ -426,7 +431,7 @@ fun PantallaFinca(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = finca?.telefono ?: "",
-                            color = Color.Blue,
+                            color = AzulHipervinculo,
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier.clickable {
                                 val telefonoPrefijoSpain = "+34${finca?.telefono}"
@@ -447,7 +452,7 @@ fun PantallaFinca(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = finca?.email ?: "",
-                            color = Color.Blue,
+                            color = AzulHipervinculo,
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier.clickable {
                                 val email = finca?.email ?: return@clickable
@@ -693,7 +698,7 @@ fun PantallaFinca(
 //                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF4CAF50)
+                                    containerColor = VerdeVenta
                                 )
                             ) {
                                 Icon(
@@ -730,7 +735,7 @@ fun PantallaFinca(
 //                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFF44336)
+                                    containerColor = RojoBorrar
                                 )
                             ) {
                                 Icon(

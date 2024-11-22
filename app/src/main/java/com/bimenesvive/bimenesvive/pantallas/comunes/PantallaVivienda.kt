@@ -63,6 +63,10 @@ import com.bimenesvive.bimenesvive.componentes.NavBarViendoPropiedad
 import com.bimenesvive.bimenesvive.modelos.EstadoPropiedad
 import com.google.firebase.storage.StorageReference
 import android.provider.Settings
+import com.bimenesvive.bimenesvive.ui.theme.AzulHipervinculo
+import com.bimenesvive.bimenesvive.ui.theme.GrisVisitas
+import com.bimenesvive.bimenesvive.ui.theme.RojoBorrar
+import com.bimenesvive.bimenesvive.ui.theme.VerdeVenta
 
 
 @Composable
@@ -76,7 +80,8 @@ fun PantallaVivienda(
     var esImagenGrande by remember { mutableStateOf(false) }
     var imagenSeleccionada by remember { mutableStateOf<Uri?>(null) }
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
-    val coroutineScope = rememberCoroutineScope() // Usado para transarVivienda, es una suspend function
+    val coroutineScope =
+        rememberCoroutineScope() // Usado para transarVivienda, es una suspend function
     // Borrar anuncio utiliza callbacks en lugar de await, por lo que no necesita coroutineScope
     val context = LocalContext.current as Activity
     var ownerUserID by remember { mutableStateOf<String?>(null) }
@@ -267,7 +272,7 @@ fun PantallaVivienda(
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = vivienda?.visitas?.toString() ?: "0",
-                            color = Color.Gray
+                            color = GrisVisitas
                         )
                     }
                     Text(
@@ -414,7 +419,7 @@ fun PantallaVivienda(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = vivienda?.telefono ?: "",
-                            color = Color.Blue,
+                            color = AzulHipervinculo,
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier.clickable {
                                 val telefonoPrefijoSpain = "+34${vivienda?.telefono}"
@@ -434,7 +439,7 @@ fun PantallaVivienda(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = vivienda?.email ?: "",
-                            color = Color.Blue,
+                            color = AzulHipervinculo,
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier.clickable {
                                 val email = vivienda?.email ?: return@clickable
@@ -677,11 +682,10 @@ fun PantallaVivienda(
 //                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(
-                                        0xFF4CAF50
-                                    )
+                                    containerColor = VerdeVenta
                                 )
-                            ) {
+                            )
+                            {
                                 Icon(
                                     imageVector = Icons.Default.Euro,
                                     contentDescription = "Símbolo €"
@@ -691,7 +695,7 @@ fun PantallaVivienda(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Button(
-                                onClick = {borrarDialog = true },
+                                onClick = { borrarDialog = true },
 //                                    try {
 //                                        borrarAnuncioVivienda(
 //                                            userID,
@@ -714,9 +718,7 @@ fun PantallaVivienda(
 //                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(
-                                        0xFFF44336
-                                    )
+                                    containerColor = RojoBorrar
                                 )
                             ) {
                                 Icon(
