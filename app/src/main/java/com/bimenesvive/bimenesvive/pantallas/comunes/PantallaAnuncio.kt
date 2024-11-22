@@ -33,7 +33,7 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
     val coloresFondoTarjetas = listOf(
         VerdeClaro,
         AzulClaro,
-        NaranjaClaro  // Light Orange
+        NaranjaClaro
     )
 
     LaunchedEffect(Unit) {
@@ -47,7 +47,7 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
             if (userID != "invitado") { // Los usuarios invitados no pueden añadir anuncios
                 FloatingActionButton(onClick = {
                     userAnuncio?.let { anuncio ->
-                        borrarAnuncioFinca(anuncio)
+                        borrarAnuncioFirebase(anuncio)
                         userAnuncio = null
                         anuncios = anuncios.filter { it.userID != userID }
                         // Actualizo la lista de anuncios, filtro los del usuario para asegurar
@@ -227,7 +227,7 @@ fun addAnuncio(anuncio: Anuncio) {
  * Borra un anuncio de Firebase
  * @param anuncio: Anuncio a borrar
  */
-fun borrarAnuncioFinca(anuncio: Anuncio) {
+fun borrarAnuncioFirebase(anuncio: Anuncio) {
     FirebaseFirestore.getInstance()
         .collection("anuncios")
         .whereEqualTo("userID", anuncio.userID)
