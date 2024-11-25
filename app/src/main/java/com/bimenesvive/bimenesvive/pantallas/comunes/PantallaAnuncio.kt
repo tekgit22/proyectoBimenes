@@ -1,5 +1,7 @@
 package com.bimenesvive.bimenesvive.pantallas.comunes
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -19,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import com.bimenesvive.bimenesvive.ui.theme.AzulClaro
 import com.bimenesvive.bimenesvive.ui.theme.NaranjaClaro
 import com.bimenesvive.bimenesvive.ui.theme.VerdeClaro
@@ -26,9 +29,11 @@ import com.bimenesvive.bimenesvive.ui.theme.VerdeClaro
 @Composable
 fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostController) {
     val userID = FirebaseAuth.getInstance().currentUser?.uid ?: "invitado"
+    val context = LocalContext.current
     var anuncios by remember { mutableStateOf(listOf<Anuncio>()) } // Lista de anuncios cargados desde Firestore
     var showDialog by remember { mutableStateOf(false) } // Dialog para añadir anuncio
     var userAnuncio by remember { mutableStateOf<Anuncio?>(null) } // Anuncio del usuario actual
+    var huboCambios by remember { mutableStateOf(false) }
 
     val coloresFondoTarjetas = listOf(
         VerdeClaro,
@@ -36,9 +41,9 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
         NaranjaClaro
     )
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(huboCambios) {
         anuncios = importarAnunciosFireBase()
-        userAnuncio = anuncios.find { it.userID == userID } //almacena el anuncio del usuario actual
+        userAnuncio = anuncios.find { it.userID == userID }
     }
 
     Scaffold(
@@ -47,12 +52,13 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
             if (userID != "invitado") { // Los usuarios invitados no pueden añadir anuncios
                 FloatingActionButton(onClick = {
                     userAnuncio?.let { anuncio ->
-                        borrarAnuncioFirebase(anuncio)
-                        userAnuncio = null
-                        anuncios = anuncios.filter { it.userID != userID }
-                        // Actualizo la lista de anuncios, filtro los del usuario para asegurar
-                        // que no aparezca el anuncio que acabo de borrar, en caso de que Firebase tardase en actualizar
-                        // (al actualizar el valor de anuncios, se lanza el LaunchedEffect)
+                        borrarAnuncioFirebase(anuncio, {
+                            userAnuncio = null
+                            huboCambios = !huboCambios // Trigger para hacer saltar el LaunchedEffect
+                        }, { e ->
+                            Log.e("PantallaAnuncio", "Error al borrar anuncio", e)
+                            Toast.makeText(context, "Error al borrar el anuncio", Toast.LENGTH_SHORT).show()
+                        })
                     } ?: run { // Si no hay anuncio del usuario, abro el Dialog para añadirlo
                         showDialog = true
                     }
@@ -100,16 +106,29 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
     }
 
     // Dialog con el formulario para añadir un anuncio
+//    if (showDialog) {
+//        AnuncioDialog(onDismiss = { showDialog = false }) { nuevoAnuncio ->
+//            val anuncioActualizado = nuevoAnuncio.copy(userID = userID)
+//            // Hago una copia de nuevoAnuncio y le añado el userID como nuevo campo
+//            addAnuncio(anuncioActualizado)
+//            anuncios = anuncios + anuncioActualizado
+//            userAnuncio = anuncioActualizado
+//            showDialog = false // Cierro el diálogo (dispara el LaunchedEffect)
+//        }
+//    }
     if (showDialog) {
         AnuncioDialog(onDismiss = { showDialog = false }) { nuevoAnuncio ->
             val anuncioActualizado = nuevoAnuncio.copy(userID = userID)
-            // Hago una copia de nuevoAnuncio y le añado el userID como nuevo campo
-            addAnuncio(anuncioActualizado)
-            anuncios = anuncios + anuncioActualizado
-            userAnuncio = anuncioActualizado
-            showDialog = false // Cierro el diálogo (dispara el LaunchedEffect)
+            addAnuncio(anuncioActualizado, {
+                huboCambios = !huboCambios // Trigger para hacer saltar el LaunchedEffect
+                showDialog = false
+            }, { e ->
+                Log.e("PantallaAnuncio", "Error al añadir anuncio", e)
+                Toast.makeText(context, "Error al añadir el anuncio", Toast.LENGTH_SHORT).show()
+            })
         }
     }
+
 }
 
 /**
@@ -217,17 +236,24 @@ suspend fun importarAnunciosFireBase(): List<Anuncio> {
  * Añade un anuncio a Firebase
  * @param anuncio: Anuncio a añadir
  */
-fun addAnuncio(anuncio: Anuncio) {
+//fun addAnuncio(anuncio: Anuncio) {
+//    FirebaseFirestore.getInstance()
+//        .collection("anuncios")
+//        .add(anuncio)
+//}
+fun addAnuncio(anuncio: Anuncio, onComplete: () -> Unit, onFailure: (Exception) -> Unit) {
     FirebaseFirestore.getInstance()
         .collection("anuncios")
         .add(anuncio)
+        .addOnSuccessListener { onComplete() }
+        .addOnFailureListener { e -> onFailure(e) }
 }
 
 /**
  * Borra un anuncio de Firebase
  * @param anuncio: Anuncio a borrar
  */
-fun borrarAnuncioFirebase(anuncio: Anuncio) {
+fun borrarAnuncioFirebase(anuncio: Anuncio, onComplete: () -> Unit, onFailure: (Exception) -> Unit) {
     FirebaseFirestore.getInstance()
         .collection("anuncios")
         .whereEqualTo("userID", anuncio.userID)
@@ -235,8 +261,11 @@ fun borrarAnuncioFirebase(anuncio: Anuncio) {
         .addOnSuccessListener { documents ->
             for (document in documents) {
                 document.reference.delete()
+                    .addOnSuccessListener { onComplete() }
+                    .addOnFailureListener { e -> onFailure(e) }
             }
         }
+        .addOnFailureListener { e -> onFailure(e) }
 }
 
 
@@ -246,8 +275,9 @@ fun borrarAnuncioFirebase(anuncio: Anuncio) {
 // 3 Se añade el anuncio a Firebase con addAnuncio
 // 4 Se añade el anuncio a la lista anuncios local
 // 5 Se actualiza el anuncio del usuario actual (userAnuncio)
-// 6 Se cierra el Dialog con showDialog = false (dispara el LaunchedEffect)
-// 7 Se actualiza la lista de anuncios con el LaunchedEffect
+// 6 Se cierra el Dialog con showDialog = false
+
+
 
 
 
