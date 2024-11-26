@@ -30,6 +30,9 @@ val MarronInvitado = Color(0xFF8B4513)
 // Pantalla Principal
 val AzulOscuro = Color(0xFF1565C0)
 
+// Pantalla SubirPropoiedad
+val VerdeRadioButton = Color(0xFF4CAF50)
+
 
 
 

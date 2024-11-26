@@ -22,9 +22,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import android.widget.Toast
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import com.bimenesvive.bimenesvive.componentes.TextLimiteTitulo
 import com.bimenesvive.bimenesvive.modelos.EstadoPropiedad
+import com.bimenesvive.bimenesvive.ui.theme.VerdeRadioButton
 
 
 @Composable
@@ -101,32 +105,55 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
         // Radio buttons dentro de una box para poder alinearla a la izquierda
         // Si modifico el Alignment de la Column directamente, no hace nada porque tiene un Column Parent
         // que la alinea al centro
+
+
+//        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopStart) {
+//            Column(horizontalAlignment = Alignment.Start) {
+//                Text(text = "Tipo de anuncio")
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    RadioButton(
+//                        selected = estado == EstadoPropiedad.VENTA,
+//                        onClick = { estado = EstadoPropiedad.VENTA }
+//                    )
+//                    Text(text = "Venta")
+//                }
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    RadioButton(
+//                        selected = estado == EstadoPropiedad.ALQUILER,
+//                        onClick = { estado = EstadoPropiedad.ALQUILER }
+//                    )
+//                    Text(text = "Alquiler")
+//                }
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    RadioButton(
+//                        selected = estado == EstadoPropiedad.ALQUILER_Y_VENTA,
+//                        onClick = { estado = EstadoPropiedad.ALQUILER_Y_VENTA }
+//                    )
+//                    Text(text = "Alquiler y Venta")
+//                }
+//            }
+//        }
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopStart) {
             Column(horizontalAlignment = Alignment.Start) {
                 Text(text = "Tipo de anuncio")
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = estado == EstadoPropiedad.VENTA,
-                        onClick = { estado = EstadoPropiedad.VENTA }
-                    )
-                    Text(text = "Venta")
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = estado == EstadoPropiedad.ALQUILER,
-                        onClick = { estado = EstadoPropiedad.ALQUILER }
-                    )
-                    Text(text = "Alquiler")
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = estado == EstadoPropiedad.ALQUILER_Y_VENTA,
-                        onClick = { estado = EstadoPropiedad.ALQUILER_Y_VENTA }
-                    )
-                    Text(text = "Alquiler y Venta")
-                }
+                RadioButtonPersonalizado(
+                    label = "Venta",
+                    selected = estado == EstadoPropiedad.VENTA,
+                    onClick = { estado = EstadoPropiedad.VENTA }
+                )
+                RadioButtonPersonalizado(
+                    label = "Alquiler",
+                    selected = estado == EstadoPropiedad.ALQUILER,
+                    onClick = { estado = EstadoPropiedad.ALQUILER }
+                )
+                RadioButtonPersonalizado(
+                    label = "Alquiler y Venta",
+                    selected = estado == EstadoPropiedad.ALQUILER_Y_VENTA,
+                    onClick = { estado = EstadoPropiedad.ALQUILER_Y_VENTA }
+                )
             }
         }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -456,6 +483,46 @@ fun NavBarInferiorSP(
             label = { Text("Finca") },
             selected = seccionSeleccionada == "Finca",
             onClick = { alSeleccionarSeccion("Finca") }
+        )
+    }
+}
+
+@Composable
+fun RadioButtonPersonalizado(
+    modifier: Modifier = Modifier,
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    enabled: Boolean = true
+) {
+    val coloresPersonalizados = RadioButtonDefaults.colors(
+        selectedColor = VerdeRadioButton,
+        unselectedColor = MaterialTheme.colorScheme.onSurface
+
+    )
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .selectable(
+                selected = selected,
+                onClick = onClick,
+                enabled = enabled,
+                role = Role.RadioButton // Toda la row es un radio button
+            )
+            .padding(horizontal = 16.dp)
+            .height(56.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = selected,
+            onClick = null, // lo maneja la propia Row (es bueno porque permite que el Text sea clickable)
+            enabled = enabled,
+            colors = coloresPersonalizados
+        )
+        Text(
+            text = label,
+            modifier = Modifier.padding(start = 16.dp)
         )
     }
 }
