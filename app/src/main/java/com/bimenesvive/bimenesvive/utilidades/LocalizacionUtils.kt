@@ -76,7 +76,8 @@ fun guardarLocalizacionVivienda(vivienda: Vivienda, context: Activity, documentI
             val geoPoint = GeoPoint(location.latitude, location.longitude)
 
             Log.d("PantallaVivienda", "Guardando localización: lat=${location.latitude}, lon=${location.longitude}")
-            Toast.makeText(context, "lat=${location.latitude}, lon=${location.longitude}", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(context, "lat=${location.latitude}, lon=${location.longitude}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Localización guardada correctamente", Toast.LENGTH_SHORT).show()
 
             val data = mapOf("localizacion" to geoPoint)
             viviendaRef.update(data)
