@@ -146,6 +146,7 @@ fun PantallaLogin(
                             ).show()
                         }
                     },
+
                     // El botón estará enabled siempre que no esté autenticando,
                     // así el usuario no puede hacer click varias veces mientras firebase responde
                     enabled = authenticationState.value != EstadoAutenticacion.ProcesandoAutentificacion
