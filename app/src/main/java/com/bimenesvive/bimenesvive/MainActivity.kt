@@ -16,7 +16,7 @@ import com.bimenesvive.bimenesvive.ui.theme.BimenesViveTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge() // Habilita el modo de pantalla completa en dispositivos con Android 11 o superior.
 
         // by viewModels() es una extensión de la clase ComponentActivity permite
         // obtener una instancia de un ViewModel asociado a la actividad.
