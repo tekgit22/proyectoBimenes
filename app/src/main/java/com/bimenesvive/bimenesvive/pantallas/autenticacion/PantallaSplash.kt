@@ -17,7 +17,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun PantallaSplash(navController: NavController, autenticacionViewModel: AutenticacionViewModel) {
     LaunchedEffect(Unit) {
-        delay(3000) // Espera 3 segundos
+        delay(2000) // Espera 2 segundos mostrando el logo y después navega a la pantalla de inicio o de login
         val pantallaDestino =
             if (autenticacionViewModel.estadoAutenticacion.value is EstadoAutenticacion.Autenticado) {
                 "inicio"

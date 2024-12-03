@@ -16,10 +16,7 @@ import com.bimenesvive.bimenesvive.ui.theme.BimenesViveTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge() // Habilita el modo de pantalla completa en dispositivos con Android 11 o superior.
-
-        // by viewModels() es una extensión de la clase ComponentActivity permite
-        // obtener una instancia de un ViewModel asociado a la actividad.
+        enableEdgeToEdge()
         val autenticacionViewModel: AutenticacionViewModel by viewModels()
 
         setContent {
@@ -29,23 +26,10 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
                         autenticacionViewModel = autenticacionViewModel
                     )
-                // El Scaffold calcula un innerPadding que representa el espacio necesario
-                // para que el contenido no se superponga con otros elementos de la interfaz de usuario
-                // (como la barra de navegación o la barra de estado).
                 }
             }
         }
     }
 }
 
-
-// Alternativa sin pasar innerPadding ni el modifier a Navegacion:
-
-//setContent {
-//    BimenesViveTheme {
-//        Scaffold(modifier = Modifier.fillMaxSize()) {
-//            Navegacion(autenticacionViewModel = autenticacionViewModel)
-//        }
-//    }
-//}
 

@@ -5,3 +5,5 @@ enum class EstadoPropiedad {
     ALQUILER,
     ALQUILER_Y_VENTA
 }
+
+//Cada constante de la enumeración es una instancia de la clase EstadoPropiedad

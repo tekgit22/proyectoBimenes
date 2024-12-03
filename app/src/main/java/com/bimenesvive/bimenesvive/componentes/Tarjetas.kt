@@ -67,6 +67,7 @@ fun TarjetaVivienda(vivienda: Vivienda, navController: NavHostController) {
             .fillMaxWidth()
             .padding(8.dp)
             //.height(alturaTarjeta)
+            // Al no especificar el tamaño de la tarjeta, se ajusta al contenido
             .clickable {
                 coroutineScope.launch {
                     subirVisitaVivienda(vivienda.documentID)
@@ -147,7 +148,7 @@ fun TarjetaFinca(finca: Finca, navController: NavHostController) {
             .padding(8.dp)
             //    .height(alturaTarjeta)
             .clickable {
-                coroutineScope.launch { // SubirVisitaFinca es una corrutina y tenemos que esperar a que termine
+                coroutineScope.launch { // Navegar a la pantalla de la finca después de subir la visita, es un bloque de código asíncrono
                     subirVisitaFinca(finca.documentID)
                     navController.navigate("finca/${finca.documentID}")
                 }

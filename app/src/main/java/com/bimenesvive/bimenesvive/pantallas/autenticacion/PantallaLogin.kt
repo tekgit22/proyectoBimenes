@@ -61,7 +61,6 @@ fun PantallaLogin(
         RecordarPasswordDialog(
             onDismiss = { showDialog = false },
             onSendEmail = { email ->
-                // lógica para enviar el email
                 autenticacionViewModel.enviarCorreoRecordarPassword(email, context)
             }
         )
@@ -166,7 +165,7 @@ fun PantallaLogin(
             }
         }
 
-        // Box está para alojar el TextButton en el fondo de la pantalla
+        // Box para colocar el TextButton al fondo de la pantalla
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -183,7 +182,9 @@ fun PantallaLogin(
     }
 }
 
-
+/**
+ * Dialog para introducir una dirección de email para recordar su contraseña
+ */
 @Composable
 fun RecordarPasswordDialog(onDismiss: () -> Unit, onSendEmail: (String) -> Unit) {
     var email by remember { mutableStateOf("") }

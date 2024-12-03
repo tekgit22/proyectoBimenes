@@ -14,10 +14,12 @@ import androidx.compose.ui.Alignment
 
 /**
  * Muestra el número de caracteres actuales y el máximo permitido para un campo de texto.
+ * @param currentLength Número de caracteres actuales
+ * @param maxLength Número máximo de caracteres permitidos
  */
 @Composable
 fun TextLimiteTitulo(currentLength: Int, maxLength: Int) {
-    //Necesito un box para poder alinear el texto a la derecha
+    //Necesito contenerlo en un box para poder alinear el texto a la derecha
     Box(
         modifier = Modifier
             .fillMaxWidth()

@@ -30,7 +30,7 @@ fun PantallaBimenes(modifier: Modifier, navController: NavHostController) {
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
-                .verticalScroll(scrollState) // Alternativa a LazyColumn
+                .verticalScroll(scrollState) // Este es el modificador que permite hacer scroll a una Column
         ) {
             Text(
                 text = "CONOCE BIMENES",

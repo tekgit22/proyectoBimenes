@@ -43,7 +43,9 @@ class AutenticacionViewModel : ViewModel() {
     }
 
     /**
-     * Envía un correo al usuario para recordarle su contraseña
+     * Envia un correo para recordar la contraseña
+     * @param email El email del usuario
+     * @param context El contexto de la aplicación
      */
     fun enviarCorreoRecordarPassword(email: String, context: Context) {
         autenticacion.sendPasswordResetEmail(email)

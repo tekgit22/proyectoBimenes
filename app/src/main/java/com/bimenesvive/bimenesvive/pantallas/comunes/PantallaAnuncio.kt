@@ -105,17 +105,6 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
         }
     }
 
-    // Dialog con el formulario para añadir un anuncio
-//    if (showDialog) {
-//        AnuncioDialog(onDismiss = { showDialog = false }) { nuevoAnuncio ->
-//            val anuncioActualizado = nuevoAnuncio.copy(userID = userID)
-//            // Hago una copia de nuevoAnuncio y le añado el userID como nuevo campo
-//            addAnuncio(anuncioActualizado)
-//            anuncios = anuncios + anuncioActualizado
-//            userAnuncio = anuncioActualizado
-//            showDialog = false // Cierro el diálogo (dispara el LaunchedEffect)
-//        }
-//    }
     if (showDialog) {
         AnuncioDialog(onDismiss = { showDialog = false }) { nuevoAnuncio ->
             val anuncioActualizado = nuevoAnuncio.copy(userID = userID)
@@ -133,6 +122,8 @@ fun PantallaAnuncio(modifier: Modifier = Modifier, navController: NavHostControl
 
 /**
  * Composable que muestra un anuncio
+ * @param anuncio: Anuncio a mostrar
+ * @param backgroundColor: Color de fondo de la tarjeta
  */
 @Composable
 fun CardAnuncio(anuncio: Anuncio, backgroundColor: Color) {
@@ -236,15 +227,11 @@ suspend fun importarAnunciosFireBase(): List<Anuncio> {
  * Añade un anuncio a Firebase
  * @param anuncio: Anuncio a añadir
  */
-//fun addAnuncio(anuncio: Anuncio) {
-//    FirebaseFirestore.getInstance()
-//        .collection("anuncios")
-//        .add(anuncio)
-//}
 fun addAnuncio(anuncio: Anuncio, onComplete: () -> Unit, onFailure: (Exception) -> Unit) {
     FirebaseFirestore.getInstance()
         .collection("anuncios")
         .add(anuncio)
+        // Añadí callbacks para saber si se añadió correctamente o no (modificará la variable huboCambios)
         .addOnSuccessListener { onComplete() }
         .addOnFailureListener { e -> onFailure(e) }
 }

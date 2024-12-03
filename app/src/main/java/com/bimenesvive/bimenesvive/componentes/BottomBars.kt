@@ -42,7 +42,7 @@ fun NavBarViendoPropiedad(navController: NavHostController) {
                 )
             },
             label = { Text("Menú") },
-            selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
+            selected = false, //No necesito seleccionar, va a navegar a otra pantalla
             onClick = {
                 val userID = FirebaseAuth.getInstance().currentUser?.uid
                 if (userID == null) {
@@ -70,7 +70,7 @@ fun NavBarViendoPropiedad(navController: NavHostController) {
                     )
                 },
                 label = { Text("Menú") },
-                selected = false, //No necesito seleccionar nada, va a navegar a otra pantalla
+                selected = false,
 //            onClick = { navController.navigate("inicio") }
                 onClick = {
                     navController.popBackStack() //Vuelve a la pantalla anterior y elimina la actual
