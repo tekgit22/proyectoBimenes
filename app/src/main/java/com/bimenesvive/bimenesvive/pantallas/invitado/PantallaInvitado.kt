@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.AutoStories
@@ -38,22 +40,29 @@ fun PantallaInvitado(
     modifier: Modifier = Modifier,
     navController: NavController,
 ) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        Spacer(modifier = Modifier.height(32.dp))
 
-    Box(modifier = modifier.fillMaxSize()) {
         // Título
         Box(
             modifier = Modifier
                 .padding(8.dp)
-                .align(Alignment.TopCenter)
+                .align(Alignment.CenterHorizontally)
         ) {
             Image(painter = painterResource(id = R.drawable.logo), contentDescription = "Logo")
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Botones centrados
         Column(
             modifier = Modifier
-                .align(Alignment.Center)
-                .padding(top = 32.dp),
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -137,17 +146,16 @@ fun PantallaInvitado(
                 }
             }
         }
-    }
 
+        Spacer(modifier = Modifier.weight(1f))
 
-    // Botón para volver al registro en la parte inferior
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 16.dp),
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        TextButton(onClick = { navController.navigate("registro") }) {
+        // Botón para volver al registro en la parte inferior
+        TextButton(
+            onClick = { navController.navigate("registro") },
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 32.dp)
+        ) {
             Text(text = "Quiero registrarme para ver más", fontSize = 18.sp)
         }
     }

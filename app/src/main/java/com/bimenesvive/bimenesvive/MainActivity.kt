@@ -23,7 +23,9 @@ class MainActivity : ComponentActivity() {
             BimenesViveTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Navegacion(
-                        modifier = Modifier.padding(innerPadding),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
                         autenticacionViewModel = autenticacionViewModel
                     )
                 }
@@ -31,5 +33,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
