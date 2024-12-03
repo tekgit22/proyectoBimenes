@@ -43,7 +43,7 @@ fun PantallaInvitado(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()) // Permite hacer scroll en la pantalla (por si la pantalla del usuario fuese muy pequeña)
     ) {
         Spacer(modifier = Modifier.height(32.dp))
 
