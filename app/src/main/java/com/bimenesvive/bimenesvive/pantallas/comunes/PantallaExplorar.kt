@@ -25,7 +25,6 @@ import com.bimenesvive.bimenesvive.componentes.TarjetaVivienda
 import com.google.firebase.auth.FirebaseAuth
 
 
-
 @Composable
 fun PantallaExplorar(
     modifier: Modifier = Modifier,
@@ -34,10 +33,10 @@ fun PantallaExplorar(
     var propiedades by remember { mutableStateOf<List<Any>>(emptyList()) } // Lista de propiedades de Card, si quiero que sean distintas es necesario
     var inmuebleSeleccionado by remember { mutableStateOf("viviendas") } // Controla la selección del navbar inferior, viviendas está seleccionado por defecto
     val scope =
-        rememberCoroutineScope() // Las corrutinas son hilos de ejecución que se pueden pausar y reanudar
+        rememberCoroutineScope() // scope es un objeto que permite lanzar corrutinas en el ciclo de vida de un composable
 
 
-    // LaunchedEffect se ejecuta cuando se compone por primera vez y cuando selectedTab cambia
+    // LaunchedEffect se ejecuta cuando se compone por primera vez y cuando cambia el valor de inmuebleSeleccionado
     LaunchedEffect(inmuebleSeleccionado) {
         scope.launch {
             propiedades =
@@ -153,8 +152,9 @@ suspend fun getViviendas(): List<Vivienda> {
     val db = FirebaseFirestore.getInstance()
     return try {
         val resultadoConsulta = db.collection("viviendas").get().await()
-        resultadoConsulta.toObjects(Vivienda::class.java)
-            .filter { it.disponible } //Convierte los documentos obtenidos en una lista de objetos de la clase
+        resultadoConsulta.toObjects(Vivienda::class.java) //Convierte los documentos obtenidos en una lista de objetos de la clase Vivienda
+            .filter { it.disponible } // it es el objeto (vivienda) actual de la iteración
+
     } catch (e: Exception) {
         emptyList()
     }

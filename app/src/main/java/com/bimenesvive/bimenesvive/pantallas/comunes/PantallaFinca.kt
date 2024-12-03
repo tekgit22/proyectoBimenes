@@ -673,29 +673,6 @@ fun PantallaFinca(
                         ) {
                             Button(
                                 onClick = { transarDialog = true },
-//                                    coroutineScope.launch {
-//                                        try {
-//                                            transarFinca(documentID)
-//                                            Toast.makeText(
-//                                                context,
-//                                                "El anuncio se ha archivado",
-//                                                Toast.LENGTH_SHORT
-//                                            ).show()
-//                                            navController.popBackStack() // Borro la pantalla actual de la pila de navegación
-//                                            navController.navigate("inicio")
-//                                        } catch (e: Exception) {
-//                                            Log.e(
-//                                                "PantallaFinca",
-//                                                "Error al cambiar disponibilidad: ${e.message}"
-//                                            )
-//                                            Toast.makeText(
-//                                                context,
-//                                                "Error al marcar como transada",
-//                                                Toast.LENGTH_SHORT
-//                                            ).show()
-//                                        }
-//                                    }
-//                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = VerdeVenta
@@ -713,26 +690,6 @@ fun PantallaFinca(
 
                             Button(
                                 onClick = { borrarDialog = true },
-//                                    try {
-//                                        borrarAnuncioFinca(
-//                                            userID,
-//                                            documentID,
-//                                            imageUris,
-//                                            context,
-//                                            navController
-//                                        )
-//                                    } catch (e: Exception) {
-//                                        Log.e(
-//                                            "PantallaFinca",
-//                                            "Error al borrar el anuncio: ${e.message}"
-//                                        )
-//                                        Toast.makeText(
-//                                            context,
-//                                            "Error al borrar el anuncio: ${e.message}",
-//                                            Toast.LENGTH_SHORT
-//                                        ).show()
-//                                    }
-//                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = RojoBorrar

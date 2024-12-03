@@ -654,32 +654,6 @@ fun PantallaVivienda(
                         ) {
                             Button(
                                 onClick = { transarDialog = true },
-//                                    coroutineScope.launch {
-//                                        try {
-//                                            transarVivienda(documentID)
-//                                            Toast.makeText(
-//                                                context,
-//                                                "El anuncio se ha archivado",
-//                                                Toast.LENGTH_SHORT
-//                                            ).show()
-//                                            navController.navigate("inicio") {
-//                                                popUpTo(navController.graph.startDestinationId) {
-//                                                    inclusive = true
-//                                                }
-//                                            }
-//                                        } catch (e: Exception) {
-//                                            Log.e(
-//                                                "PantallaVivienda",
-//                                                "Error al cambiar disponibilidad: ${e.message}"
-//                                            )
-//                                            Toast.makeText(
-//                                                context,
-//                                                "Error al marcar como transada",
-//                                                Toast.LENGTH_SHORT
-//                                            ).show()
-//                                        }
-//                                    }
-//                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = VerdeVenta
@@ -696,26 +670,6 @@ fun PantallaVivienda(
                             Spacer(modifier = Modifier.width(8.dp))
                             Button(
                                 onClick = { borrarDialog = true },
-//                                    try {
-//                                        borrarAnuncioVivienda(
-//                                            userID,
-//                                            documentID,
-//                                            imageUris,
-//                                            context,
-//                                            navController
-//                                        )
-//                                    } catch (e: Exception) {
-//                                        Log.e(
-//                                            "PantallaVivienda",
-//                                            "Error al borrar el anuncio: ${e.message}"
-//                                        )
-//                                        Toast.makeText(
-//                                            context,
-//                                            "Error al borrar el anuncio: ${e.message}",
-//                                            Toast.LENGTH_SHORT
-//                                        ).show()
-//                                    }
-//                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = RojoBorrar
@@ -784,7 +738,7 @@ private fun borrarAnuncioVivienda(
 //            Log.d("borrarAnuncioVivienda", "nombreFoto: $nombreFoto")
 //            Log.d("borrarAnuncioVivienda", "referenciaFoto: ${referenciaFoto.path}")
 
-            /* Ejemplo:
+            /* Ejemplo para explicar el funcionamiento de lastPathSegment y substringAfterLast:
             LOG:
                 uri: https://firebasestorage.googleapis.com/v0/b/bimenes-vive.appspot.com/o/4wOzuh8c8GhYeP3qbgn6Ja888F02%2FRvwMSNZVnf4bmmR3TNMa%2F05cdb4a0-53c7-4af0-a10a-a478ee7cef25.jpg?alt=media&token=e7ab36ab-b999-4d54-a0ae-bca40b8355c0
                 nombreFoto: 05cdb4a0-53c7-4af0-a10a-a478ee7cef25.jpg
