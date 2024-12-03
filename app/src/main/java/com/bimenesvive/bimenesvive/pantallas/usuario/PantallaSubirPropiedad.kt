@@ -105,33 +105,6 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
         // Si modifico el Alignment de la Column directamente, no hace nada porque tiene un Column Parent
         // que la alinea al centro
 
-
-//        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopStart) {
-//            Column(horizontalAlignment = Alignment.Start) {
-//                Text(text = "Tipo de anuncio")
-//                Row(verticalAlignment = Alignment.CenterVertically) {
-//                    RadioButton(
-//                        selected = estado == EstadoPropiedad.VENTA,
-//                        onClick = { estado = EstadoPropiedad.VENTA }
-//                    )
-//                    Text(text = "Venta")
-//                }
-//                Row(verticalAlignment = Alignment.CenterVertically) {
-//                    RadioButton(
-//                        selected = estado == EstadoPropiedad.ALQUILER,
-//                        onClick = { estado = EstadoPropiedad.ALQUILER }
-//                    )
-//                    Text(text = "Alquiler")
-//                }
-//                Row(verticalAlignment = Alignment.CenterVertically) {
-//                    RadioButton(
-//                        selected = estado == EstadoPropiedad.ALQUILER_Y_VENTA,
-//                        onClick = { estado = EstadoPropiedad.ALQUILER_Y_VENTA }
-//                    )
-//                    Text(text = "Alquiler y Venta")
-//                }
-//            }
-//        }
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopStart) {
             Column(horizontalAlignment = Alignment.Start) {
                 Text(text = "Tipo de anuncio")
@@ -155,13 +128,6 @@ fun FormularioVivienda(db: FirebaseFirestore, navController: NavController) {
 
 
         Spacer(modifier = Modifier.height(16.dp))
-
-//        Text(
-//            text = "${titulo.length} / 30",
-//            style = MaterialTheme.typography.bodySmall,
-//            color = if (titulo.length == 30) Color.Red else Color.Gray,
-//            modifier = Modifier.align(Alignment.End).padding(end = 16.dp)
-//        )
 
         //Composable custom, muestra el num de caracteres escritos / límite de caracteres del título
         TextLimiteTitulo(currentLength = titulo.length, maxLength = limiteCaracteresTitulo)
@@ -299,34 +265,7 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Radio buttons dentro de una box para poder alinearla a la izquierda
 
-//        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopStart) {
-//            Column(horizontalAlignment = Alignment.Start) {
-//                Text(text = "Tipo de anuncio")
-//                Row(verticalAlignment = Alignment.CenterVertically) {
-//                    RadioButton(
-//                        selected = estado == EstadoPropiedad.VENTA,
-//                        onClick = { estado = EstadoPropiedad.VENTA }
-//                    )
-//                    Text(text = "Venta")
-//                }
-//                Row(verticalAlignment = Alignment.CenterVertically) {
-//                    RadioButton(
-//                        selected = estado == EstadoPropiedad.ALQUILER,
-//                        onClick = { estado = EstadoPropiedad.ALQUILER }
-//                    )
-//                    Text(text = "Alquiler")
-//                }
-//                Row(verticalAlignment = Alignment.CenterVertically) {
-//                    RadioButton(
-//                        selected = estado == EstadoPropiedad.ALQUILER_Y_VENTA,
-//                        onClick = { estado = EstadoPropiedad.ALQUILER_Y_VENTA }
-//                    )
-//                    Text(text = "Alquiler y Venta")
-//                }
-//            }
-//        }
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopStart) {
             Column(horizontalAlignment = Alignment.Start) {
                 Text(text = "Tipo de anuncio")
