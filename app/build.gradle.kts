@@ -86,10 +86,6 @@ dependencies {
     //FIREBASE BoM
     implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
 
-    //revisar esto:
-    // If your project is using a libs.versions.toml file, you should place all Gradle dependencies in the TOML file.
-
-
     //Firebase Autehntication
     implementation("com.google.firebase:firebase-auth-ktx")
     //Firestore
@@ -97,7 +93,7 @@ dependencies {
     //Storage
     implementation("com.google.firebase:firebase-storage-ktx")
 
-    // Coil
+    // Coil (Fotos)
     implementation("io.coil-kt:coil-compose:2.1.0")
 
     //OsmDroid (Open Street Maps)
@@ -110,7 +106,7 @@ dependencies {
     testImplementation ("junit:junit:4.13.2")
     testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1")
 
-    //Testing Android
+    //Testing Android UI
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
 
 
