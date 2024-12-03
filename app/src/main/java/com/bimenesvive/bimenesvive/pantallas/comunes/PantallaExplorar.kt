@@ -53,20 +53,19 @@ fun PantallaExplorar(
     }
 
     Scaffold(
-        //BOTTOM BAR
         bottomBar = {
             NavBarInferior(
                 navController,
                 inmuebleSeleccionado,
-                ::onInmuebleSeleccionado // Paso una función como parámetro
+                ::onInmuebleSeleccionado
             )
         }
-    ) {
-
+    ) { padding ->
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(horizontal = 16.dp), // padding a los lados de la card
+            contentPadding = padding // padding alrededor del contenido dentro del composable (evitamos superponer el contenido con la navbar inferior)
         ) {
             items(propiedades) { propiedad ->
                 when (propiedad) {
