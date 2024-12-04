@@ -258,6 +258,7 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
     val localizacion = GeoPoint(0.0, 0.0)
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val limiteCaracteresTitulo = 30
 
     Column(
         modifier = Modifier
@@ -294,11 +295,12 @@ fun FormularioFinca(db: FirebaseFirestore, navController: NavController) {
 
         TextField(
             value = titulo,
-            onValueChange = { titulo = it },
+            onValueChange = { if (it.length <= limiteCaracteresTitulo) titulo = it },
             label = { Text("Título") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
         )
+
         TextField(
             value = descripcion,
             onValueChange = { descripcion = it },

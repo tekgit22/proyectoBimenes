@@ -111,7 +111,7 @@ fun guardarLocalizacionFinca(finca: Finca, context: Activity, documentID: String
             val geoPoint = GeoPoint(location.latitude, location.longitude)
 
             Log.d("PantallaFinca", "Guardando localización: lat=${location.latitude}, lon=${location.longitude}")
-            Toast.makeText(context, "lat=${location.latitude}, lon=${location.longitude}", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(context, "lat=${location.latitude}, lon=${location.longitude}", Toast.LENGTH_SHORT).show()
 
             val data = mapOf("localizacion" to geoPoint)
             fincaRef.update(data)
