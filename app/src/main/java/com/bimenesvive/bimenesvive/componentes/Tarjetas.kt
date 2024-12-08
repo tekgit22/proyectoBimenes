@@ -3,6 +3,7 @@ package com.bimenesvive.bimenesvive.componentes
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,9 +16,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +43,13 @@ import com.bimenesvive.bimenesvive.ui.theme.VerdeClaro
 import com.bimenesvive.bimenesvive.utilidades.obtenerUrisFotosFinca
 import com.bimenesvive.bimenesvive.utilidades.obtenerUrisFotosVivienda
 import kotlinx.coroutines.launch
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Hotel
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.SquareFoot
 
 
 
@@ -102,19 +113,76 @@ fun TarjetaVivienda(vivienda: Vivienda, navController: NavHostController) {
                     Column(
                         modifier = Modifier
                             .weight(1f)
-                            .align(Alignment.CenterVertically)
+                            .align(Alignment.CenterVertically),
+                        verticalArrangement = Arrangement.spacedBy((-8).dp)
                     ) {
-                        Text(
-                            text = vivienda.ubicacion,
-                            Modifier.padding(top = 16.dp)
+//                        Text(
+//                            text = vivienda.ubicacion,
+//                            Modifier.padding(top = 16.dp)
+//                        )
+//                        Text(text = "${vivienda.habitaciones} ${if (vivienda.habitaciones == 1) "habitación" else "habitaciones"}")
+//                        Text(text = "${vivienda.metros} m²")
+//                        Text(
+//                            text = if (vivienda.precio == 0) "Precio no disponible" else "Precio: ${vivienda.precio} €",
+//                            modifier = Modifier
+//                                .wrapContentWidth()
+//                                .wrapContentHeight()
+//                        )
+                        AssistChip(
+                            onClick = { /*  */ },
+                            label = { Text(vivienda.ubicacion) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.LocationOn,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = Color.Transparent
+                            )
                         )
-                        Text(text = "${vivienda.habitaciones} ${if (vivienda.habitaciones == 1) "habitación" else "habitaciones"}")
-                        Text(text = "${vivienda.metros} m²")
-                        Text(
-                            text = if (vivienda.precio == 0) "Precio no disponible" else "Precio: ${vivienda.precio} €",
-                            modifier = Modifier
-                                .wrapContentWidth()
-                                .wrapContentHeight()
+                        AssistChip(
+                            onClick = { /*  */ },
+                            label = { Text("${vivienda.habitaciones} ${if (vivienda.habitaciones == 1) "habitación" else "habitaciones"}") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Hotel,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = Color.Transparent
+                            )
+                        )
+                        AssistChip(
+                            onClick = { /*  */ },
+                            label = { Text("${vivienda.metros} m²") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.SquareFoot,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = Color.Transparent
+                            )
+                        )
+                        AssistChip(
+                            onClick = { /*  */ },
+                            label = { Text(if (vivienda.precio == 0) "Precio no disponible" else "Precio: ${vivienda.precio} €") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.AttachMoney,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = Color.Transparent
+                            )
                         )
                     }
                 }
@@ -176,17 +244,78 @@ fun TarjetaFinca(finca: Finca, navController: NavHostController) {
                             .padding(end = 16.dp)
                     )
                     //Columna que muestra los datos de la finca a la derecha de la foto
-                    Column {
-                        Text(
-                            text = finca.ubicacion, Modifier.padding(top = 16.dp)
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .align(Alignment.CenterVertically),
+                        verticalArrangement = Arrangement.spacedBy((-8).dp)
+                    ){
+//                        Text(
+//                            text = finca.ubicacion, Modifier.padding(top = 16.dp)
+//                        )
+//                        Text(text = "${finca.metros} m²")
+//                        Text(text = if (finca.edificable) "Edificable" else "No edificable")
+//                        Text(
+//                            text = if (finca.precio == 0) "Precio no disponible" else "Precio: ${finca.precio} €",
+//                            modifier = Modifier
+//                                .wrapContentWidth()
+//                                .wrapContentHeight()
+//                        )
+                        AssistChip(
+                            onClick = { /*  */ },
+                            label = { Text(finca.ubicacion) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.LocationOn,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = Color.Transparent
+                            )
                         )
-                        Text(text = "${finca.metros} m²")
-                        Text(text = if (finca.edificable) "Edificable" else "No edificable")
-                        Text(
-                            text = if (finca.precio == 0) "Precio no disponible" else "Precio: ${finca.precio} €",
-                            modifier = Modifier
-                                .wrapContentWidth()
-                                .wrapContentHeight()
+                        AssistChip(
+                            onClick = { /*  */ },
+                            label = { Text("${finca.metros} m²") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.SquareFoot,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = Color.Transparent
+                            )
+                        )
+                        AssistChip(
+                            onClick = { /*  */ },
+                            label = { Text(if (finca.edificable) "Edificable" else "No edificable") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Home, // Replace with appropriate icon if needed
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = Color.Transparent
+                            )
+                        )
+                        AssistChip(
+                            onClick = { /*  */ },
+                            label = { Text(if (finca.precio == 0) "Precio no disponible" else "Precio: ${finca.precio} €") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.AttachMoney,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                                )
+                            },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = Color.Transparent
+                            )
                         )
                     }
                 }

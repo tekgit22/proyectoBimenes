@@ -214,8 +214,8 @@ fun RecordarPasswordDialog(onDismiss: () -> Unit, onSendEmail: (String) -> Unit)
                 onDismiss()
             }) {
                 Text("Enviar")
-                // El usuario recibirá un email de noreply@bimenes-vive.firebaseapp.com
-                // Con un link para cambiar la contraseña
+                // Recibe mail de noreply@bimenes-vive.firebaseapp.com
+                // link para cambiar la contraseña
             }
         }
     )
