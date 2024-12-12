@@ -18,7 +18,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val autenticacionViewModel: AutenticacionViewModel by viewModels()
-
         setContent {
             BimenesViveTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
