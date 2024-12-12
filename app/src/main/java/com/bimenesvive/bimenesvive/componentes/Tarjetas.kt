@@ -128,6 +128,7 @@ fun TarjetaVivienda(vivienda: Vivienda, navController: NavHostController) {
 //                                .wrapContentWidth()
 //                                .wrapContentHeight()
 //                        )
+                        // Con AssistChips
                         AssistChip(
                             onClick = { /*  */ },
                             label = { Text(vivienda.ubicacion) },
