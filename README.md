@@ -1,5 +1,32 @@
 # Bimenes Vive
 
+Bimenes Vive is a mobile application designed for the municipality of Bimenes, in Asturias, Spain.
+
+The main purpose of the application is to provide the residents of Bimenes with a platform where they can post advertisements for properties located within the municipality that are available for sale or rent.
+
+The application also includes additional features, such as a notice board where potential buyers or tenants can express their interest in purchasing or renting properties, as well as an institutional section where Bimenes Town Council can publish information of interest to potential new residents.
+
+The application uses Firebase Firestore to store and retrieve data, Coil for image loading, OpenStreetMap for location data, and JUnit for testing.
+
+## Acknowledgements
+
+This project uses the following third-party libraries and services:
+
+- [Firebase](https://firebase.google.com/) – Licensed under the Apache License 2.0.
+- [Coil](https://github.com/coil-kt/coil) – Licensed under the Apache License 2.0.
+- [OpenStreetMap](https://www.openstreetmap.org/copyright) – Licensed under the Open Database License (ODbL).
+- [JUnit](https://junit.org/junit5/) – Licensed under the Eclipse Public License 2.0.
+
+## License
+
+This project is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+You can find the full terms and conditions in the [LICENSE](LICENSE) file.
+
+---------------------------------------
+
+# Bimenes Vive
+
 Bimenes Vive es una aplicación móvil que diseñada para el municipio de Bimenes, en Asturias.
 
 La funcionalidad principal de la aplicación es dar una herramienta a los vecinos de Bimenes para
@@ -23,4 +50,6 @@ Este proyecto utiliza las siguientes bibliotecas de terceros:
 - 
 ## Licencia
 
-Espacio reservado para mi licencia ...
+Este proyecto está licenciado bajo la [Licencia Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+Puedes consultar los términos y condiciones completos en el archivo [LICENSE](LICENSE).
