@@ -23,6 +23,25 @@ This project is licensed under the [Apache License 2.0](https://www.apache.org/l
 
 You can find the full terms and conditions in the [LICENSE](LICENSE) file.
 
+## Add a web version of Bimenes Vive
+## Overview
+
+Develop a web version of Bimenes Vive to make the platform accessible without requiring an Android device.
+
+## Goals
+
+- Provide access through desktop and mobile web browsers.
+- Recreate the existing Android app functionality.
+- Allow users to browse property listings.
+- Allow users to publish properties for sale or rent.
+- Provide access to the notice board.
+- Maintain the institutional information section.
+- Reuse Firebase as the backend where appropriate.
+
+## Status
+
+Planned – not yet started.
+
 ---------------------------------------
 
 # Bimenes Vive
